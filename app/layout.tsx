@@ -8,14 +8,22 @@ export const metadata: Metadata = {
   },
   description: 'Track and manage all your subscriptions in one clean place.',
   icons: {
-    icon: '/favicon.svg',
+    icon: '/logo.png',
+    apple: '/logo.png',
+    shortcut: '/logo.png',
+  },
+  manifest: '/manifest.json',
+  openGraph: {
+    title: 'Perezoso — Subscription Manager',
+    description: 'Track and manage all your subscriptions in one clean place.',
+    images: [{ url: '/logo.png', width: 1024, height: 1024 }],
   },
 }
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#6366F1',
+  themeColor: '#4318D1',
 }
 
 export default function RootLayout({

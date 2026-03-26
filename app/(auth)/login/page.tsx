@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import LoginForm from './LoginForm'
+import Image from 'next/image'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -28,8 +29,15 @@ export default async function LoginPage() {
       <div className="relative w-full max-w-sm">
         {/* Logo / brand */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-indigo-600 shadow-lg mb-5">
-            <span className="text-white text-2xl font-bold tracking-tight">P</span>
+          <div className="inline-flex items-center justify-center mb-5">
+            <Image
+              src="/logo.png"
+              alt="Perezoso"
+              width={80}
+              height={80}
+              className="rounded-[22px] shadow-lg"
+              priority
+            />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Perezoso</h1>
           <p className="mt-1.5 text-sm text-gray-500">

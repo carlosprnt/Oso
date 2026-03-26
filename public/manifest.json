@@ -1,0 +1,15 @@
+{
+  "name": "Perezoso",
+  "short_name": "Perezoso",
+  "description": "Track and manage all your subscriptions in one clean place.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#F7F8FA",
+  "theme_color": "#4318D1",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/logo.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/logo.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any" }
+  ]
+}

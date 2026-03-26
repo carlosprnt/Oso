@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { LayoutDashboard, CreditCard, LogOut } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import type { Profile } from '@/types'
 
 const NAV_ITEMS = [
@@ -37,9 +38,13 @@ export default function Sidebar({ profile }: SidebarProps) {
     ">
       {/* Brand */}
       <div className="flex items-center gap-2.5 px-3 mb-8">
-        <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center flex-shrink-0">
-          <span className="text-white text-sm font-bold">P</span>
-        </div>
+        <Image
+          src="/logo.png"
+          alt="Perezoso"
+          width={32}
+          height={32}
+          className="rounded-xl flex-shrink-0"
+        />
         <span className="font-bold text-gray-900 text-base tracking-tight">Perezoso</span>
       </div>
 
