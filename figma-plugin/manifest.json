@@ -1,0 +1,8 @@
+{
+  "name": "Perezoso — Generate Screens",
+  "id": "perezoso-screens-generator",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"]
+}
