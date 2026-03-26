@@ -6,11 +6,21 @@ import { NextResponse, type NextRequest } from 'next/server'
  * This is necessary to keep the session alive across server-rendered pages.
  */
 export async function updateSession(request: NextRequest) {
+  // If env vars are missing (e.g. not yet configured in Vercel), let the
+  // request pass through so the app can render a useful error page instead
+  // of crashing the middleware with a 500.
+  if (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  ) {
+    return NextResponse.next({ request })
+  }
+
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
         getAll() {
