@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/Button'
 import SubscriptionAvatar from '@/components/subscriptions/SubscriptionAvatar'
 import { StatusBadge } from '@/components/ui/Badge'
 import { loadDemoData } from '@/app/(dashboard)/subscriptions/demo-action'
-import AddSubscriptionFlow from '@/components/subscriptions/AddSubscriptionFlow'
+import UserAvatarMenu from '@/components/dashboard/UserAvatarMenu'
 import Insights from '@/components/dashboard/Insights'
 import type { Metadata } from 'next'
 
@@ -34,6 +34,9 @@ export default async function DashboardPage() {
 
   const isEmpty = subs.length === 0
 
+  // Share text with real data
+  const shareText = `My monthly subscriptions: ${formatCurrency(stats.total_monthly_cost, 'EUR')} across ${subs.length} subscriptions — tracked with Perezoso 🦥`
+
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -42,7 +45,7 @@ export default async function DashboardPage() {
           <h1 className="text-2xl font-bold text-[#121212] tracking-tight">Dashboard</h1>
           <p className="text-sm text-[#616161] mt-0.5">Your subscription overview</p>
         </div>
-        <AddSubscriptionFlow />
+        <UserAvatarMenu shareText={shareText} />
       </div>
 
       {isEmpty ? (

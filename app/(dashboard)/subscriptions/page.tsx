@@ -45,14 +45,17 @@ export default async function SubscriptionsPage({ searchParams }: PageProps) {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[#121212] tracking-tight">Subscriptions</h1>
         <div className="flex items-center gap-2">
-          {/* Filter only visible on desktop — mobile uses floating FAB */}
+          {/* Filter button */}
           <div className="hidden sm:block">
             <FilterModal
               currentStatus={params.status}
               currentCategory={params.category}
             />
           </div>
-          <AddSubscriptionFlow />
+          {/* Add button — desktop only; mobile uses floating nav "+" */}
+          <div className="hidden sm:block">
+            <AddSubscriptionFlow />
+          </div>
         </div>
       </div>
 
