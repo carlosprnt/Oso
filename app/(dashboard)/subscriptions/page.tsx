@@ -2,11 +2,11 @@ import { createClient } from '@/lib/supabase/server'
 import { enrichSubscriptions, getDashboardStats } from '@/lib/calculations/subscriptions'
 import { formatCurrency } from '@/lib/utils/currency'
 import type { Subscription, SubscriptionStatus, Category } from '@/types'
-import Link from 'next/link'
-import { Plus, Search } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
 import SubscriptionCard from '@/components/subscriptions/SubscriptionCard'
 import FilterModal from '@/components/ui/FilterModal'
+import AddSubscriptionFlow from '@/components/subscriptions/AddSubscriptionFlow'
+import { Search } from 'lucide-react'
+import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Subscriptions' }
@@ -26,78 +26,92 @@ export default async function SubscriptionsPage({ searchParams }: PageProps) {
 
   const allSubs = enrichSubscriptions((rawSubs ?? []) as Subscription[])
 
-  // Apply filters
   let filtered = allSubs
   if (params.status && params.status !== 'all') {
-    filtered = filtered.filter((s) => s.status === (params.status as SubscriptionStatus))
+    filtered = filtered.filter(s => s.status === (params.status as SubscriptionStatus))
   }
   if (params.category && params.category !== 'all') {
-    filtered = filtered.filter((s) => s.category === (params.category as Category))
+    filtered = filtered.filter(s => s.category === (params.category as Category))
   }
 
   const stats = getDashboardStats(allSubs)
-  const hasActiveFilters = (params.status && params.status !== 'all') || (params.category && params.category !== 'all')
+  const hasActiveFilters =
+    (params.status && params.status !== 'all') ||
+    (params.category && params.category !== 'all')
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-[#121212] tracking-tight">Subscriptions</h1>
-          <p className="text-sm text-[#616161] mt-0.5">
-            {allSubs.length} total · {formatCurrency(stats.total_monthly_cost, 'EUR')} / mo
-          </p>
-        </div>
+        <h1 className="text-2xl font-bold text-[#121212] tracking-tight">Subscriptions</h1>
         <div className="flex items-center gap-2">
-          <FilterModal
-            currentStatus={params.status}
-            currentCategory={params.category}
-          />
-          <Link href="/subscriptions/new">
-            <Button icon={<Plus size={15} />}>Add</Button>
-          </Link>
+          {/* Filter only visible on desktop — mobile uses floating FAB */}
+          <div className="hidden sm:block">
+            <FilterModal
+              currentStatus={params.status}
+              currentCategory={params.category}
+            />
+          </div>
+          <AddSubscriptionFlow />
         </div>
       </div>
+
+      {/* Summary cards (only when data exists) */}
+      {allSubs.length > 0 && (
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-white border border-[#E5E5E5] rounded-2xl p-4">
+            <p className="text-xs font-medium text-[#616161]">Total</p>
+            <p className="text-2xl font-bold text-[#121212] mt-1 tabular-nums leading-none">
+              {allSubs.length}
+            </p>
+            <p className="text-xs text-[#A3A3A3] mt-1">subscriptions</p>
+          </div>
+          <div className="bg-white border border-[#E5E5E5] rounded-2xl p-4">
+            <p className="text-xs font-medium text-[#616161]">Monthly</p>
+            <p className="text-2xl font-bold text-[#121212] mt-1 tabular-nums leading-none">
+              {formatCurrency(stats.total_monthly_cost, 'EUR')}
+            </p>
+            <p className="text-xs text-[#A3A3A3] mt-1">/ month</p>
+          </div>
+        </div>
+      )}
 
       {/* Active filter chips */}
       {hasActiveFilters && (
         <div className="flex items-center gap-2 flex-wrap animate-fade-in">
           {params.status && params.status !== 'all' && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#121212] text-white text-xs font-medium">
-              Status: {params.status}
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#121212] text-white text-xs font-medium capitalize">
+              {params.status}
             </span>
           )}
           {params.category && params.category !== 'all' && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#121212] text-white text-xs font-medium">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#121212] text-white text-xs font-medium capitalize">
               {params.category}
             </span>
           )}
           <Link
             href="/subscriptions"
-            className="text-xs text-[#616161] hover:text-[#121212] underline underline-offset-2 transition-colors duration-150"
+            className="text-xs text-[#616161] hover:text-[#121212] underline underline-offset-2 transition-colors"
           >
             Clear filters
           </Link>
         </div>
       )}
 
-      {/* List */}
+      {/* Subscription list */}
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
           <div className="w-12 h-12 rounded-2xl bg-[#F5F5F5] border border-[#E5E5E5] flex items-center justify-center mb-4">
             <Search size={20} className="text-[#616161]" />
           </div>
-          <p className="text-sm font-medium text-[#121212] mb-1">No subscriptions found</p>
-          <p className="text-xs text-[#616161] mb-5">
-            {allSubs.length === 0
-              ? "You haven't added any subscriptions yet."
-              : "Try adjusting your filters."}
+          <p className="text-sm font-medium text-[#121212] mb-1">
+            {allSubs.length === 0 ? 'No subscriptions yet' : 'No results'}
           </p>
-          {allSubs.length === 0 && (
-            <Link href="/subscriptions/new">
-              <Button icon={<Plus size={15} />}>Add your first subscription</Button>
-            </Link>
-          )}
+          <p className="text-xs text-[#616161]">
+            {allSubs.length === 0
+              ? 'Tap Add to get started.'
+              : 'Try adjusting your filters.'}
+          </p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -106,6 +120,16 @@ export default async function SubscriptionsPage({ searchParams }: PageProps) {
           ))}
         </div>
       )}
+
+      {/* Floating filter FAB — mobile only, above bottom nav */}
+      <div className="sm:hidden">
+        <div className="fixed bottom-20 right-4 z-30">
+          <FilterModal
+            currentStatus={params.status}
+            currentCategory={params.category}
+          />
+        </div>
+      </div>
     </div>
   )
 }

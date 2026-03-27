@@ -1,0 +1,190 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { ArrowLeft, Pencil, Calendar, Tag, Zap, Users } from 'lucide-react'
+import SubscriptionAvatar from './SubscriptionAvatar'
+import BottomSheet from '@/components/ui/BottomSheet'
+import SubscriptionForm from './SubscriptionForm'
+import { formatCurrency } from '@/lib/utils/currency'
+import { formatRelativeDate } from '@/lib/utils/dates'
+import { getCategoryMeta } from '@/lib/constants/categories'
+import { BILLING_PERIOD_LABELS } from '@/lib/constants/currencies'
+import type { SubscriptionWithCosts } from '@/types'
+
+const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
+  active:    { label: 'Active',    color: '#16A34A', bg: '#F0FDF4' },
+  trial:     { label: 'Trial',     color: '#D97706', bg: '#FFFBEB' },
+  paused:    { label: 'Paused',    color: '#6B7280', bg: '#F9FAFB' },
+  cancelled: { label: 'Cancelled', color: '#DC2626', bg: '#FEF2F2' },
+}
+
+interface SubscriptionDetailProps {
+  subscription: SubscriptionWithCosts
+}
+
+export default function SubscriptionDetail({ subscription: sub }: SubscriptionDetailProps) {
+  const [editOpen, setEditOpen] = useState(false)
+  const router = useRouter()
+  const meta = getCategoryMeta(sub.category)
+  const CategoryIcon = meta.icon
+  const status = STATUS_CONFIG[sub.status] ?? STATUS_CONFIG.active
+
+  return (
+    <>
+      <div className="min-h-screen bg-[#F7F8FA]">
+
+        {/* Top nav */}
+        <div className="flex items-center justify-between px-5 pt-5 pb-4 bg-[#F7F8FA]">
+          <button
+            onClick={() => router.back()}
+            className="w-9 h-9 rounded-xl flex items-center justify-center bg-white border border-[#E5E5E5] hover:border-[#D4D4D4] transition-colors"
+          >
+            <ArrowLeft size={17} className="text-[#121212]" />
+          </button>
+          <button
+            onClick={() => setEditOpen(true)}
+            className="
+              flex items-center gap-1.5 px-3.5 py-2 rounded-xl
+              bg-[#121212] text-white text-sm font-medium
+              hover:bg-[#2A2A2A] transition-colors pressable
+            "
+          >
+            <Pencil size={13} />
+            Edit
+          </button>
+        </div>
+
+        {/* Hero card */}
+        <div className="mx-5 mb-4 bg-white rounded-2xl border border-[#E5E5E5] p-6 flex flex-col items-center text-center">
+          <SubscriptionAvatar name={sub.name} logoUrl={sub.logo_url} size="xl" />
+
+          <h1 className="text-xl font-bold text-[#121212] mt-4 mb-2 leading-tight">
+            {sub.name}
+          </h1>
+
+          {/* Status pill */}
+          <span
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
+            style={{ color: status.color, backgroundColor: status.bg }}
+          >
+            <span
+              className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+              style={{ backgroundColor: status.color }}
+            />
+            {status.label}
+            {sub.is_shared && (
+              <span className="ml-1 flex items-center gap-1 opacity-70">
+                · <Users size={11} /> {sub.shared_with_count}
+              </span>
+            )}
+          </span>
+        </div>
+
+        {/* Cost breakdown */}
+        <div className="mx-5 mb-4 bg-white rounded-2xl border border-[#E5E5E5] p-4">
+          <div className="flex items-end justify-between">
+            <div>
+              <p className="text-xs text-[#616161] mb-1">
+                {formatCurrency(sub.price_amount, sub.currency)} /{' '}
+                {BILLING_PERIOD_LABELS[sub.billing_period]}
+              </p>
+              <p className="text-3xl font-bold text-[#121212] tabular-nums leading-none">
+                {formatCurrency(sub.my_monthly_cost, sub.currency)}
+              </p>
+              <p className="text-sm text-[#616161] mt-1">per month</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-[#A3A3A3] mb-0.5">Annually</p>
+              <p className="text-lg font-semibold text-[#424242] tabular-nums">
+                {formatCurrency(sub.my_annual_cost, sub.currency)}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Detail rows */}
+        <div className="mx-5 mb-4 bg-white rounded-2xl border border-[#E5E5E5] overflow-hidden">
+          <DetailRow
+            icon={<Tag size={15} />}
+            label="Category"
+            value={
+              <span className="flex items-center gap-1.5">
+                <CategoryIcon size={13} />
+                {meta.label}
+              </span>
+            }
+          />
+          {sub.next_billing_date && (
+            <DetailRow
+              icon={<Calendar size={15} />}
+              label="Next billing"
+              value={formatRelativeDate(sub.next_billing_date)}
+            />
+          )}
+          {sub.trial_end_date && (
+            <DetailRow
+              icon={<Zap size={15} />}
+              label="Trial ends"
+              value={formatRelativeDate(sub.trial_end_date)}
+            />
+          )}
+        </div>
+
+        {/* Notes */}
+        {sub.notes && (
+          <div className="mx-5 mb-4 bg-white rounded-2xl border border-[#E5E5E5] p-4">
+            <p className="text-xs font-medium text-[#A3A3A3] uppercase tracking-wide mb-2">Notes</p>
+            <p className="text-sm text-[#424242] whitespace-pre-wrap leading-relaxed">{sub.notes}</p>
+          </div>
+        )}
+
+        {/* CTA */}
+        <div className="px-5 pb-12">
+          <button
+            onClick={() => setEditOpen(true)}
+            className="
+              w-full py-3 rounded-xl bg-[#121212] text-white
+              text-sm font-medium hover:bg-[#2A2A2A]
+              transition-colors pressable
+            "
+          >
+            Edit subscription
+          </button>
+        </div>
+      </div>
+
+      {/* Edit bottom sheet */}
+      <BottomSheet
+        isOpen={editOpen}
+        onClose={() => setEditOpen(false)}
+        title="Edit subscription"
+        height="tall"
+      >
+        <SubscriptionForm
+          mode="edit"
+          subscription={sub}
+          onCancel={() => setEditOpen(false)}
+        />
+      </BottomSheet>
+    </>
+  )
+}
+
+function DetailRow({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode
+  label: string
+  value: React.ReactNode
+}) {
+  return (
+    <div className="flex items-center gap-3 px-4 py-3.5 border-b border-[#F0F0F0] last:border-b-0">
+      <span className="text-[#B0B0B0] flex-shrink-0">{icon}</span>
+      <span className="text-sm text-[#616161] flex-1">{label}</span>
+      <span className="text-sm font-medium text-[#121212]">{value}</span>
+    </div>
+  )
+}

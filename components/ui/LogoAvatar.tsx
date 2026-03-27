@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { getInitials, getAvatarColor } from '@/lib/utils/logos'
+import { getInitials, getAvatarPastel } from '@/lib/utils/logos'
 
 interface LogoAvatarProps {
   name: string
@@ -42,7 +42,7 @@ export default function LogoAvatar({
     )
   }
 
-  const bgColor = getAvatarColor(name)
+  const { bg, fg } = getAvatarPastel(name)
   const initials = getInitials(name)
 
   return (
@@ -50,9 +50,9 @@ export default function LogoAvatar({
       className={`
         ${container} rounded-xl flex-shrink-0
         flex items-center justify-center
-        font-semibold text-white select-none ${text} ${className}
+        font-semibold select-none ${text} ${className}
       `}
-      style={{ backgroundColor: bgColor }}
+      style={{ backgroundColor: bg, color: fg }}
       aria-label={`${name} logo`}
     >
       {initials}

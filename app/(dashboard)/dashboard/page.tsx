@@ -5,12 +5,13 @@ import { getCategoryMeta } from '@/lib/constants/categories'
 import { formatRelativeDate } from '@/lib/utils/dates'
 import type { Subscription } from '@/types'
 import Link from 'next/link'
-import { Plus, TrendingUp, Calendar, Users, Zap } from 'lucide-react'
+import { TrendingUp, Calendar, Users, Zap, Plus } from 'lucide-react'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import LogoAvatar from '@/components/ui/LogoAvatar'
+import SubscriptionAvatar from '@/components/subscriptions/SubscriptionAvatar'
 import { StatusBadge } from '@/components/ui/Badge'
 import { loadDemoData } from '@/app/(dashboard)/subscriptions/demo-action'
+import AddSubscriptionFlow from '@/components/subscriptions/AddSubscriptionFlow'
 import Insights from '@/components/dashboard/Insights'
 import type { Metadata } from 'next'
 
@@ -34,16 +35,14 @@ export default async function DashboardPage() {
   const isEmpty = subs.length === 0
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#121212] tracking-tight">Dashboard</h1>
           <p className="text-sm text-[#616161] mt-0.5">Your subscription overview</p>
         </div>
-        <Link href="/subscriptions/new">
-          <Button icon={<Plus size={15} />}>Add</Button>
-        </Link>
+        <AddSubscriptionFlow />
       </div>
 
       {isEmpty ? (
@@ -51,7 +50,7 @@ export default async function DashboardPage() {
       ) : (
         <>
           {/* Stats row */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
             <StatCard
               label="Monthly"
               value={formatCurrency(stats.total_monthly_cost, 'EUR')}
@@ -82,7 +81,7 @@ export default async function DashboardPage() {
           {/* Insights */}
           <Insights subscriptions={subs} stats={stats} />
 
-          <div className="grid lg:grid-cols-3 gap-4">
+          <div className="grid lg:grid-cols-3 gap-3">
             {/* Upcoming renewals */}
             <div className="lg:col-span-2">
               <Card>
@@ -93,7 +92,7 @@ export default async function DashboardPage() {
                   <div className="space-y-3">
                     {upcoming.slice(0, 6).map((r) => (
                       <div key={r.subscription.id} className="flex items-center gap-3">
-                        <LogoAvatar
+                        <SubscriptionAvatar
                           name={r.subscription.name}
                           logoUrl={r.subscription.logo_url}
                           size="sm"
@@ -164,7 +163,7 @@ export default async function DashboardPage() {
                 <Card>
                   <p className="text-xs font-medium text-[#616161] mb-2">Most expensive</p>
                   <div className="flex items-center gap-3">
-                    <LogoAvatar name={highest.name} logoUrl={highest.logo_url} size="md" />
+                    <SubscriptionAvatar name={highest.name} logoUrl={highest.logo_url} size="md" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-[#121212] truncate">{highest.name}</p>
                       <p className="text-xs text-[#616161]">
@@ -200,9 +199,9 @@ export default async function DashboardPage() {
                 const meta = getCategoryMeta(sub.category)
                 const Icon = meta.icon
                 return (
-                  <Link key={sub.id} href={`/subscriptions/${sub.id}/edit`}>
+                  <Link key={sub.id} href={`/subscriptions/${sub.id}`}>
                     <div className="flex items-center gap-3 px-2 py-2.5 rounded-xl hover:bg-[#F5F5F5] transition-colors duration-150 -mx-2">
-                      <LogoAvatar name={sub.name} logoUrl={sub.logo_url} size="sm" />
+                      <SubscriptionAvatar name={sub.name} logoUrl={sub.logo_url} size="sm" />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-[#121212] truncate">{sub.name}</p>
                         <p className="text-xs text-[#616161] flex items-center gap-1">

@@ -1,6 +1,6 @@
 /**
  * Returns initials from a subscription name for fallback avatars.
- * "Netflix" → "N", "Apple TV+" → "AT", "Xbox Game Pass" → "XG"
+ * "Netflix" → "NE", "Apple TV+" → "AT", "Xbox Game Pass" → "XG"
  */
 export function getInitials(name: string): string {
   const words = name.trim().split(/\s+/)
@@ -13,26 +13,33 @@ export function getInitials(name: string): string {
 }
 
 /**
- * Deterministic color from a string (for avatar backgrounds).
- * Returns a Tailwind-compatible hex color.
+ * Soft pastel pairs — light background + dark text for readability.
+ * All pairs pass WCAG AA contrast ratio on their background.
  */
-const AVATAR_COLORS = [
-  '#6366F1', // indigo
-  '#8B5CF6', // violet
-  '#EC4899', // pink
-  '#F59E0B', // amber
-  '#10B981', // emerald
-  '#3B82F6', // blue
-  '#F97316', // orange
-  '#14B8A6', // teal
-  '#EF4444', // red
-  '#84CC16', // lime
+const PASTEL_PAIRS: Array<{ bg: string; fg: string }> = [
+  { bg: '#FDE8E8', fg: '#9B1C1C' }, // rose
+  { bg: '#FEF3C7', fg: '#92400E' }, // amber
+  { bg: '#D1FAE5', fg: '#065F46' }, // emerald
+  { bg: '#DBEAFE', fg: '#1E3A8A' }, // blue
+  { bg: '#EDE9FE', fg: '#4C1D95' }, // violet
+  { bg: '#FCE7F3', fg: '#831843' }, // pink
+  { bg: '#E0F2FE', fg: '#0C4A6E' }, // sky
+  { bg: '#FEF9C3', fg: '#713F12' }, // yellow
+  { bg: '#DCFCE7', fg: '#14532D' }, // green
+  { bg: '#F3E8FF', fg: '#581C87' }, // purple
+  { bg: '#FFE4E6', fg: '#9F1239' }, // red
+  { bg: '#E0E7FF', fg: '#3730A3' }, // indigo
 ]
 
-export function getAvatarColor(name: string): string {
+export function getAvatarPastel(name: string): { bg: string; fg: string } {
   let hash = 0
   for (let i = 0; i < name.length; i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash)
   }
-  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length]
+  return PASTEL_PAIRS[Math.abs(hash) % PASTEL_PAIRS.length]
+}
+
+/** Legacy: kept for backward compat with LogoAvatar */
+export function getAvatarColor(name: string): string {
+  return getAvatarPastel(name).bg
 }
