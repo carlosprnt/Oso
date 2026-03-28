@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { SlidersHorizontal, X, Check } from 'lucide-react'
 import SubscriptionAvatar from '@/components/subscriptions/SubscriptionAvatar'
+import { resolveSubscriptionLogoUrl } from '@/lib/constants/platforms'
 import { formatCurrency } from '@/lib/utils/currency'
 import { CATEGORIES } from '@/lib/constants/categories'
 import type { SubscriptionWithCosts, SubscriptionStatus, Category, DashboardStats } from '@/types'
@@ -33,8 +34,12 @@ function WalletCard({ sub }: { sub: SubscriptionWithCosts }) {
         className="w-full bg-white rounded-[28px] px-6 pt-6 pb-7 flex items-start gap-5 active:scale-[0.985] transition-transform duration-100"
         style={{ border: '1.5px solid #E8E8E8', minHeight: 'clamp(130px, 18vw, 160px)' }}
       >
-        {/* Avatar — larger to fill taller card */}
-        <SubscriptionAvatar name={sub.name} logoUrl={sub.logo_url} size="lg" />
+        {/* Avatar — resolve from catalog if no stored logo */}
+        <SubscriptionAvatar
+          name={sub.name}
+          logoUrl={resolveSubscriptionLogoUrl(sub.name, sub.logo_url)}
+          size="lg"
+        />
 
         {/* Name + category */}
         <div className="flex-1 min-w-0">

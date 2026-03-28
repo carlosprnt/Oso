@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Pencil, Calendar, Tag, Zap, Users } from 'lucide-react'
 import SubscriptionAvatar from './SubscriptionAvatar'
 import BottomSheet from '@/components/ui/BottomSheet'
+import { resolveSubscriptionLogoUrl } from '@/lib/constants/platforms'
 import SubscriptionForm from './SubscriptionForm'
 import { formatCurrency } from '@/lib/utils/currency'
 import { formatRelativeDate } from '@/lib/utils/dates'
@@ -57,7 +58,11 @@ export default function SubscriptionDetail({ subscription: sub }: SubscriptionDe
 
         {/* Hero card */}
         <div className="mb-2 bg-white rounded-2xl border border-[#E8E8E8] p-6 flex flex-col items-center text-center">
-          <SubscriptionAvatar name={sub.name} logoUrl={sub.logo_url} size="xl" />
+          <SubscriptionAvatar
+            name={sub.name}
+            logoUrl={resolveSubscriptionLogoUrl(sub.name, sub.logo_url)}
+            size="xl"
+          />
 
           <h1 className="text-xl font-bold text-[#121212] mt-4 mb-2 leading-tight">
             {sub.name}

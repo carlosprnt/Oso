@@ -1,7 +1,7 @@
 'use client'
 
 import { PenLine } from 'lucide-react'
-import { PLATFORMS, getPlatformLogoUrl, type PlatformPreset } from '@/lib/constants/platforms'
+import { PLATFORMS, resolvePlatformLogoUrl, type PlatformPreset } from '@/lib/constants/platforms'
 import SubscriptionAvatar from './SubscriptionAvatar'
 
 interface PlatformPickerProps {
@@ -34,18 +34,18 @@ export default function PlatformPicker({ onSelect }: PlatformPickerProps) {
         </p>
       </div>
 
-      {/* Scrollable platform list — no search */}
+      {/* Scrollable platform list */}
       <div className="flex-1 overflow-y-auto px-5 pb-8">
         <div className="space-y-0.5">
           {PLATFORMS.map(platform => (
             <button
-              key={platform.slug}
+              key={platform.id}
               onClick={() => onSelect(platform)}
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#F5F5F5] transition-colors text-left"
             >
               <SubscriptionAvatar
                 name={platform.name}
-                logoUrl={getPlatformLogoUrl(platform.domain)}
+                logoUrl={resolvePlatformLogoUrl(platform)}
                 size="sm"
               />
               <span className="text-sm font-medium text-[#111111]">{platform.name}</span>

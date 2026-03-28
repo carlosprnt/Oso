@@ -9,7 +9,7 @@ import { CURRENCIES, BILLING_PERIOD_LABELS } from '@/lib/constants/currencies'
 import { AlertCircle, Calendar, ChevronDown, ChevronUp, ChevronRight, Check } from 'lucide-react'
 import type { Subscription, BillingPeriod, SubscriptionStatus, UserShareMode, Category } from '@/types'
 import type { PlatformPreset } from '@/lib/constants/platforms'
-import { getPlatformLogoUrl } from '@/lib/constants/platforms'
+import { getPrefilledPlatformValues } from '@/lib/constants/platforms'
 import { CARD_COLOR_PRESETS } from '@/components/subscriptions/SubscriptionCard'
 
 interface SubscriptionFormProps {
@@ -34,25 +34,23 @@ export default function SubscriptionForm({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [showAllCategories, setShowAllCategories] = useState(false)
 
+  // Derive pre-filled values from platform preset (create mode only)
+  const prefill = platformPreset ? getPrefilledPlatformValues(platformPreset) : null
+
   // Derive initial logo URL: explicit > platform preset > empty
-  const initialLogoUrl =
-    subscription?.logo_url ??
-    (platformPreset ? getPlatformLogoUrl(platformPreset.domain) : '')
+  const initialLogoUrl = subscription?.logo_url ?? prefill?.logoUrl ?? ''
 
   // ── Primary state ─────────────────────────────────────────
-  const [name, setName] = useState(
-    subscription?.name ?? platformPreset?.name ?? ''
-  )
+  const [name, setName] = useState(subscription?.name ?? prefill?.name ?? '')
   const [priceAmount, setPriceAmount] = useState(
-    subscription?.price_amount?.toString() ??
-    platformPreset?.defaultPrice?.toString() ?? ''
+    subscription?.price_amount?.toString() ?? prefill?.priceAmount ?? ''
   )
   const [currency, setCurrency] = useState(subscription?.currency ?? 'EUR')
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>(
-    subscription?.billing_period ?? platformPreset?.defaultBillingPeriod ?? 'monthly'
+    subscription?.billing_period ?? (prefill?.billingPeriod as BillingPeriod) ?? 'monthly'
   )
   const [category, setCategory] = useState<Category>(
-    subscription?.category ?? platformPreset?.category ?? 'other'
+    subscription?.category ?? (prefill?.category as Category) ?? 'other'
   )
   const [nextBillingDate, setNextBillingDate] = useState(
     subscription?.next_billing_date ?? ''
