@@ -1,18 +1,36 @@
 'use client'
 
-import { PenLine } from 'lucide-react'
+import { PenLine, Mail } from 'lucide-react'
 import { PLATFORMS, resolvePlatformLogoUrl, type PlatformPreset } from '@/lib/constants/platforms'
 import SubscriptionAvatar from './SubscriptionAvatar'
 
 interface PlatformPickerProps {
   onSelect: (platform: PlatformPreset | null) => void
+  onGmailSearch?: () => void
 }
 
-export default function PlatformPicker({ onSelect }: PlatformPickerProps) {
+export default function PlatformPicker({ onSelect, onGmailSearch }: PlatformPickerProps) {
   return (
     <div className="flex flex-col h-full">
-      {/* Manual entry */}
-      <div className="px-5 pt-4 pb-3 flex-shrink-0">
+      {/* Action buttons */}
+      <div className="px-5 pt-4 pb-3 flex-shrink-0 space-y-2">
+        {/* Gmail search — primary shortcut */}
+        {onGmailSearch && (
+          <button
+            onClick={onGmailSearch}
+            className="w-full h-12 flex items-center gap-3 px-4 rounded-[10px] border border-[#3D3BF3] bg-[#F5F5FF] hover:bg-[#EDEDFF] transition-colors text-left"
+          >
+            <div className="w-9 h-9 rounded-xl bg-[#3D3BF3] flex items-center justify-center flex-shrink-0">
+              <Mail size={15} className="text-white" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-[#3D3BF3]">Search in Gmail</p>
+              <p className="text-xs text-[#7B79F7]">Find subscription receipts automatically</p>
+            </div>
+          </button>
+        )}
+
+        {/* Manual entry */}
         <button
           onClick={() => onSelect(null)}
           className="w-full h-12 flex items-center gap-3 px-4 rounded-[10px] border border-dashed border-[#D4D4D4] hover:border-[#A3A3A3] hover:bg-[#FAFAFA] transition-colors text-left"

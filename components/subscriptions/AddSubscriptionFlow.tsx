@@ -1,17 +1,29 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus } from 'lucide-react'
 import BottomSheet from '@/components/ui/BottomSheet'
 import PlatformPicker from './PlatformPicker'
 import SubscriptionForm from './SubscriptionForm'
+import GmailSubscriptionSearchSheet from './GmailSubscriptionSearchSheet'
 import type { PlatformPreset } from '@/lib/constants/platforms'
 
-type Step = 'closed' | 'pick' | 'form'
+type Step = 'closed' | 'pick' | 'form' | 'gmail'
 
 export default function AddSubscriptionFlow() {
   const [step, setStep] = useState<Step>('closed')
   const [platform, setPlatform] = useState<PlatformPreset | null>(null)
+
+  // After Gmail OAuth redirect, localStorage flag tells us to auto-open the Gmail sheet
+  useEffect(() => {
+    const pending = localStorage.getItem('perezoso_gmail_pending')
+    if (pending === '1') {
+      localStorage.removeItem('perezoso_gmail_pending')
+      // Small delay so the page finishes mounting before opening the sheet
+      const t = setTimeout(() => setStep('gmail'), 350)
+      return () => clearTimeout(t)
+    }
+  }, [])
 
   function handleSelect(p: PlatformPreset | null) {
     setPlatform(p)
@@ -33,20 +45,24 @@ export default function AddSubscriptionFlow() {
         Add
       </button>
 
-      {/* Step 1 — Platform list (no search) */}
+      {/* Step 1 — Platform list */}
       <BottomSheet isOpen={step === 'pick'} onClose={close} title="Create new" height="tall">
-        <PlatformPicker onSelect={handleSelect} />
+        <PlatformPicker
+          onSelect={handleSelect}
+          onGmailSearch={() => setStep('gmail')}
+        />
       </BottomSheet>
 
       {/* Step 2 — Form */}
-      <BottomSheet
-        isOpen={step === 'form'}
-        onClose={close}
-        title="Create new"
-        height="tall"
-      >
+      <BottomSheet isOpen={step === 'form'} onClose={close} title="Create new" height="tall">
         <SubscriptionForm mode="create" platformPreset={platform ?? undefined} onCancel={close} />
       </BottomSheet>
+
+      {/* Gmail search sheet — opened from platform picker or auto-opened after OAuth */}
+      <GmailSubscriptionSearchSheet
+        isOpen={step === 'gmail'}
+        onClose={close}
+      />
     </>
   )
 }

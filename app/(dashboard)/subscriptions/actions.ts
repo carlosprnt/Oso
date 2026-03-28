@@ -112,6 +112,39 @@ export async function deleteSubscription(id: string) {
 }
 
 // ============================================================
+// BULK IMPORT (no redirect — used by Gmail detection flow)
+// ============================================================
+
+export async function importSubscriptions(
+  items: SubscriptionFormData[],
+): Promise<{ imported: number; error?: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { imported: 0, error: 'Not authenticated' }
+
+  let imported = 0
+  for (const formData of items) {
+    const payload = { ...formData, user_id: user.id }
+    let result = await supabase.from('subscriptions').insert(payload).select('id').single()
+
+    if (result.error && isSchemaError(result.error.message)) {
+      const fallback = { ...stripOptionalColumns(payload as Record<string, unknown>), user_id: user.id }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      result = await (supabase.from('subscriptions').insert(fallback).select('id').single() as any)
+    }
+
+    if (!result.error) imported++
+  }
+
+  if (imported > 0) {
+    revalidatePath('/dashboard')
+    revalidatePath('/subscriptions')
+  }
+
+  return { imported }
+}
+
+// ============================================================
 // ARCHIVE (set status to cancelled)
 // ============================================================
 
