@@ -12,20 +12,20 @@ interface PlatformPickerProps {
 export default function PlatformPicker({ onSelect, onGmailSearch }: PlatformPickerProps) {
   return (
     <div className="flex flex-col h-full">
-      {/* Action buttons */}
-      <div className="px-5 pt-4 pb-3 flex-shrink-0 space-y-2">
-        {/* Gmail search — primary shortcut */}
+      {/* Action buttons — two-column large cards */}
+      <div className={`px-5 pt-4 pb-3 flex-shrink-0 ${onGmailSearch ? 'grid grid-cols-2 gap-3' : ''}`}>
+        {/* Gmail search */}
         {onGmailSearch && (
           <button
             onClick={onGmailSearch}
-            className="w-full h-12 flex items-center gap-3 px-4 rounded-[10px] border border-[#3D3BF3] bg-[#F5F5FF] hover:bg-[#EDEDFF] transition-colors text-left"
+            className="flex flex-col items-center justify-center gap-2.5 px-3 py-5 rounded-2xl border border-[#3D3BF3] bg-[#F5F5FF] active:bg-[#EDEDFF] transition-colors text-center"
           >
-            <div className="w-9 h-9 rounded-xl bg-[#3D3BF3] flex items-center justify-center flex-shrink-0">
-              <Mail size={15} className="text-white" />
+            <div className="w-11 h-11 rounded-2xl bg-[#3D3BF3] flex items-center justify-center flex-shrink-0">
+              <Mail size={18} className="text-white" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-[#3D3BF3]">Search in Gmail</p>
-              <p className="text-xs text-[#7B79F7]">Find subscription receipts automatically</p>
+              <p className="text-[13px] font-semibold text-[#3D3BF3] leading-snug">Search in Gmail</p>
+              <p className="text-[11px] text-[#7B79F7] mt-0.5 leading-snug">Find receipts automatically</p>
             </div>
           </button>
         )}
@@ -33,14 +33,14 @@ export default function PlatformPicker({ onSelect, onGmailSearch }: PlatformPick
         {/* Manual entry */}
         <button
           onClick={() => onSelect(null)}
-          className="w-full h-12 flex items-center gap-3 px-4 rounded-[10px] border border-dashed border-[#D4D4D4] hover:border-[#A3A3A3] hover:bg-[#FAFAFA] transition-colors text-left"
+          className="flex flex-col items-center justify-center gap-2.5 px-3 py-5 rounded-2xl border border-[#E8E8E8] bg-white active:bg-[#FAFAFA] transition-colors text-center"
         >
-          <div className="w-9 h-9 rounded-xl bg-[#F5F5F5] border border-[#E8E8E8] flex items-center justify-center flex-shrink-0">
-            <PenLine size={15} className="text-[#666666]" />
+          <div className="w-11 h-11 rounded-2xl bg-[#F5F5F5] border border-[#E8E8E8] flex items-center justify-center flex-shrink-0">
+            <PenLine size={18} className="text-[#666666]" />
           </div>
           <div>
-            <p className="text-sm font-medium text-[#111111]">Enter manually</p>
-            <p className="text-xs text-[#999999]">Any custom service or subscription</p>
+            <p className="text-[13px] font-semibold text-[#111111] leading-snug">Enter manually</p>
+            <p className="text-[11px] text-[#999999] mt-0.5 leading-snug">Any service or subscription</p>
           </div>
         </button>
       </div>

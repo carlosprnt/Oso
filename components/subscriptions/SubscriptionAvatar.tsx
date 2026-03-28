@@ -9,14 +9,15 @@ interface SubscriptionAvatarProps {
   logoUrl?: string | null
   /** Simple Icons slug — resolves to cdn.simpleicons.org/{slug} */
   simpleIconSlug?: string | null
-  size?: 'sm' | 'md' | 'lg' | 'xl'
+  size?: 'sm' | 'md' | 'md48' | 'lg' | 'xl'
 }
 
 const SIZE = {
-  sm: { cls: 'w-9 h-9',            text: 'text-xs font-semibold',  px: 36  },
-  md: { cls: 'w-11 h-11',          text: 'text-sm font-semibold',  px: 44  },
-  lg: { cls: 'w-14 h-14',          text: 'text-base font-bold',    px: 56  },
-  xl: { cls: 'w-[72px] h-[72px]',  text: 'text-xl font-bold',      px: 72  },
+  sm:   { cls: 'w-9 h-9',            text: 'text-xs font-semibold',  px: 36  },
+  md:   { cls: 'w-11 h-11',          text: 'text-sm font-semibold',  px: 44  },
+  md48: { cls: 'w-12 h-12',          text: 'text-sm font-semibold',  px: 48  },
+  lg:   { cls: 'w-14 h-14',          text: 'text-base font-bold',    px: 56  },
+  xl:   { cls: 'w-[72px] h-[72px]',  text: 'text-xl font-bold',      px: 72  },
 }
 
 const SIMPLE_ICONS_CDN = 'https://cdn.simpleicons.org'

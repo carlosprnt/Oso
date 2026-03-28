@@ -142,7 +142,8 @@ export default function SubscriptionForm({
   const labelCls = 'text-xs font-medium text-[#424242] block mb-1.5'
 
   return (
-    <form onSubmit={handleSubmit} className="px-5 py-4 space-y-5 pb-10">
+    <form onSubmit={handleSubmit} className="flex flex-col">
+      <div className="px-5 py-4 space-y-5 pb-4">
       {/* Error */}
       {error && (
         <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-[#991B1B] text-sm rounded-xl px-4 py-3">
@@ -316,7 +317,7 @@ export default function SubscriptionForm({
       {/* ── Next billing date ─────────────────────────────── */}
       <div>
         <label className={labelCls}>Next billing date</label>
-        <div className="relative w-full overflow-hidden">
+        <div className="relative overflow-hidden rounded-xl">
           <Calendar
             size={15}
             className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#A3A3A3] pointer-events-none z-10"
@@ -325,7 +326,8 @@ export default function SubscriptionForm({
             type="date"
             value={nextBillingDate}
             onChange={e => setNextBillingDate(e.target.value)}
-            className={inputCls + ' pl-10 w-full min-w-0 max-w-full'}
+            className={inputCls + ' pl-10'}
+            style={{ width: '100%', boxSizing: 'border-box', maxWidth: '100%' }}
           />
         </div>
       </div>
@@ -494,8 +496,13 @@ export default function SubscriptionForm({
         </div>
       </div>
 
-      {/* ── Actions ───────────────────────────────────────── */}
-      <div className="space-y-3 pt-1">
+      </div>
+
+      {/* ── Sticky actions ────────────────────────────────── */}
+      <div
+        className="sticky bottom-0 bg-white border-t border-[#F0F0F0] px-5 py-4 space-y-3"
+        style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
+      >
         <div className="flex gap-2">
           <Button type="submit" loading={isPending} className="flex-1">
             {mode === 'create' ? 'Add subscription' : 'Save changes'}

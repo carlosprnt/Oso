@@ -73,7 +73,7 @@ export default function BottomSheet({
 
         {/* Header */}
         {title && (
-          <div className="flex-shrink-0 flex items-center justify-between px-5 py-3 border-b border-[#F0F0F0]">
+          <div className="flex-shrink-0 flex items-center justify-between px-5 py-3">
             <h2 className="text-[17px] font-semibold text-[#111111]">{title}</h2>
             <button
               onClick={onClose}
