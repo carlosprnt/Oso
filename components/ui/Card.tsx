@@ -50,7 +50,7 @@ export function CardHeader({
   return (
     <div className={`flex items-center justify-between mb-4 ${className}`}>
       <div>
-        <h3 className="text-sm font-semibold text-[#121212]">{title}</h3>
+        <h3 className="text-[17px] font-bold text-[#121212] tracking-tight leading-tight">{title}</h3>
         {subtitle && (
           <p className="text-xs text-[#616161] mt-0.5">{subtitle}</p>
         )}

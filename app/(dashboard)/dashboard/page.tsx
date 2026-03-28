@@ -9,7 +9,6 @@ import { TrendingUp, Calendar, Users, Zap, Plus } from 'lucide-react'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import SubscriptionAvatar from '@/components/subscriptions/SubscriptionAvatar'
-import { StatusBadge } from '@/components/ui/Badge'
 import { loadDemoData } from '@/app/(dashboard)/subscriptions/demo-action'
 import UserAvatarMenu from '@/components/dashboard/UserAvatarMenu'
 import Insights from '@/components/dashboard/Insights'
@@ -34,7 +33,6 @@ export default async function DashboardPage() {
 
   const isEmpty = subs.length === 0
 
-  // Share text with real data
   const shareText = `My monthly subscriptions: ${formatCurrency(stats.total_monthly_cost, 'EUR')} across ${subs.length} subscriptions — tracked with Perezoso 🦥`
 
   return (
@@ -52,32 +50,47 @@ export default async function DashboardPage() {
         <EmptyState />
       ) : (
         <>
-          {/* Stats row */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-[8px]">
-            <StatCard
-              label="Monthly"
-              value={formatCurrency(stats.total_monthly_cost, 'EUR')}
-              sub="What you spend / mo"
-              icon={<TrendingUp size={16} />}
-              accent
-            />
-            <StatCard
-              label="Yearly"
-              value={formatCurrency(stats.total_annual_cost, 'EUR')}
-              sub="Projected annual cost"
-              icon={<Calendar size={16} className="text-[#424242]" />}
-            />
-            <StatCard
+          {/* ── Stats ──────────────────────────────────────────────────── */}
+
+          {/* Monthly + Yearly — one wide horizontal card */}
+          <div className="bg-white rounded-2xl border border-[#E8E8E8] p-5">
+            <div className="grid grid-cols-2">
+              <div className="pr-5 border-r border-[#F0F0F0]">
+                <div className="flex items-center gap-1.5 mb-3">
+                  <TrendingUp size={13} className="text-[#A3A3A3]" />
+                  <span className="text-xs font-medium text-[#A3A3A3] uppercase tracking-wide">Monthly</span>
+                </div>
+                <p className="text-[28px] font-bold text-[#121212] tabular-nums tracking-tight leading-none">
+                  {formatCurrency(stats.total_monthly_cost, 'EUR')}
+                </p>
+                <p className="text-xs text-[#A3A3A3] mt-1.5">What you spend / mo</p>
+              </div>
+              <div className="pl-5">
+                <div className="flex items-center gap-1.5 mb-3">
+                  <Calendar size={13} className="text-[#A3A3A3]" />
+                  <span className="text-xs font-medium text-[#A3A3A3] uppercase tracking-wide">Yearly</span>
+                </div>
+                <p className="text-[28px] font-bold text-[#121212] tabular-nums tracking-tight leading-none">
+                  {formatCurrency(stats.total_annual_cost, 'EUR')}
+                </p>
+                <p className="text-xs text-[#A3A3A3] mt-1.5">Projected annual cost</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Active + Shared — two smaller cards */}
+          <div className="grid grid-cols-2 gap-[8px]">
+            <SmallStatCard
               label="Active"
               value={String(stats.active_count + stats.trial_count)}
               sub={`${stats.trial_count} on trial`}
-              icon={<Zap size={16} className="text-[#424242]" />}
+              icon={<Zap size={13} className="text-[#A3A3A3]" />}
             />
-            <StatCard
+            <SmallStatCard
               label="Shared"
               value={formatCurrency(stats.shared_monthly_cost, 'EUR')}
               sub="Your share / mo"
-              icon={<Users size={16} className="text-[#424242]" />}
+              icon={<Users size={13} className="text-[#A3A3A3]" />}
             />
           </div>
 
@@ -88,7 +101,10 @@ export default async function DashboardPage() {
             {/* Upcoming renewals */}
             <div className="lg:col-span-2">
               <Card>
-                <CardHeader title="Upcoming renewals" subtitle={`Next 30 days · ${upcoming.length} renewals`} />
+                <CardHeader
+                  title="Upcoming renewals"
+                  subtitle={`Next 30 days · ${upcoming.length} renewal${upcoming.length !== 1 ? 's' : ''}`}
+                />
                 {upcoming.length === 0 ? (
                   <p className="text-sm text-[#616161] py-2">No upcoming renewals in the next 30 days.</p>
                 ) : (
@@ -104,9 +120,9 @@ export default async function DashboardPage() {
                           <p className="text-sm font-medium text-[#121212] truncate">{r.subscription.name}</p>
                           <p className="text-xs text-[#616161]">
                             {r.days_until === 0 ? (
-                              <span className="text-red-600 font-medium">Due today</span>
+                              <span className="text-[#DC2626] font-medium">Due today</span>
                             ) : r.days_until === 1 ? (
-                              <span className="text-amber-700 font-medium">Tomorrow</span>
+                              <span className="text-[#D97706] font-medium">Tomorrow</span>
                             ) : (
                               `in ${r.days_until} days`
                             )}
@@ -117,7 +133,7 @@ export default async function DashboardPage() {
                           <p className="text-sm font-semibold text-[#121212] tabular-nums">
                             {formatCurrency(r.subscription.my_monthly_cost, r.subscription.currency)}
                           </p>
-                          <p className="text-xs text-[#616161]">/ mo</p>
+                          <p className="text-xs text-[#A3A3A3]">/ mo</p>
                         </div>
                       </div>
                     ))}
@@ -127,11 +143,11 @@ export default async function DashboardPage() {
             </div>
 
             {/* Right column */}
-            <div className="space-y-3">
+            <div className="space-y-[8px]">
               {/* Top categories */}
               <Card>
                 <CardHeader title="Top categories" />
-                <div className="space-y-2.5">
+                <div className="space-y-3">
                   {topCategories.map(({ category, monthly_cost }) => {
                     const meta = getCategoryMeta(category)
                     const Icon = meta.icon
@@ -140,16 +156,16 @@ export default async function DashboardPage() {
                       : 0
                     return (
                       <div key={category}>
-                        <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center justify-between mb-1.5">
                           <span className="text-xs text-[#424242] font-medium flex items-center gap-1.5">
-                            <Icon size={12} className="text-[#616161]" />
+                            <Icon size={11} className="text-[#A3A3A3]" />
                             {meta.label}
                           </span>
                           <span className="text-xs font-semibold text-[#121212] tabular-nums">
                             {formatCurrency(monthly_cost, 'EUR')}
                           </span>
                         </div>
-                        <div className="h-1.5 bg-[#F5F5F5] rounded-full overflow-hidden">
+                        <div className="h-1 bg-[#F5F5F5] rounded-full overflow-hidden">
                           <div
                             className="h-full bg-[#121212] rounded-full transition-all duration-500"
                             style={{ width: `${Math.min(pct, 100)}%` }}
@@ -164,19 +180,18 @@ export default async function DashboardPage() {
               {/* Highest cost */}
               {highest && (
                 <Card>
-                  <p className="text-xs font-medium text-[#616161] mb-2">Most expensive</p>
+                  <p className="text-xs font-medium text-[#A3A3A3] uppercase tracking-wide mb-3">Most expensive</p>
                   <div className="flex items-center gap-3">
                     <SubscriptionAvatar name={highest.name} logoUrl={highest.logo_url} size="md" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-[#121212] truncate">{highest.name}</p>
                       <p className="text-xs text-[#616161]">
-                        {formatCurrency(highest.price_amount, highest.currency)} /{' '}
-                        {highest.billing_period}
+                        {formatCurrency(highest.price_amount, highest.currency)} / {highest.billing_period}
                       </p>
                     </div>
                   </div>
-                  <div className="mt-3 pt-3 border-t border-[#E5E5E5] flex justify-between">
-                    <span className="text-xs text-[#616161]">Monthly equiv.</span>
+                  <div className="mt-3 pt-3 border-t border-[#F0F0F0] flex justify-between items-center">
+                    <span className="text-xs text-[#A3A3A3]">Monthly equiv.</span>
                     <span className="text-sm font-bold text-[#121212] tabular-nums">
                       {formatCurrency(highest.my_monthly_cost, highest.currency)}
                     </span>
@@ -190,14 +205,14 @@ export default async function DashboardPage() {
           <Card>
             <CardHeader
               title="Active subscriptions"
-              subtitle={`${activeSubs.length} subscriptions`}
+              subtitle={`${activeSubs.length} subscription${activeSubs.length !== 1 ? 's' : ''}`}
               action={
                 <Link href="/subscriptions" className="text-xs text-[#424242] hover:text-[#121212] font-medium transition-colors duration-150">
                   View all →
                 </Link>
               }
             />
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               {activeSubs.slice(0, 5).map((sub) => {
                 const meta = getCategoryMeta(sub.category)
                 const Icon = meta.icon
@@ -207,8 +222,8 @@ export default async function DashboardPage() {
                       <SubscriptionAvatar name={sub.name} logoUrl={sub.logo_url} size="sm" />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-[#121212] truncate">{sub.name}</p>
-                        <p className="text-xs text-[#616161] flex items-center gap-1">
-                          <Icon size={11} />
+                        <p className="text-xs text-[#A3A3A3] flex items-center gap-1">
+                          <Icon size={10} />
                           {meta.label}
                         </p>
                       </div>
@@ -216,9 +231,8 @@ export default async function DashboardPage() {
                         <p className="text-sm font-semibold text-[#121212] tabular-nums">
                           {formatCurrency(sub.my_monthly_cost, sub.currency)}
                         </p>
-                        <p className="text-xs text-[#616161]">/ mo</p>
+                        <p className="text-xs text-[#A3A3A3]">/ mo</p>
                       </div>
-                      <StatusBadge status={sub.status} />
                     </div>
                   </Link>
                 )
@@ -231,45 +245,39 @@ export default async function DashboardPage() {
   )
 }
 
-function StatCard({
+// ── Small stat card (Active, Shared) ──────────────────────────────────────────
+
+function SmallStatCard({
   label,
   value,
   sub,
   icon,
-  accent = false,
 }: {
   label: string
   value: string
   sub: string
   icon: React.ReactNode
-  accent?: boolean
 }) {
   return (
-    <div
-      className={`
-        rounded-2xl p-4 border
-        ${accent
-          ? 'bg-[#121212] border-[#121212] text-white'
-          : 'bg-white border-[#E8E8E8]'
-        }
-      `}
-    >
-      <div className={`flex items-center gap-1.5 mb-2 ${accent ? 'text-[#A3A3A3]' : 'text-[#616161]'}`}>
+    <div className="bg-white rounded-2xl border border-[#E8E8E8] p-4">
+      <div className="flex items-center gap-1.5 mb-2.5">
         {icon}
-        <span className="text-xs font-medium">{label}</span>
+        <span className="text-xs font-medium text-[#A3A3A3] uppercase tracking-wide">{label}</span>
       </div>
-      <p className={`text-xl font-bold tracking-tight tabular-nums ${accent ? 'text-white' : 'text-[#121212]'}`}>
+      <p className="text-[22px] font-bold text-[#121212] tabular-nums tracking-tight leading-none">
         {value}
       </p>
-      <p className={`text-xs mt-0.5 ${accent ? 'text-[#A3A3A3]' : 'text-[#616161]'}`}>{sub}</p>
+      <p className="text-xs text-[#A3A3A3] mt-1.5">{sub}</p>
     </div>
   )
 }
 
+// ── Empty state ───────────────────────────────────────────────────────────────
+
 function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center py-24 text-center animate-fade-in">
-      <div className="w-16 h-16 rounded-2xl bg-[#F5F5F5] border border-[#E5E5E5] flex items-center justify-center mb-4">
+      <div className="w-16 h-16 rounded-2xl bg-[#F5F5F5] border border-[#E8E8E8] flex items-center justify-center mb-4">
         <span className="text-3xl">🦥</span>
       </div>
       <h2 className="text-lg font-semibold text-[#121212] mb-1">No subscriptions yet</h2>
@@ -289,9 +297,7 @@ function EmptyState() {
 function LoadDemoButton() {
   return (
     <form action={loadDemoData}>
-      <Button type="submit" variant="secondary">
-        Try with demo data
-      </Button>
+      <Button type="submit" variant="secondary">Try with demo data</Button>
     </form>
   )
 }
