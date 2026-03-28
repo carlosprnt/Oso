@@ -1,7 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect, useRef } from 'react'
+import {
+  motion, AnimatePresence,
+  useScroll, useVelocity, useSpring, useTransform,
+  type MotionValue,
+} from 'framer-motion'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { SlidersHorizontal, X, Check } from 'lucide-react'
@@ -26,23 +30,44 @@ const STATUS_COLOR: Record<string, string> = {
   active: '#16A34A', trial: '#D97706', paused: '#E07B1A', cancelled: '#EF4444',
 }
 
+// ─── Stack geometry ────────────────────────────────────────────────────────
+// pt-5 (20px) + avatar h-14 (56px) + 16px gap = 92px visible per card
+const STACK_VISIBLE_TOP = '92px'
+const CARD_HEIGHT_EXPR = 'clamp(260px, 36vw, 320px)'
+const STACK_MARGIN = `calc(${STACK_VISIBLE_TOP} - ${CARD_HEIGHT_EXPR})`
+
 // ─── Single wallet card ────────────────────────────────────────────────────
-function WalletCard({ sub, isNew }: { sub: SubscriptionWithCosts; isNew?: boolean }) {
+interface WalletCardProps {
+  sub: SubscriptionWithCosts
+  isNew?: boolean
+  index: number
+  /** Spring-smoothed scroll velocity from parent */
+  velocityMv: MotionValue<number>
+}
+
+function WalletCard({ sub, isNew, index, velocityMv }: WalletCardProps) {
   const [shimmer, setShimmer] = useState(isNew ?? false)
 
-  // Auto-stop shimmer after 3 s
   useEffect(() => {
     if (!isNew) return
     const t = setTimeout(() => setShimmer(false), 3000)
     return () => clearTimeout(t)
   }, [isNew])
 
+  // Organic parallax: each card shifts slightly based on scroll velocity.
+  // Higher-index cards (deeper in stack) shift more — creates a depth feel.
+  const maxShift = (index + 1) * 2.5 // px; very subtle
+  const yOffset = useTransform(velocityMv, [-2500, 0, 2500], [maxShift, 0, -maxShift])
+
   return (
     <Link href={`/subscriptions/${sub.id}`}>
       <motion.div
         className="w-full bg-white rounded-[28px] px-5 pt-5 pb-7 flex items-start gap-5 active:scale-[0.985] transition-transform duration-100 relative overflow-hidden"
-        style={{ border: '1.5px solid #E8E8E8', minHeight: 'clamp(260px, 36vw, 320px)' }}
-        // Shimmer glow on border
+        style={{
+          border: '1.5px solid #E8E8E8',
+          minHeight: CARD_HEIGHT_EXPR,
+          y: yOffset,
+        }}
         animate={shimmer ? {
           boxShadow: [
             '0 0 0px 0px rgba(61,59,243,0)',
@@ -53,12 +78,10 @@ function WalletCard({ sub, isNew }: { sub: SubscriptionWithCosts; isNew?: boolea
           ],
         } : { boxShadow: '0 0 0px 0px rgba(61,59,243,0)' }}
         transition={shimmer ? {
-          duration: 2.8,
-          ease: 'easeInOut',
-          times: [0, 0.2, 0.5, 0.8, 1],
+          duration: 2.8, ease: 'easeInOut', times: [0, 0.2, 0.5, 0.8, 1],
         } : { duration: 0 }}
       >
-        {/* Sweep reflection — fires once on mount if new */}
+        {/* Sweep reflection on new card */}
         {isNew && (
           <motion.div
             className="absolute inset-0 pointer-events-none rounded-[28px]"
@@ -72,38 +95,112 @@ function WalletCard({ sub, isNew }: { sub: SubscriptionWithCosts; isNew?: boolea
           />
         )}
 
-        {/* Avatar */}
         <SubscriptionAvatar
           name={sub.name}
           logoUrl={resolveSubscriptionLogoUrl(sub.name, sub.logo_url)}
           size="lg"
         />
 
-        {/* Name + category */}
         <div className="flex-1 min-w-0">
-          <p className="text-[21px] font-bold text-[#111111] leading-snug truncate">
-            {sub.name}
-          </p>
+          <p className="text-[21px] font-bold text-[#111111] leading-snug truncate">{sub.name}</p>
           <p className="text-[14px] text-[#999999] mt-1 leading-snug">
             {CATEGORY_LABEL[sub.category] ?? sub.category}
           </p>
         </div>
 
-        {/* Price + status */}
         <div className="text-right flex-shrink-0">
           <p className="text-[16px] font-bold text-[#111111] tabular-nums leading-snug">
             {formatCurrency(sub.my_monthly_cost, sub.currency)}
             <span className="text-[13px] font-normal text-[#999999] ml-0.5">/mo</span>
           </p>
-          <p
-            className="text-[14px] font-semibold mt-1 leading-snug"
-            style={{ color: STATUS_COLOR[sub.status] ?? '#9CA3AF' }}
-          >
+          <p className="text-[14px] font-semibold mt-1 leading-snug"
+            style={{ color: STATUS_COLOR[sub.status] ?? '#9CA3AF' }}>
             {STATUS_LABEL[sub.status] ?? sub.status}
           </p>
         </div>
       </motion.div>
     </Link>
+  )
+}
+
+// ─── Stacked card list with scroll physics ────────────────────────────────
+function CardStack({
+  subscriptions,
+  newSubscriptionId,
+}: {
+  subscriptions: SubscriptionWithCosts[]
+  newSubscriptionId?: string
+}) {
+  // Organic scroll: spring-smoothed velocity drives per-card parallax
+  const { scrollY } = useScroll()
+  const rawVelocity = useVelocity(scrollY)
+  const springVelocity = useSpring(rawVelocity, { stiffness: 180, damping: 28 })
+
+  // Overscroll stretch: pulling past the bottom of the page fans cards open
+  const [stretchPx, setStretchPx] = useState(0)
+  const stretchingRef = useRef(false)
+  const touchStartY = useRef(0)
+
+  useEffect(() => {
+    const onTouchStart = (e: TouchEvent) => {
+      touchStartY.current = e.touches[0].clientY
+    }
+
+    const onTouchMove = (e: TouchEvent) => {
+      const atBottom =
+        window.scrollY + window.innerHeight >= document.body.scrollHeight - 4
+      if (!atBottom) return
+
+      const pull = e.touches[0].clientY - touchStartY.current // positive = pulling down
+      if (pull > 0) {
+        stretchingRef.current = true
+        // Resistance: slows as you pull further (sqrt curve), max ~60px
+        setStretchPx(Math.min(Math.sqrt(pull) * 3.2, 60))
+      }
+    }
+
+    const onTouchEnd = () => {
+      if (stretchingRef.current) {
+        stretchingRef.current = false
+        setStretchPx(0) // springs back via CSS transition
+      }
+    }
+
+    window.addEventListener('touchstart', onTouchStart, { passive: true })
+    window.addEventListener('touchmove', onTouchMove, { passive: true })
+    window.addEventListener('touchend', onTouchEnd, { passive: true })
+    return () => {
+      window.removeEventListener('touchstart', onTouchStart)
+      window.removeEventListener('touchmove', onTouchMove)
+      window.removeEventListener('touchend', onTouchEnd)
+    }
+  }, [])
+
+  return (
+    <div className="relative">
+      {subscriptions.map((sub, i) => (
+        <div
+          key={sub.id}
+          style={{
+            marginTop: i === 0 ? 0
+              : `calc(${STACK_VISIBLE_TOP} + ${stretchPx}px - ${CARD_HEIGHT_EXPR})`,
+            // Snap back smoothly; no transition while actively pulling
+            transition: stretchingRef.current
+              ? 'none'
+              : 'margin-top 0.55s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            zIndex: i + 1,
+            position: 'relative',
+          }}
+        >
+          <WalletCard
+            sub={sub}
+            isNew={sub.id === newSubscriptionId}
+            index={i}
+            velocityMv={springVelocity}
+          />
+        </div>
+      ))}
+    </div>
   )
 }
 
@@ -175,7 +272,7 @@ function FilterSheet({ currentStatus, currentCategory, onClose }: FilterSheetPro
             <div className="flex flex-wrap gap-2">
               {STATUS_OPTIONS.map(opt => (
                 <button key={opt.value} onClick={() => setStatus(opt.value)}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-2xl text-sm font-medium border transition-colors duration-150 ${status === opt.value ? 'bg-[#111111] text-white border-[#111111]' : 'bg-white text-[#444444] border-[#E0E0E0]'}`}>
+                  className={`flex items-center gap-1.5 px-4 h-10 rounded-2xl text-sm font-medium border transition-colors duration-150 ${status === opt.value ? 'bg-[#3D3BF3] text-white border-[#3D3BF3]' : 'bg-white text-[#444444] border-[#E0E0E0]'}`}>
                   {status === opt.value && <Check size={12} strokeWidth={3} />}
                   {opt.label}
                 </button>
@@ -186,7 +283,7 @@ function FilterSheet({ currentStatus, currentCategory, onClose }: FilterSheetPro
             <p className="text-[11px] font-semibold text-[#888888] uppercase tracking-wider mb-3">Category</p>
             <div className="grid grid-cols-2 gap-2">
               <button onClick={() => setCategory('all')}
-                className={`flex items-center gap-2 px-3 py-2 rounded-2xl text-sm font-medium border transition-colors duration-150 ${category === 'all' ? 'bg-[#111111] text-white border-[#111111]' : 'bg-white text-[#444444] border-[#E0E0E0]'}`}>
+                className={`flex items-center gap-2 px-3 h-10 rounded-2xl text-sm font-medium border transition-colors duration-150 ${category === 'all' ? 'bg-[#3D3BF3] text-white border-[#3D3BF3]' : 'bg-white text-[#444444] border-[#E0E0E0]'}`}>
                 {category === 'all' && <Check size={12} strokeWidth={3} />}
                 All categories
               </button>
@@ -195,7 +292,7 @@ function FilterSheet({ currentStatus, currentCategory, onClose }: FilterSheetPro
                 const active = category === cat.value
                 return (
                   <button key={cat.value} onClick={() => setCategory(cat.value)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-2xl text-sm font-medium border transition-colors duration-150 ${active ? 'bg-[#111111] text-white border-[#111111]' : 'bg-white text-[#444444] border-[#E0E0E0]'}`}>
+                    className={`flex items-center gap-2 px-3 h-10 rounded-2xl text-sm font-medium border transition-colors duration-150 ${active ? 'bg-[#3D3BF3] text-white border-[#3D3BF3]' : 'bg-white text-[#444444] border-[#E0E0E0]'}`}>
                     <Icon size={13} strokeWidth={2} />
                     {cat.label}
                   </button>
@@ -204,9 +301,16 @@ function FilterSheet({ currentStatus, currentCategory, onClose }: FilterSheetPro
             </div>
           </div>
         </div>
-        <div className="flex gap-3 px-5 py-4 border-t border-[#F0F0F0]" style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
-          <button onClick={reset} className="flex-1 py-3 rounded-2xl text-sm font-semibold text-[#444444] bg-[#F5F5F5] transition-colors active:bg-[#ECECEC]">Reset</button>
-          <button onClick={apply} className="flex-1 py-3 rounded-2xl text-sm font-semibold text-white bg-[#111111] transition-colors active:bg-[#333333]">Apply</button>
+        <div className="flex gap-3 px-5 py-4 border-t border-[#F0F0F0]"
+          style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
+          <button onClick={reset}
+            className="flex-1 h-10 rounded-2xl text-sm font-semibold text-[#444444] bg-[#F5F5F5] transition-colors active:bg-[#ECECEC]">
+            Reset
+          </button>
+          <button onClick={apply}
+            className="flex-1 h-10 rounded-2xl text-sm font-semibold text-white bg-[#3D3BF3] hover:bg-[#3230D0] transition-colors active:bg-[#2B29B8]">
+            Apply
+          </button>
         </div>
       </motion.div>
     </AnimatePresence>
@@ -222,13 +326,6 @@ interface SubscriptionsViewProps {
   currentCategory: string
   newSubscriptionId?: string
 }
-
-// Stack offset: next card peeks 16px below the content row of the previous card.
-// Content row = pt-5 (20px) + avatar height (56px) + 16px gap = 92px from card top.
-// Overlap = cardHeight - 92px  →  marginTop = calc(92px - clamp(260px, 36vw, 320px))
-const STACK_VISIBLE_TOP = '92px'
-const CARD_HEIGHT_EXPR = 'clamp(260px, 36vw, 320px)'
-const STACK_MARGIN = `calc(${STACK_VISIBLE_TOP} - ${CARD_HEIGHT_EXPR})`
 
 export default function SubscriptionsView({
   subscriptions,
@@ -254,7 +351,7 @@ export default function SubscriptionsView({
           >
             <SlidersHorizontal size={17} strokeWidth={2} className="text-[#333333]" />
             {hasActiveFilters && (
-              <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#111111] border-2 border-white" />
+              <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#3D3BF3] border-2 border-white" />
             )}
           </button>
         </div>
@@ -281,12 +378,12 @@ export default function SubscriptionsView({
         {hasActiveFilters && (
           <div className="flex items-center gap-2 flex-wrap">
             {currentStatus && currentStatus !== 'all' && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#111111] text-white text-xs font-medium capitalize">
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#3D3BF3] text-white text-xs font-medium capitalize">
                 {currentStatus}
               </span>
             )}
             {currentCategory && currentCategory !== 'all' && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#111111] text-white text-xs font-medium capitalize">
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#3D3BF3] text-white text-xs font-medium capitalize">
                 {currentCategory}
               </span>
             )}
@@ -304,20 +401,7 @@ export default function SubscriptionsView({
             </p>
           </div>
         ) : (
-          <div className="relative">
-            {subscriptions.map((sub, i) => (
-              <div
-                key={sub.id}
-                style={{
-                  marginTop: i === 0 ? 0 : STACK_MARGIN,
-                  zIndex: i + 1,
-                  position: 'relative',
-                }}
-              >
-                <WalletCard sub={sub} isNew={sub.id === newSubscriptionId} />
-              </div>
-            ))}
-          </div>
+          <CardStack subscriptions={subscriptions} newSubscriptionId={newSubscriptionId} />
         )}
       </div>
 

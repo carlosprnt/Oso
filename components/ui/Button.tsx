@@ -12,17 +12,18 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: React.ReactNode
 }
 
+// Primary = nav blue (#3D3BF3), all sizes fixed to 40 px
 const VARIANTS: Record<Variant, string> = {
-  primary:   'bg-[#121212] text-white hover:bg-[#2A2A2A] border border-[#121212]',
+  primary:   'bg-[#3D3BF3] text-white hover:bg-[#3230D0] active:bg-[#2B29B8] border border-[#3D3BF3]',
   secondary: 'bg-white text-[#121212] border border-[#D4D4D4] hover:bg-[#F5F5F5] hover:border-[#A3A3A3]',
   ghost:     'bg-transparent text-[#424242] hover:bg-[#F5F5F5] border border-transparent',
-  danger:    'bg-[#991B1B] text-white hover:bg-[#7F1D1D] border border-[#991B1B]',
+  danger:    'bg-[#DC2626] text-white hover:bg-[#B91C1C] active:bg-[#991B1B] border border-[#DC2626]',
 }
 
 const SIZES: Record<Size, string> = {
-  sm: 'px-3 py-1.5 text-xs rounded-lg  gap-1.5 h-8',
-  md: 'px-4 py-2   text-sm rounded-xl  gap-2   h-9',
-  lg: 'px-5 py-2.5 text-sm rounded-xl  gap-2   h-10',
+  sm: 'px-4 text-xs  rounded-xl gap-1.5 h-10',
+  md: 'px-4 text-sm  rounded-xl gap-2   h-10',
+  lg: 'px-6 text-sm  rounded-xl gap-2   h-10',
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
@@ -46,7 +47,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
         inline-flex items-center justify-center font-medium
         transition-colors duration-150 select-none pressable
         disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none
-        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5B21B6] focus-visible:ring-offset-1
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3D3BF3]/40 focus-visible:ring-offset-1
         ${VARIANTS[variant]} ${SIZES[size]} ${className}
       `}
       {...props}
