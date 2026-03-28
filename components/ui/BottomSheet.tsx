@@ -87,8 +87,7 @@ export default function BottomSheet({
         {/* Scrollable content — always starts at top */}
         <div
           ref={scrollRef}
-          className="flex-1 overflow-y-auto overscroll-contain"
-          // Prevent iOS momentum scroll from going past the sheet
+          className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain"
           style={{ WebkitOverflowScrolling: 'touch' }}
         >
           {children}

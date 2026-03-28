@@ -34,7 +34,7 @@ export default function AddSubscriptionFlow() {
       </button>
 
       {/* Step 1 — Platform list (no search) */}
-      <BottomSheet isOpen={step === 'pick'} onClose={close} title="Add subscription" height="tall">
+      <BottomSheet isOpen={step === 'pick'} onClose={close} title="Create new" height="tall">
         <PlatformPicker onSelect={handleSelect} />
       </BottomSheet>
 
@@ -42,7 +42,7 @@ export default function AddSubscriptionFlow() {
       <BottomSheet
         isOpen={step === 'form'}
         onClose={close}
-        title={platform ? platform.name : 'New subscription'}
+        title="Create new"
         height="tall"
       >
         <SubscriptionForm mode="create" platformPreset={platform ?? undefined} onCancel={close} />

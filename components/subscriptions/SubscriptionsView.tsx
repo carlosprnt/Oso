@@ -26,15 +26,53 @@ const STATUS_COLOR: Record<string, string> = {
   active: '#16A34A', trial: '#D97706', paused: '#E07B1A', cancelled: '#EF4444',
 }
 
-// ─── Single wallet card (always white) ────────────────────────────────────
-function WalletCard({ sub }: { sub: SubscriptionWithCosts }) {
+// ─── Single wallet card ────────────────────────────────────────────────────
+function WalletCard({ sub, isNew }: { sub: SubscriptionWithCosts; isNew?: boolean }) {
+  const [shimmer, setShimmer] = useState(isNew ?? false)
+
+  // Auto-stop shimmer after 3 s
+  useEffect(() => {
+    if (!isNew) return
+    const t = setTimeout(() => setShimmer(false), 3000)
+    return () => clearTimeout(t)
+  }, [isNew])
+
   return (
     <Link href={`/subscriptions/${sub.id}`}>
-      <div
-        className="w-full bg-white rounded-[28px] px-6 pt-6 pb-7 flex items-start gap-5 active:scale-[0.985] transition-transform duration-100"
-        style={{ border: '1.5px solid #E8E8E8', minHeight: 'clamp(130px, 18vw, 160px)' }}
+      <motion.div
+        className="w-full bg-white rounded-[28px] px-6 pt-6 pb-7 flex items-start gap-5 active:scale-[0.985] transition-transform duration-100 relative overflow-hidden"
+        style={{ border: '1.5px solid #E8E8E8', minHeight: 'clamp(260px, 36vw, 320px)' }}
+        // Shimmer glow on border
+        animate={shimmer ? {
+          boxShadow: [
+            '0 0 0px 0px rgba(61,59,243,0)',
+            '0 0 0px 3px rgba(61,59,243,0.5)',
+            '0 0 24px 6px rgba(61,59,243,0.22)',
+            '0 0 0px 3px rgba(61,59,243,0.5)',
+            '0 0 0px 0px rgba(61,59,243,0)',
+          ],
+        } : { boxShadow: '0 0 0px 0px rgba(61,59,243,0)' }}
+        transition={shimmer ? {
+          duration: 2.8,
+          ease: 'easeInOut',
+          times: [0, 0.2, 0.5, 0.8, 1],
+        } : { duration: 0 }}
       >
-        {/* Avatar — resolve from catalog if no stored logo */}
+        {/* Sweep reflection — fires once on mount if new */}
+        {isNew && (
+          <motion.div
+            className="absolute inset-0 pointer-events-none rounded-[28px]"
+            style={{
+              background: 'linear-gradient(110deg, transparent 20%, rgba(255,255,255,0.72) 50%, transparent 80%)',
+              zIndex: 10,
+            }}
+            initial={{ x: '-160%' }}
+            animate={{ x: '260%' }}
+            transition={{ duration: 1.1, ease: [0.4, 0, 0.2, 1], delay: 0.15 }}
+          />
+        )}
+
+        {/* Avatar */}
         <SubscriptionAvatar
           name={sub.name}
           logoUrl={resolveSubscriptionLogoUrl(sub.name, sub.logo_url)}
@@ -64,7 +102,7 @@ function WalletCard({ sub }: { sub: SubscriptionWithCosts }) {
             {STATUS_LABEL[sub.status] ?? sub.status}
           </p>
         </div>
-      </div>
+      </motion.div>
     </Link>
   )
 }
@@ -90,7 +128,6 @@ function FilterSheet({ currentStatus, currentCategory, onClose }: FilterSheetPro
   const [status, setStatus] = useState<SubscriptionStatus | 'all'>((currentStatus as SubscriptionStatus) ?? 'all')
   const [category, setCategory] = useState<Category | 'all'>((currentCategory as Category) ?? 'all')
 
-  // Lock body scroll
   useEffect(() => {
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = '' }
@@ -111,75 +148,45 @@ function FilterSheet({ currentStatus, currentCategory, onClose }: FilterSheetPro
 
   return (
     <AnimatePresence>
-      {/* Backdrop */}
       <motion.div
         className="fixed inset-0 bg-black/40 z-[59]"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
         onClick={onClose}
       />
-
-      {/* Sheet */}
       <motion.div
         className="fixed bottom-0 left-0 right-0 z-[60] bg-white rounded-t-[28px]"
         style={{ border: '1px solid #E5E5E5', borderBottom: 'none' }}
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '100%' }}
+        initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 380, damping: 36 }}
       >
-        {/* Handle */}
         <div className="flex justify-center pt-3 pb-1">
           <div className="w-10 h-1 bg-[#DADADA] rounded-full" />
         </div>
-
-        {/* Header */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-[#F0F0F0]">
           <h2 className="text-[17px] font-semibold text-[#111111]">Filters</h2>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-2xl bg-[#F5F5F5] flex items-center justify-center"
-          >
+          <button onClick={onClose} className="w-8 h-8 rounded-2xl bg-[#F5F5F5] flex items-center justify-center">
             <X size={15} strokeWidth={2.5} className="text-[#666666]" />
           </button>
         </div>
-
         <div className="px-5 py-5 space-y-6 max-h-[60vh] overflow-y-auto">
-          {/* Status */}
           <div>
             <p className="text-[11px] font-semibold text-[#888888] uppercase tracking-wider mb-3">Status</p>
             <div className="flex flex-wrap gap-2">
               {STATUS_OPTIONS.map(opt => (
-                <button
-                  key={opt.value}
-                  onClick={() => setStatus(opt.value)}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-2xl text-sm font-medium border transition-colors duration-150 ${
-                    status === opt.value
-                      ? 'bg-[#111111] text-white border-[#111111]'
-                      : 'bg-white text-[#444444] border-[#E0E0E0]'
-                  }`}
-                >
+                <button key={opt.value} onClick={() => setStatus(opt.value)}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-2xl text-sm font-medium border transition-colors duration-150 ${status === opt.value ? 'bg-[#111111] text-white border-[#111111]' : 'bg-white text-[#444444] border-[#E0E0E0]'}`}>
                   {status === opt.value && <Check size={12} strokeWidth={3} />}
                   {opt.label}
                 </button>
               ))}
             </div>
           </div>
-
-          {/* Category */}
           <div>
             <p className="text-[11px] font-semibold text-[#888888] uppercase tracking-wider mb-3">Category</p>
             <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={() => setCategory('all')}
-                className={`flex items-center gap-2 px-3 py-2 rounded-2xl text-sm font-medium border transition-colors duration-150 ${
-                  category === 'all'
-                    ? 'bg-[#111111] text-white border-[#111111]'
-                    : 'bg-white text-[#444444] border-[#E0E0E0]'
-                }`}
-              >
+              <button onClick={() => setCategory('all')}
+                className={`flex items-center gap-2 px-3 py-2 rounded-2xl text-sm font-medium border transition-colors duration-150 ${category === 'all' ? 'bg-[#111111] text-white border-[#111111]' : 'bg-white text-[#444444] border-[#E0E0E0]'}`}>
                 {category === 'all' && <Check size={12} strokeWidth={3} />}
                 All categories
               </button>
@@ -187,15 +194,8 @@ function FilterSheet({ currentStatus, currentCategory, onClose }: FilterSheetPro
                 const Icon = cat.icon
                 const active = category === cat.value
                 return (
-                  <button
-                    key={cat.value}
-                    onClick={() => setCategory(cat.value)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-2xl text-sm font-medium border transition-colors duration-150 ${
-                      active
-                        ? 'bg-[#111111] text-white border-[#111111]'
-                        : 'bg-white text-[#444444] border-[#E0E0E0]'
-                    }`}
-                  >
+                  <button key={cat.value} onClick={() => setCategory(cat.value)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-2xl text-sm font-medium border transition-colors duration-150 ${active ? 'bg-[#111111] text-white border-[#111111]' : 'bg-white text-[#444444] border-[#E0E0E0]'}`}>
                     <Icon size={13} strokeWidth={2} />
                     {cat.label}
                   </button>
@@ -204,21 +204,9 @@ function FilterSheet({ currentStatus, currentCategory, onClose }: FilterSheetPro
             </div>
           </div>
         </div>
-
-        {/* Actions */}
         <div className="flex gap-3 px-5 py-4 border-t border-[#F0F0F0]" style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
-          <button
-            onClick={reset}
-            className="flex-1 py-3 rounded-2xl text-sm font-semibold text-[#444444] bg-[#F5F5F5] transition-colors active:bg-[#ECECEC]"
-          >
-            Reset
-          </button>
-          <button
-            onClick={apply}
-            className="flex-1 py-3 rounded-2xl text-sm font-semibold text-white bg-[#111111] transition-colors active:bg-[#333333]"
-          >
-            Apply
-          </button>
+          <button onClick={reset} className="flex-1 py-3 rounded-2xl text-sm font-semibold text-[#444444] bg-[#F5F5F5] transition-colors active:bg-[#ECECEC]">Reset</button>
+          <button onClick={apply} className="flex-1 py-3 rounded-2xl text-sm font-semibold text-white bg-[#111111] transition-colors active:bg-[#333333]">Apply</button>
         </div>
       </motion.div>
     </AnimatePresence>
@@ -232,9 +220,10 @@ interface SubscriptionsViewProps {
   stats: DashboardStats
   currentStatus: string
   currentCategory: string
+  newSubscriptionId?: string
 }
 
-const STACK_OVERLAP = 20 // px overlap between cards
+const STACK_OVERLAP = 20
 
 export default function SubscriptionsView({
   subscriptions,
@@ -242,6 +231,7 @@ export default function SubscriptionsView({
   stats,
   currentStatus,
   currentCategory,
+  newSubscriptionId,
 }: SubscriptionsViewProps) {
   const [filterOpen, setFilterOpen] = useState(false)
   const hasActiveFilters = (currentStatus && currentStatus !== 'all') || (currentCategory && currentCategory !== 'all')
@@ -252,8 +242,6 @@ export default function SubscriptionsView({
         {/* ── Header ───────────────────────────────────────────── */}
         <div className="flex items-center justify-between">
           <h1 className="text-[28px] font-bold text-[#111111] tracking-tight">Subscriptions</h1>
-
-          {/* Filter button — small rounded square */}
           <button
             onClick={() => setFilterOpen(true)}
             className="relative w-10 h-10 rounded-2xl bg-white flex items-center justify-center transition-colors active:bg-[#F0F0F0]"
@@ -272,7 +260,7 @@ export default function SubscriptionsView({
             <div className="bg-white rounded-[20px] p-4" style={{ border: '1.5px solid #E8E8E8' }}>
               <p className="text-[13px] text-[#999999] font-medium">Total</p>
               <p className="text-[18px] font-bold text-[#111111] mt-1 leading-tight tabular-nums">
-                {allCount} Suscriptions
+                {allCount} subscriptions
               </p>
             </div>
             <div className="bg-white rounded-[20px] p-4" style={{ border: '1.5px solid #E8E8E8' }}>
@@ -313,23 +301,16 @@ export default function SubscriptionsView({
         ) : (
           <div className="relative">
             {subscriptions.map((sub, i) => (
-              <motion.div
+              <div
                 key={sub.id}
                 style={{
                   marginTop: i === 0 ? 0 : -STACK_OVERLAP,
-                  zIndex: i + 1,        // first card lowest, last card on top
+                  zIndex: i + 1,
                   position: 'relative',
                 }}
-                initial={{ y: 70, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{
-                  delay: i * 0.06,
-                  duration: 0.42,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
               >
-                <WalletCard sub={sub} />
-              </motion.div>
+                <WalletCard sub={sub} isNew={sub.id === newSubscriptionId} />
+              </div>
             ))}
           </div>
         )}

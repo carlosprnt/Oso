@@ -99,7 +99,7 @@ export default function FloatingNav() {
       </nav>
 
       {/* Step 1 — Platform list */}
-      <BottomSheet isOpen={step === 'pick'} onClose={close} title="Add subscription" height="tall">
+      <BottomSheet isOpen={step === 'pick'} onClose={close} title="Create new" height="tall">
         <PlatformPicker onSelect={handleSelect} />
       </BottomSheet>
 
@@ -107,7 +107,7 @@ export default function FloatingNav() {
       <BottomSheet
         isOpen={step === 'form'}
         onClose={close}
-        title={platform ? platform.name : 'New subscription'}
+        title="Create new"
         height="tall"
       >
         <SubscriptionForm mode="create" platformPreset={platform ?? undefined} onCancel={close} />

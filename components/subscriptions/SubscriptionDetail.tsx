@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Pencil, Calendar, Tag, Zap, Users } from 'lucide-react'
+import { ArrowLeft, Calendar, Tag, Zap, Users } from 'lucide-react'
 import SubscriptionAvatar from './SubscriptionAvatar'
 import BottomSheet from '@/components/ui/BottomSheet'
 import { resolveSubscriptionLogoUrl } from '@/lib/constants/platforms'
@@ -35,24 +35,13 @@ export default function SubscriptionDetail({ subscription: sub }: SubscriptionDe
     <>
       <div className="min-h-screen bg-[#F7F8FA] -mx-4 sm:-mx-6 px-4 sm:px-6">
 
-        {/* Top nav */}
-        <div className="flex items-center justify-between pt-1 pb-4 bg-[#F7F8FA]">
+        {/* Top nav — back only, Edit is in the CTA below */}
+        <div className="flex items-center pt-1 pb-4 bg-[#F7F8FA]">
           <button
             onClick={() => router.back()}
             className="w-9 h-9 rounded-xl flex items-center justify-center bg-white border border-[#E5E5E5] hover:border-[#D4D4D4] transition-colors"
           >
             <ArrowLeft size={17} className="text-[#121212]" />
-          </button>
-          <button
-            onClick={() => setEditOpen(true)}
-            className="
-              flex items-center gap-1.5 px-3.5 py-2 rounded-xl
-              bg-[#121212] text-white text-sm font-medium
-              hover:bg-[#2A2A2A] transition-colors pressable
-            "
-          >
-            <Pencil size={13} />
-            Edit
           </button>
         </div>
 

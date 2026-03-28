@@ -93,6 +93,38 @@ export const CARD_COLOR_PRESETS: Array<{
     hex: '#FFD6E0', label: 'Rose',
     theme: { bg: '#FFD6E0', border: 'transparent', title: '#5C0A1A', subtitle: '#9A4060', price: '#5C0A1A', dark: false },
   },
+  {
+    hex: '#1C2B3A', label: 'Midnight',
+    theme: { bg: '#1C2B3A', border: 'transparent', title: '#FFFFFF', subtitle: '#5A8A9F', price: '#FFFFFF', dark: true },
+  },
+  {
+    hex: '#2D5A27', label: 'Forest',
+    theme: { bg: '#2D5A27', border: 'transparent', title: '#FFFFFF', subtitle: '#7ABF70', price: '#FFFFFF', dark: true },
+  },
+  {
+    hex: '#6C3483', label: 'Plum',
+    theme: { bg: '#6C3483', border: 'transparent', title: '#FFFFFF', subtitle: '#C39BD3', price: '#FFFFFF', dark: true },
+  },
+  {
+    hex: '#B5EAD7', label: 'Mint',
+    theme: { bg: '#B5EAD7', border: 'transparent', title: '#0A3D2A', subtitle: '#3A7A60', price: '#0A3D2A', dark: false },
+  },
+  {
+    hex: '#D6EAF8', label: 'Ice',
+    theme: { bg: '#D6EAF8', border: 'transparent', title: '#0A2A4A', subtitle: '#3A6A8A', price: '#0A2A4A', dark: false },
+  },
+  {
+    hex: '#FAD7A0', label: 'Apricot',
+    theme: { bg: '#FAD7A0', border: 'transparent', title: '#5C2A00', subtitle: '#9A6040', price: '#5C2A00', dark: false },
+  },
+  {
+    hex: '#E8D5B7', label: 'Sand',
+    theme: { bg: '#E8D5B7', border: 'transparent', title: '#3D2800', subtitle: '#7A5A30', price: '#3D2800', dark: false },
+  },
+  {
+    hex: '#F4D03F', label: 'Gold',
+    theme: { bg: '#F4D03F', border: 'transparent', title: '#3D2800', subtitle: '#7A5000', price: '#3D2800', dark: false },
+  },
 ]
 
 const WHITE_THEME = CARD_COLOR_PRESETS[0].theme

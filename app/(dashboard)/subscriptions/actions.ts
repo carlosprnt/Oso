@@ -5,8 +5,6 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import type { SubscriptionFormData } from '@/types'
 
-// Columns that may not exist yet (pending migrations).
-// If Supabase returns a schema-cache error for these, we retry without them.
 const OPTIONAL_COLUMNS = ['card_color'] as const
 
 function stripOptionalColumns(data: Record<string, unknown>): Record<string, unknown> {
@@ -30,22 +28,27 @@ export async function createSubscription(formData: SubscriptionFormData) {
   if (!user) redirect('/login')
 
   const payload = { ...formData, user_id: user.id }
-  let { error } = await supabase.from('subscriptions').insert(payload)
+  let result = await supabase
+    .from('subscriptions')
+    .insert(payload)
+    .select('id')
+    .single()
 
   // Retry without optional columns if DB schema is behind
-  if (error && isSchemaError(error.message)) {
+  if (result.error && isSchemaError(result.error.message)) {
     const fallback = { ...stripOptionalColumns(payload as Record<string, unknown>), user_id: user.id }
-    const retry = await supabase.from('subscriptions').insert(fallback)
-    error = retry.error
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    result = await (supabase.from('subscriptions').insert(fallback).select('id').single() as any)
   }
 
-  if (error) {
-    return { error: error.message }
+  if (result.error) {
+    return { error: result.error.message }
   }
 
   revalidatePath('/dashboard')
   revalidatePath('/subscriptions')
-  redirect('/subscriptions')
+  // Pass new ID so the list can highlight it
+  redirect(`/subscriptions?new=${result.data?.id ?? ''}`)
 }
 
 // ============================================================
@@ -64,7 +67,6 @@ export async function updateSubscription(id: string, formData: SubscriptionFormD
     .eq('id', id)
     .eq('user_id', user.id)
 
-  // Retry without optional columns if DB schema is behind
   if (error && isSchemaError(error.message)) {
     const fallback = stripOptionalColumns(formData as unknown as Record<string, unknown>)
     const retry = await supabase

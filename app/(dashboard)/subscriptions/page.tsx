@@ -8,7 +8,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = { title: 'Subscriptions' }
 
 interface PageProps {
-  searchParams: Promise<{ status?: string; category?: string }>
+  searchParams: Promise<{ status?: string; category?: string; new?: string }>
 }
 
 export default async function SubscriptionsPage({ searchParams }: PageProps) {
@@ -40,6 +40,7 @@ export default async function SubscriptionsPage({ searchParams }: PageProps) {
         stats={stats}
         currentStatus={params.status ?? 'all'}
         currentCategory={params.category ?? 'all'}
+        newSubscriptionId={params.new}
       />
       {/* Add button — desktop only; mobile uses floating nav "+" */}
       <div className="hidden sm:block fixed top-6 right-6 z-30">

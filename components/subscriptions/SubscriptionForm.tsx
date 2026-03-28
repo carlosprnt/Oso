@@ -45,7 +45,7 @@ export default function SubscriptionForm({
   const [priceAmount, setPriceAmount] = useState(
     subscription?.price_amount?.toString() ?? prefill?.priceAmount ?? ''
   )
-  const [currency, setCurrency] = useState(subscription?.currency ?? 'EUR')
+  const currency = 'EUR'
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>(
     subscription?.billing_period ?? (prefill?.billingPeriod as BillingPeriod) ?? 'monthly'
   )
@@ -168,7 +168,7 @@ export default function SubscriptionForm({
       {/* ── Card colour ───────────────────────────────────── */}
       <div>
         <label className={labelCls}>Card color</label>
-        <div className="flex gap-2.5 flex-wrap">
+        <div className="flex gap-3 overflow-x-auto pb-1 -mx-5 px-5 scrollbar-hide">
           {CARD_COLOR_PRESETS.map(preset => {
             const isSelected = cardColor === preset.hex
             return (
@@ -177,18 +177,18 @@ export default function SubscriptionForm({
                 type="button"
                 title={preset.label}
                 onClick={() => setCardColor(preset.hex)}
-                className="relative w-9 h-9 rounded-full transition-all duration-150 focus:outline-none"
+                className="relative flex-shrink-0 w-[72px] h-[72px] rounded-2xl transition-all duration-150 focus:outline-none"
                 style={{
                   background: preset.theme.bg,
                   border: isSelected
-                    ? '2.5px solid #111111'
+                    ? '3px solid #111111'
                     : `1.5px solid ${preset.hex ? '#D4D4D4' : '#D4D4D4'}`,
-                  boxShadow: isSelected ? '0 0 0 3px rgba(0,0,0,0.12)' : 'none',
+                  boxShadow: isSelected ? '0 0 0 4px rgba(0,0,0,0.12)' : 'none',
                 }}
               >
                 {isSelected && (
                   <Check
-                    size={14}
+                    size={22}
                     strokeWidth={2.5}
                     style={{ position: 'absolute', inset: 0, margin: 'auto', color: preset.theme.title }}
                   />
@@ -199,7 +199,7 @@ export default function SubscriptionForm({
         </div>
       </div>
 
-      {/* ── Amount + Currency + Period (inline row) ───────── */}
+      {/* ── Amount + Period (inline row) ──────────────────── */}
       <div>
         <label className={labelCls}>Amount *</label>
         <div className="flex rounded-xl border border-[#D4D4D4] focus-within:ring-2 focus-within:ring-[#121212]/10 focus-within:border-[#121212] transition-all overflow-hidden bg-white">
@@ -213,15 +213,10 @@ export default function SubscriptionForm({
             className="flex-1 px-3.5 py-2.5 text-sm text-[#121212] placeholder:text-[#A3A3A3] outline-none bg-transparent min-w-0"
             required
           />
-          <select
-            value={currency}
-            onChange={e => setCurrency(e.target.value)}
-            className="px-2 py-2.5 text-sm text-[#424242] bg-[#F5F5F5] border-l border-[#D4D4D4] outline-none cursor-pointer"
-          >
-            {CURRENCIES.map(c => (
-              <option key={c.code} value={c.code}>{c.code}</option>
-            ))}
-          </select>
+          {/* Currency fixed to EUR */}
+          <span className="px-3 py-2.5 text-sm font-medium text-[#424242] bg-[#F5F5F5] border-l border-[#D4D4D4] flex items-center select-none">
+            EUR
+          </span>
           <select
             value={billingPeriod}
             onChange={e => setBillingPeriod(e.target.value as BillingPeriod)}
@@ -265,7 +260,7 @@ export default function SubscriptionForm({
 
         {!showAllCategories ? (
           /* Horizontal scroll strip */
-          <div className="flex gap-2 overflow-x-auto pb-1 -mx-5 px-5 scrollbar-hide">
+          <div className="flex gap-2.5 overflow-x-auto pb-1 -mx-5 px-5 scrollbar-hide">
             {CATEGORIES.map(cat => {
               const Icon = cat.icon
               const active = category === cat.value
@@ -275,7 +270,7 @@ export default function SubscriptionForm({
                   type="button"
                   onClick={() => setCategory(cat.value)}
                   className={`
-                    flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium
+                    flex-shrink-0 flex items-center gap-2 px-5 py-3.5 rounded-2xl text-sm font-medium
                     border transition-colors duration-150
                     ${active
                       ? 'bg-[#121212] text-white border-[#121212]'
@@ -283,7 +278,7 @@ export default function SubscriptionForm({
                     }
                   `}
                 >
-                  <Icon size={12} strokeWidth={2} />
+                  <Icon size={15} strokeWidth={2} />
                   {cat.label}
                 </button>
               )
@@ -291,7 +286,7 @@ export default function SubscriptionForm({
           </div>
         ) : (
           /* Expanded 3-column grid */
-          <div className="grid grid-cols-3 gap-1.5 animate-fade-in">
+          <div className="grid grid-cols-3 gap-2 animate-fade-in">
             {CATEGORIES.map(cat => {
               const Icon = cat.icon
               const active = category === cat.value
@@ -301,7 +296,7 @@ export default function SubscriptionForm({
                   type="button"
                   onClick={() => setCategory(cat.value)}
                   className={`
-                    flex items-center gap-1.5 px-2.5 py-2 rounded-xl text-xs font-medium
+                    flex items-center gap-2 px-3 py-3.5 rounded-2xl text-sm font-medium
                     border transition-colors duration-150
                     ${active
                       ? 'bg-[#121212] text-white border-[#121212]'
@@ -309,7 +304,7 @@ export default function SubscriptionForm({
                     }
                   `}
                 >
-                  <Icon size={12} strokeWidth={2} />
+                  <Icon size={15} strokeWidth={2} />
                   {cat.label}
                 </button>
               )
