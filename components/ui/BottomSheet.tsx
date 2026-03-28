@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, type ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import { X } from 'lucide-react'
 
 interface BottomSheetProps {
@@ -8,7 +8,6 @@ interface BottomSheetProps {
   onClose: () => void
   title?: string
   children: ReactNode
-  /** Height of the sheet. Default: 'tall' (88dvh) */
   height?: 'auto' | 'tall' | 'full'
 }
 
@@ -19,18 +18,31 @@ export default function BottomSheet({
   children,
   height = 'tall',
 }: BottomSheetProps) {
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  // Lock body scroll when open
   useEffect(() => {
-    if (isOpen) document.body.style.overflow = 'hidden'
-    else document.body.style.overflow = ''
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
     return () => { document.body.style.overflow = '' }
+  }, [isOpen])
+
+  // Reset scroll to top every time the sheet opens
+  useEffect(() => {
+    if (isOpen && scrollRef.current) {
+      scrollRef.current.scrollTop = 0
+    }
   }, [isOpen])
 
   if (!isOpen) return null
 
-  const heightCls = {
-    auto: 'max-h-[90dvh]',
-    tall: 'h-[88dvh]',
-    full: 'h-[96dvh]',
+  const maxH = {
+    auto: 'max-h-[80dvh]',
+    tall: 'max-h-[82dvh]',
+    full: 'max-h-[92dvh]',
   }[height]
 
   return (
@@ -41,15 +53,18 @@ export default function BottomSheet({
         onClick={onClose}
       />
 
-      {/* Sheet */}
+      {/* Sheet — anchored to bottom, never taller than maxH */}
       <div
         className={`
           fixed bottom-0 left-0 right-0 z-50
-          bg-white rounded-t-2xl
+          bg-white rounded-t-[28px]
           flex flex-col
-          ${heightCls}
+          ${maxH}
           animate-slide-up
         `}
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+        // Prevent touch events from reaching the backdrop
+        onClick={e => e.stopPropagation()}
       >
         {/* Handle bar */}
         <div className="flex-shrink-0 flex justify-center pt-3 pb-1">
@@ -58,19 +73,24 @@ export default function BottomSheet({
 
         {/* Header */}
         {title && (
-          <div className="flex-shrink-0 flex items-center justify-between px-5 py-3 border-b border-[#E5E5E5]">
-            <h2 className="text-base font-semibold text-[#121212]">{title}</h2>
+          <div className="flex-shrink-0 flex items-center justify-between px-5 py-3 border-b border-[#F0F0F0]">
+            <h2 className="text-[17px] font-semibold text-[#111111]">{title}</h2>
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-xl flex items-center justify-center text-[#616161] hover:bg-[#F5F5F5] transition-colors"
+              className="w-8 h-8 rounded-2xl bg-[#F5F5F5] flex items-center justify-center text-[#666666] transition-colors active:bg-[#EBEBEB]"
             >
-              <X size={16} />
+              <X size={16} strokeWidth={2.5} />
             </button>
           </div>
         )}
 
-        {/* Scrollable content */}
-        <div className="flex-1 overflow-y-auto overscroll-contain">
+        {/* Scrollable content — always starts at top */}
+        <div
+          ref={scrollRef}
+          className="flex-1 overflow-y-auto overscroll-contain"
+          // Prevent iOS momentum scroll from going past the sheet
+          style={{ WebkitOverflowScrolling: 'touch' }}
+        >
           {children}
         </div>
       </div>
