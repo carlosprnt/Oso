@@ -30,7 +30,7 @@ function WalletCard({ sub }: { sub: SubscriptionWithCosts }) {
   return (
     <Link href={`/subscriptions/${sub.id}`}>
       <div
-        className="w-full bg-white rounded-[28px] px-6 py-9 flex items-center gap-5 active:scale-[0.985] transition-transform duration-100"
+        className="w-full bg-white rounded-[28px] px-6 pt-6 pb-7 flex items-start gap-5 active:scale-[0.985] transition-transform duration-100"
         style={{ border: '1.5px solid #E8E8E8', minHeight: 'clamp(130px, 18vw, 160px)' }}
       >
         {/* Avatar — larger to fill taller card */}
