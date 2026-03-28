@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import BottomSheet from '@/components/ui/BottomSheet'
 import PlatformPicker from './PlatformPicker'
@@ -13,17 +13,6 @@ type Step = 'closed' | 'pick' | 'form' | 'gmail'
 export default function AddSubscriptionFlow() {
   const [step, setStep] = useState<Step>('closed')
   const [platform, setPlatform] = useState<PlatformPreset | null>(null)
-
-  // After Gmail OAuth redirect, localStorage flag tells us to auto-open the Gmail sheet
-  useEffect(() => {
-    const pending = localStorage.getItem('perezoso_gmail_pending')
-    if (pending === '1') {
-      localStorage.removeItem('perezoso_gmail_pending')
-      // Small delay so the page finishes mounting before opening the sheet
-      const t = setTimeout(() => setStep('gmail'), 350)
-      return () => clearTimeout(t)
-    }
-  }, [])
 
   function handleSelect(p: PlatformPreset | null) {
     setPlatform(p)

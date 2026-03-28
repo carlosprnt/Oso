@@ -1,34 +1,81 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Mail, Loader2, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react'
 import BottomSheet from '@/components/ui/BottomSheet'
 import GmailSubscriptionResultItem from './GmailSubscriptionResultItem'
 import { importSubscriptions } from '@/app/(dashboard)/subscriptions/actions'
-import { createClient } from '@/lib/supabase/client'
 import type { DetectedSubscription } from '@/types/detected-subscription'
 import type { SubscriptionFormData } from '@/types'
 
-// ─── Gmail OAuth trigger ───────────────────────────────────────────────────────
+// ─── Google Identity Services types ───────────────────────────────────────────
 
-async function initiateGmailAuth() {
-  if (typeof window === 'undefined') return
-  // Mark pending so AddSubscriptionFlow auto-reopens this sheet after OAuth redirect
-  localStorage.setItem('perezoso_gmail_pending', '1')
+interface GisTokenResponse {
+  access_token?: string
+  error?: string
+  error_description?: string
+}
+interface GisTokenClient {
+  requestAccessToken(opts?: { prompt?: string }): void
+}
+declare const google: {
+  accounts: {
+    oauth2: {
+      initTokenClient(cfg: {
+        client_id: string
+        scope: string
+        callback: (r: GisTokenResponse) => void
+      }): GisTokenClient
+    }
+  }
+}
 
-  const supabase = createClient()
-  await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      scopes: 'https://www.googleapis.com/auth/gmail.readonly',
-      queryParams: { access_type: 'offline', prompt: 'consent' },
-      redirectTo: `${window.location.origin}/auth/gmail-callback`,
-    },
+// ─── Load the GIS script once ──────────────────────────────────────────────────
+
+let gisReady = false
+let gisLoading = false
+const gisCallbacks: Array<() => void> = []
+
+function loadGis(onReady: () => void) {
+  if (gisReady) { onReady(); return }
+  gisCallbacks.push(onReady)
+  if (gisLoading) return
+  gisLoading = true
+  const s = document.createElement('script')
+  s.src = 'https://accounts.google.com/gsi/client'
+  s.async = true
+  s.defer = true
+  s.onload = () => {
+    gisReady = true
+    gisCallbacks.forEach(cb => cb())
+    gisCallbacks.length = 0
+  }
+  document.head.appendChild(s)
+}
+
+// ─── Request a Gmail access token via GIS popup ────────────────────────────────
+
+function requestGmailToken(clientId: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    loadGis(() => {
+      const client = google.accounts.oauth2.initTokenClient({
+        client_id: clientId,
+        scope: 'https://www.googleapis.com/auth/gmail.readonly',
+        callback: (response) => {
+          if (response.access_token) {
+            resolve(response.access_token)
+          } else {
+            reject(new Error(response.error_description ?? response.error ?? 'Auth cancelled'))
+          }
+        },
+      })
+      client.requestAccessToken({ prompt: 'consent' })
+    })
   })
 }
 
-// ─── Convert candidate → form data ────────────────────────────────────────────
+// ─── Convert candidate → form payload ─────────────────────────────────────────
 
 function candidateToFormData(c: DetectedSubscription): SubscriptionFormData {
   return {
@@ -51,15 +98,15 @@ function candidateToFormData(c: DetectedSubscription): SubscriptionFormData {
   }
 }
 
-// ─── Sheet state ───────────────────────────────────────────────────────────────
+// ─── Sheet state machine ───────────────────────────────────────────────────────
 
 type SheetState =
   | { type: 'searching' }
-  | { type: 'not_connected'; hint?: string }
+  | { type: 'not_connected' }
   | { type: 'results'; candidates: DetectedSubscription[] }
   | { type: 'empty' }
   | { type: 'error'; message: string }
-  | { type: 'adding'; total: number; done: number }
+  | { type: 'adding'; total: number }
   | { type: 'done'; count: number }
 
 const fadeSlide = {
@@ -79,86 +126,96 @@ interface Props {
 export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props) {
   const [sheetState, setSheetState] = useState<SheetState>({ type: 'searching' })
   const [selected, setSelected] = useState<Set<string>>(new Set())
+  // Token lives only in component memory — not persisted to storage
+  const tokenRef = useRef<string | null>(null)
 
-  const doSearch = useCallback(async () => {
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
+
+  // ── Search using a token ───────────────────────────────────────────────────
+  const doSearch = useCallback(async (token?: string) => {
     setSheetState({ type: 'searching' })
     try {
-      const res = await fetch('/api/gmail/search')
-      const data: { status: string; candidates?: DetectedSubscription[]; error?: string } =
-        await res.json()
+      const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {}
+      const res = await fetch('/api/gmail/search', { headers })
+      const data: {
+        status: string
+        candidates?: DetectedSubscription[]
+        error?: string
+      } = await res.json()
 
       if (data.status === 'not_connected') {
         setSheetState({ type: 'not_connected' })
-        return
-      }
-      if (data.status === 'error') {
+      } else if (data.status === 'error') {
         setSheetState({ type: 'error', message: data.error ?? 'Something went wrong' })
-        return
-      }
-      const candidates = data.candidates ?? []
-      if (candidates.length === 0) {
+      } else if (!data.candidates?.length) {
         setSheetState({ type: 'empty' })
-        return
+      } else {
+        setSheetState({ type: 'results', candidates: data.candidates })
+        setSelected(new Set(data.candidates.filter(c => c.confidence === 'high').map(c => c.id)))
       }
-      setSheetState({ type: 'results', candidates })
-      // Pre-select high-confidence items
-      setSelected(new Set(candidates.filter(c => c.confidence === 'high').map(c => c.id)))
     } catch {
       setSheetState({ type: 'error', message: 'Network error. Please try again.' })
     }
   }, [])
 
-  // Start search when sheet opens; reset when it closes
+  // ── Open: start search immediately ────────────────────────────────────────
   useEffect(() => {
     if (isOpen) {
-      doSearch()
+      doSearch(tokenRef.current ?? undefined)
     } else {
       setSheetState({ type: 'searching' })
       setSelected(new Set())
+      tokenRef.current = null
     }
   }, [isOpen, doSearch])
 
-  // Handle gmail_error param returned from OAuth callback
-  useEffect(() => {
-    if (!isOpen) return
-    const params = new URLSearchParams(window.location.search)
-    const err = params.get('gmail_error')
-    if (err === 'no_token') {
+  // ── Connect Gmail via GIS popup ────────────────────────────────────────────
+  async function connectGmail() {
+    if (!clientId) {
       setSheetState({
-        type: 'not_connected',
-        hint: 'Gmail access could not be obtained. Make sure "Save User Token" is enabled in your Supabase project.',
+        type: 'error',
+        message: 'NEXT_PUBLIC_GOOGLE_CLIENT_ID is not set. Add it to your .env.local file.',
       })
+      return
     }
-  }, [isOpen])
+    try {
+      const token = await requestGmailToken(clientId)
+      tokenRef.current = token
+      await doSearch(token)
+    } catch (err) {
+      // User closed the popup or denied permission — stay on not_connected
+      if (err instanceof Error && err.message !== 'Auth cancelled') {
+        setSheetState({ type: 'error', message: err.message })
+      }
+    }
+  }
 
+  // ── Selection helpers ──────────────────────────────────────────────────────
   function toggleSelect(id: string) {
     setSelected(prev => {
       const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
+      next.has(id) ? next.delete(id) : next.add(id)
       return next
     })
   }
 
   function toggleAll() {
     if (sheetState.type !== 'results') return
-    if (selected.size === sheetState.candidates.length) {
-      setSelected(new Set())
-    } else {
-      setSelected(new Set(sheetState.candidates.map(c => c.id)))
-    }
+    setSelected(
+      selected.size === sheetState.candidates.length
+        ? new Set()
+        : new Set(sheetState.candidates.map(c => c.id)),
+    )
   }
 
+  // ── Import selected candidates ─────────────────────────────────────────────
   async function addSelected() {
     if (sheetState.type !== 'results') return
     const toAdd = sheetState.candidates.filter(c => selected.has(c.id))
-    if (toAdd.length === 0) return
+    if (!toAdd.length) return
 
-    setSheetState({ type: 'adding', total: toAdd.length, done: 0 })
-
-    const formItems = toAdd.map(candidateToFormData)
-    const { imported } = await importSubscriptions(formItems)
-
+    setSheetState({ type: 'adding', total: toAdd.length })
+    const { imported } = await importSubscriptions(toAdd.map(candidateToFormData))
     setSheetState({ type: 'done', count: imported })
   }
 
@@ -197,21 +254,16 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
                 Perezoso will search your inbox for subscription receipts and suggest them to you.
                 Nothing is added without your confirmation.
               </p>
-              {sheetState.hint && (
-                <p className="text-[12px] text-[#E07B1A] mt-3 bg-[#FFF7ED] rounded-xl px-3 py-2">
-                  {sheetState.hint}
-                </p>
-              )}
             </div>
             <div className="w-full space-y-2.5">
               <button
-                onClick={initiateGmailAuth}
+                onClick={connectGmail}
                 className="w-full h-12 rounded-[10px] bg-[#3D3BF3] text-white text-sm font-medium hover:bg-[#3230D0] active:bg-[#2B29B8] transition-colors flex items-center justify-center gap-2"
               >
                 <Mail size={16} />
                 Connect Gmail
               </button>
-              <p className="text-[11px] text-[#AAAAAA] text-center">
+              <p className="text-[11px] text-[#AAAAAA]">
                 Read-only access · Perezoso never stores your emails
               </p>
             </div>
@@ -221,7 +273,6 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
         {/* ── Results ────────────────────────────────────────────────────────── */}
         {sheetState.type === 'results' && (
           <motion.div key="results" {...fadeSlide} className="flex flex-col min-h-0">
-            {/* Header */}
             <div className="px-5 pt-1 pb-4 flex-shrink-0">
               <p className="text-[13px] font-semibold text-[#111111]">
                 {sheetState.candidates.length} possible subscription{sheetState.candidates.length !== 1 ? 's' : ''} found
@@ -230,8 +281,6 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
                 Review and add the ones you want
               </p>
             </div>
-
-            {/* List */}
             <div className="flex-1 overflow-y-auto px-5 pb-4 space-y-2">
               {sheetState.candidates.map(candidate => (
                 <GmailSubscriptionResultItem
@@ -242,8 +291,6 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
                 />
               ))}
             </div>
-
-            {/* Footer actions */}
             <div
               className="flex-shrink-0 px-5 pt-3 pb-4 border-t border-[#F0F0F0] space-y-2.5"
               style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
@@ -255,9 +302,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
                 >
                   {selected.size === sheetState.candidates.length ? 'Deselect all' : 'Select all'}
                 </button>
-                <span className="text-[12px] text-[#AAAAAA]">
-                  {selectedCount} selected
-                </span>
+                <span className="text-[12px] text-[#AAAAAA]">{selectedCount} selected</span>
               </div>
               <button
                 onClick={addSelected}
@@ -285,12 +330,9 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
             <div className="w-14 h-14 rounded-2xl bg-[#F0F0FF] flex items-center justify-center">
               <Loader2 size={24} className="text-[#3D3BF3] animate-spin" />
             </div>
-            <div>
-              <p className="text-[15px] font-semibold text-[#111111]">
-                Adding {sheetState.total} subscription{sheetState.total !== 1 ? 's' : ''}…
-              </p>
-              <p className="text-[13px] text-[#999999] mt-1">Just a moment</p>
-            </div>
+            <p className="text-[15px] font-semibold text-[#111111]">
+              Adding {sheetState.total} subscription{sheetState.total !== 1 ? 's' : ''}…
+            </p>
           </motion.div>
         )}
 
@@ -328,9 +370,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
               <Mail size={28} className="text-[#AAAAAA]" />
             </div>
             <div>
-              <p className="text-[15px] font-semibold text-[#111111]">
-                No subscriptions found
-              </p>
+              <p className="text-[15px] font-semibold text-[#111111]">No subscriptions found</p>
               <p className="text-[13px] text-[#999999] mt-1 leading-relaxed">
                 We couldn't find obvious subscription receipts in your Gmail.
                 You can still add subscriptions manually.
@@ -344,7 +384,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
                 Add manually
               </button>
               <button
-                onClick={doSearch}
+                onClick={() => doSearch(tokenRef.current ?? undefined)}
                 className="w-full h-12 rounded-[10px] border border-[#E0E0E0] text-[#444444] text-sm font-medium hover:bg-[#F5F5F5] transition-colors flex items-center justify-center gap-1.5"
               >
                 <RefreshCw size={14} />
@@ -367,7 +407,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
               <p className="text-[13px] text-[#999999] mt-1">{sheetState.message}</p>
             </div>
             <button
-              onClick={doSearch}
+              onClick={() => doSearch(tokenRef.current ?? undefined)}
               className="w-full h-12 rounded-[10px] bg-[#3D3BF3] text-white text-sm font-medium hover:bg-[#3230D0] transition-colors flex items-center justify-center gap-1.5"
             >
               <RefreshCw size={14} />

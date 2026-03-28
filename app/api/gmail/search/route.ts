@@ -27,11 +27,17 @@ async function fetchJson<T>(url: string, token: string): Promise<T | null> {
 }
 
 export async function GET(request: NextRequest) {
-  const token = request.cookies.get('gmail_token')?.value
+  // Token can come from:
+  //   1. Authorization header (GIS popup flow — preferred)
+  //   2. gmail_token httpOnly cookie (legacy Supabase redirect flow)
+  const authHeader = request.headers.get('authorization')
+  const token =
+    (authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null) ??
+    request.cookies.get('gmail_token')?.value ??
+    null
 
   // ── Mock mode ───────────────────────────────────────────────────────────────
   // Active when GMAIL_MOCK=true OR when no token exists in development.
-  // This lets you test the full import UI without a real Google account.
   const isMock =
     process.env.GMAIL_MOCK === 'true' ||
     (!token && process.env.NODE_ENV === 'development')
