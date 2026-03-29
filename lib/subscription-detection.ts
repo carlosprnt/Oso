@@ -1,12 +1,12 @@
 /**
- * Heuristic-based subscription detection from Gmail message headers.
+ * Heuristic-based subscription detection from Gmail message headers + snippets.
  *
- * Strategy: deterministic, easy to understand, easy to improve.
- * - Match sender domain against a known platform map
- * - Filter by subscription-related subject keywords
- * - Parse amount/currency from subject text
- * - Infer billing period from subject text
- * - Group by domain to surface recurring senders
+ * Key improvements over v1:
+ * - Known domains bypass subject keyword filtering (catches "Enjoy Netflix", etc.)
+ * - Spanish + multilingual subject keywords
+ * - Amount parsed from BOTH subject and email snippet (body preview)
+ * - Broader domain map with Spanish/EU services
+ * - Exported KNOWN_DOMAINS list used by the API route to build from: query
  */
 
 import type { DetectedSubscription } from '@/types/detected-subscription'
@@ -20,36 +20,55 @@ export interface GmailMessageHeader {
   from: string
   subject: string
   date: string
+  snippet?: string  // email body preview (~500 chars) — use for amount parsing
 }
 
-// ─── Platform sender map ───────────────────────────────────────────────────────
-// Maps the last two parts of a sender's email domain (e.g. "netflix.com")
-// to a platform catalog ID. When multiple domains share a platform (e.g. Apple),
-// list them all pointing to the best default match.
+// ─── Platform sender domain map ───────────────────────────────────────────────
+// Key: normalized last-two-part domain (e.g. "netflix.com")
+// Value: platform catalog ID
 
 const DOMAIN_TO_PLATFORM_ID: Record<string, string> = {
   // Streaming
   'netflix.com': 'netflix',
   'nflximg.com': 'netflix',
   'disneyplus.com': 'disney-plus',
+  'disney.com': 'disney-plus',
   'hbomax.com': 'hbo-max',
+  'max.com': 'hbo-max',
   'hulu.com': 'hulu',
   'paramountplus.com': 'other',
   'peacocktv.com': 'other',
+  'primevideo.com': 'amazon-prime',
+  'crunchyroll.com': 'other',
+  'mubi.com': 'other',
+  'filmin.es': 'other',
+  'atresplayer.com': 'other',
+  'mitele.es': 'other',
+  'rtve.es': 'other',
 
-  // Music
+  // Music / Podcasts
   'spotify.com': 'spotify',
+  'tidal.com': 'other',
+  'deezer.com': 'other',
+  'music.amazon.com': 'other',
 
-  // Apple — maps to iCloud+ as the most common Apple subscription
-  // subject-based refinement is aspirational; good enough for MVP
+  // Apple
   'apple.com': 'icloud-plus',
+  'icloud.com': 'icloud-plus',
 
   // Google
   'google.com': 'google-one',
   'youtube.com': 'youtube-premium',
   'googleplay.com': 'google-one',
 
-  // Productivity
+  // Microsoft
+  'microsoft.com': 'microsoft-onedrive',
+  'xbox.com': 'xbox-game-pass',
+  'office.com': 'microsoft-onedrive',
+  'live.com': 'microsoft-onedrive',
+  'outlook.com': 'microsoft-onedrive',
+
+  // Productivity / SaaS
   'notion.so': 'notion',
   'evernote.com': 'evernote',
   'basecamp.com': 'basecamp',
@@ -57,50 +76,126 @@ const DOMAIN_TO_PLATFORM_ID: Record<string, string> = {
   'adobe.com': 'adobe-creative-cloud',
   'github.com': 'github',
   'github.io': 'github',
+  'figma.com': 'other',
+  'canva.com': 'other',
+  'dropbox.com': 'other',
+  'box.com': 'other',
+  'monday.com': 'other',
+  'asana.com': 'other',
+  'trello.com': 'other',
+  'atlassian.com': 'other',
+  'zoom.us': 'other',
+  'webex.com': 'other',
+  'intercom.io': 'other',
+  'mailchimp.com': 'other',
+  'hubspot.com': 'other',
+  'airtable.com': 'other',
+  'miro.com': 'other',
+  'loom.com': 'other',
+  'linear.app': 'other',
+  'craft.do': 'other',
+  'readwise.io': 'other',
 
-  // Cloud
+  // AI / Dev tools
+  'openai.com': 'chatgpt-plus',
+  'anthropic.com': 'other',
+  'midjourney.com': 'other',
+  'cursor.sh': 'other',
+  'replit.com': 'other',
+  'vercel.com': 'other',
+  'netlify.com': 'other',
+  'render.com': 'other',
+
+  // Cloud / Hosting
   'amazonaws.com': 'aws',
   'digitalocean.com': 'digitalocean',
   'namecheap.com': 'namecheap',
-
-  // AI
-  'openai.com': 'chatgpt-plus',
+  'godaddy.com': 'other',
+  'cloudflare.com': 'other',
+  'linode.com': 'other',
+  'hetzner.com': 'other',
+  'ovhcloud.com': 'other',
 
   // Gaming
   'playstation.com': 'playstation-plus',
-  'xbox.com': 'xbox-game-pass',
   'nintendo.com': 'nintendo-switch-online',
+  'steampowered.com': 'other',
+  'epicgames.com': 'other',
+  'ubisoft.com': 'other',
+  'ea.com': 'other',
 
   // Education
   'medium.com': 'medium',
   'coursera.org': 'coursera',
   'skillshare.com': 'skillshare',
   'duolingo.com': 'duolingo',
+  'udemy.com': 'other',
+  'masterclass.com': 'other',
+  'domestika.org': 'other',
+  'datacamp.com': 'other',
+  'pluralsight.com': 'other',
+  'linkedin.com': 'other',
 
-  // Finance / Other
+  // Finance / Fintech
   'amazon.com': 'amazon-prime',
   'paypal.com': 'paypal',
   'revolut.com': 'revolut',
   'wise.com': 'wise',
   'transferwise.com': 'wise',
-  'americanexpress.com': 'american-express',
-  'microsoft.com': 'microsoft-onedrive',
+  'n26.com': 'other',
+  'bunq.com': 'other',
+  'monzo.com': 'other',
+
+  // VPN / Security
+  'nordvpn.com': 'other',
+  'expressvpn.com': 'other',
+  'proton.me': 'other',
+  'protonmail.com': 'other',
+  '1password.com': 'other',
+  'lastpass.com': 'other',
+  'bitwarden.com': 'other',
+  'malwarebytes.com': 'other',
+
+  // News / Reading
+  'nytimes.com': 'other',
+  'wsj.com': 'other',
+  'economist.com': 'other',
+  'elpais.com': 'other',
+  'elmundo.es': 'other',
+  'elconfidencial.com': 'other',
+  'expansion.com': 'other',
 }
 
-// ─── Subscription subject keywords ────────────────────────────────────────────
+/** All known domains — exported so the API route can build from: queries */
+export const KNOWN_DOMAINS = Object.keys(DOMAIN_TO_PLATFORM_ID)
+
+// ─── Subject keywords (English + Spanish + FR/DE/IT) ─────────────────────────
 
 const SUBSCRIPTION_KEYWORDS = [
+  // English
   'receipt', 'invoice', 'subscription', 'renewal', 'billing',
   'charged', 'plan', 'payment', 'membership', 'billed',
-  'your order', 'confirmation', 'annual', 'monthly', 'renew',
-  'renewed', 'your bill', 'statement', 'new charge', 'auto-renewal',
-  'auto renewal', 'successful payment', 'payment processed', 'payment received',
-  'payment confirmation', 'order confirmation', 'thank you for your payment',
+  'order', 'confirmation', 'annual', 'monthly', 'renew',
+  'renewed', 'statement', 'auto-renewal', 'auto renewal',
+  'successful payment', 'payment processed', 'payment received',
+  'payment confirmation', 'order confirmation', 'thank you for',
+  'your subscription', 'your membership', 'your account',
+  // Spanish
+  'factura', 'recibo', 'suscripción', 'suscripcion', 'renovación', 'renovacion',
+  'cobro', 'cargo', 'pago', 'confirmación', 'confirmacion', 'membresía',
+  'membresia', 'pedido', 'mensual', 'anual', 'plan', 'gracias por',
+  'tu suscripción', 'tu plan', 'pago realizado', 'pago confirmado',
+  'confirmación de pago', 'recibo de pago', 'renovación automática',
+  // French
+  'abonnement', 'reçu', 'facture', 'renouvellement', 'paiement',
+  // German
+  'rechnung', 'abonnement', 'zahlung', 'kündigung',
+  // Italian
+  'abbonamento', 'ricevuta', 'fattura', 'rinnovo', 'pagamento',
 ]
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-/** Extract the last-two-part domain from a From header like "Netflix <billing@mailer.netflix.com>" */
 function extractNormalizedDomain(from: string): string | null {
   const emailMatch = from.match(/<([^>]+)>/) ?? from.match(/\S+@\S+/)
   const email = emailMatch ? emailMatch[1] ?? emailMatch[0] : from.trim()
@@ -111,7 +206,6 @@ function extractNormalizedDomain(from: string): string | null {
   return parts.length >= 2 ? parts.slice(-2).join('.') : domain
 }
 
-/** Extract the full sender domain (keeping subdomains) for the source_hint display */
 function extractFullDomain(from: string): string | null {
   const emailMatch = from.match(/<([^>]+)>/) ?? from.match(/\S+@\S+/)
   const email = emailMatch ? emailMatch[1] ?? emailMatch[0] : from.trim()
@@ -119,7 +213,6 @@ function extractFullDomain(from: string): string | null {
   return domainMatch ? domainMatch[1].toLowerCase().replace('>', '').trim() : null
 }
 
-/** Extract display name from "Display Name <email@domain>" */
 function extractDisplayName(from: string): string {
   const nameMatch = from.match(/^"?([^"<]+)"?\s*</)
   if (nameMatch) return nameMatch[1].trim().replace(/["']/g, '')
@@ -128,60 +221,68 @@ function extractDisplayName(from: string): string {
   return email.split('@')[0].replace(/[._-]/g, ' ').trim()
 }
 
-/** Return true if the subject looks like a subscription/billing email */
 function isSubscriptionSubject(subject: string): boolean {
   const lower = subject.toLowerCase()
   return SUBSCRIPTION_KEYWORDS.some(kw => lower.includes(kw))
 }
 
-/** Try to parse a price and currency from subject text */
-function parseAmount(text: string): { amount: number; currency: string } | null {
+/** Parse price from text — tries subject first, then snippet */
+function parseAmount(texts: string[]): { amount: number; currency: string } | null {
   const patterns: Array<{ re: RegExp; currency: string }> = [
-    { re: /\$\s?(\d+(?:\.\d{1,2})?)(?!\d)/, currency: 'USD' },
-    { re: /€\s?(\d+(?:[,.]\d{1,2})?)(?!\d)/, currency: 'EUR' },
-    { re: /£\s?(\d+(?:\.\d{1,2})?)(?!\d)/, currency: 'GBP' },
-    { re: /(\d+(?:\.\d{1,2})?)\s?USD(?!\w)/, currency: 'USD' },
-    { re: /(\d+(?:[,.]\d{1,2})?)\s?EUR(?!\w)/, currency: 'EUR' },
-    { re: /(\d+(?:\.\d{1,2})?)\s?GBP(?!\w)/, currency: 'GBP' },
-    { re: /(\d+(?:[,.]\d{2})?)\s?€/, currency: 'EUR' },
+    // Symbol prefix: $9.99, €9.99, £9.99
+    { re: /\$\s?(\d+(?:[.,]\d{1,2})?)(?!\d)/, currency: 'USD' },
+    { re: /€\s?(\d+(?:[.,]\d{1,2})?)(?!\d)/,  currency: 'EUR' },
+    { re: /£\s?(\d+(?:[.,]\d{1,2})?)(?!\d)/,  currency: 'GBP' },
+    // Symbol suffix: 9,99€ or 9.99€ or 9 €
+    { re: /(\d+(?:[.,]\d{1,2})?)\s?€/, currency: 'EUR' },
+    { re: /(\d+(?:[.,]\d{1,2})?)\s?\$/, currency: 'USD' },
+    { re: /(\d+(?:[.,]\d{1,2})?)\s?£/, currency: 'GBP' },
+    // ISO code suffix: 9.99 USD/EUR/GBP
+    { re: /(\d+(?:[.,]\d{1,2})?)\s?USD(?!\w)/, currency: 'USD' },
+    { re: /(\d+(?:[.,]\d{1,2})?)\s?EUR(?!\w)/, currency: 'EUR' },
+    { re: /(\d+(?:[.,]\d{1,2})?)\s?GBP(?!\w)/, currency: 'GBP' },
   ]
-  for (const { re, currency } of patterns) {
-    const match = text.match(re)
-    if (match) {
-      const raw = match[1].replace(',', '.')
-      const amount = parseFloat(raw)
-      if (!isNaN(amount) && amount > 0 && amount < 10_000) {
-        return { amount, currency }
+
+  for (const text of texts) {
+    for (const { re, currency } of patterns) {
+      const match = text.match(re)
+      if (match) {
+        const raw = match[1].replace(',', '.')
+        const amount = parseFloat(raw)
+        if (!isNaN(amount) && amount > 0 && amount < 10_000) {
+          return { amount, currency }
+        }
       }
     }
   }
   return null
 }
 
-/** Infer billing period from subject text */
-function parseBillingPeriod(text: string): BillingPeriod | null {
-  const lower = text.toLowerCase()
-  if (lower.includes('annual') || lower.includes('yearly') || lower.includes('/year') ||
-      lower.includes('per year') || lower.includes('1 year') || lower.includes('12 month')) {
-    return 'yearly'
-  }
-  if (lower.includes('monthly') || lower.includes('/month') || lower.includes('per month') ||
-      lower.includes('1 month')) {
-    return 'monthly'
-  }
-  if (lower.includes('quarterly') || lower.includes('3 month') || lower.includes('3-month')) {
-    return 'quarterly'
-  }
-  if (lower.includes('weekly') || lower.includes('/week') || lower.includes('per week')) {
-    return 'weekly'
+function parseBillingPeriod(texts: string[]): BillingPeriod | null {
+  for (const text of texts) {
+    const lower = text.toLowerCase()
+    if (lower.match(/\b(annual|yearly|year|anual|año|anualmente|per\s+year|\/year|12.month)\b/)) {
+      return 'yearly'
+    }
+    if (lower.match(/\b(monthly|month|mensual|mes|mensualmente|per\s+month|\/month|1.month)\b/)) {
+      return 'monthly'
+    }
+    if (lower.match(/\b(quarterly|quarter|trimestral|trimestre|3.month)\b/)) {
+      return 'quarterly'
+    }
+    if (lower.match(/\b(weekly|week|semanal|semana|\/week)\b/)) {
+      return 'weekly'
+    }
   }
   return null
 }
 
-/** Infer a display name from a domain when no platform match exists */
 function nameFromDomain(domain: string, senderDisplay: string): string {
-  const GENERIC = ['billing', 'invoice', 'noreply', 'no-reply', 'notify',
-    'notifications', 'info', 'support', 'donotreply', 'hello', 'team']
+  const GENERIC = [
+    'billing', 'invoice', 'noreply', 'no-reply', 'notify',
+    'notifications', 'info', 'support', 'donotreply', 'hello',
+    'team', 'mail', 'mailer', 'newsletter', 'news',
+  ]
   const cleaned = senderDisplay.toLowerCase().replace(/\s/g, '')
   if (!GENERIC.includes(cleaned) && senderDisplay.length > 2 && !/\d/.test(senderDisplay)) {
     return senderDisplay.charAt(0).toUpperCase() + senderDisplay.slice(1)
@@ -195,10 +296,15 @@ function nameFromDomain(domain: string, senderDisplay: string): string {
 export function detectSubscriptionsFromEmails(
   messages: GmailMessageHeader[],
 ): DetectedSubscription[] {
-  // 1. Filter to subscription-like subjects
-  const relevant = messages.filter(m => isSubscriptionSubject(m.subject))
+  // For KNOWN domains → include regardless of subject (catches "Enjoy Netflix", etc.)
+  // For UNKNOWN domains → require a subscription-related subject
+  const relevant = messages.filter(m => {
+    const domain = extractNormalizedDomain(m.from)
+    if (domain && DOMAIN_TO_PLATFORM_ID[domain]) return true
+    return isSubscriptionSubject(m.subject)
+  })
 
-  // 2. Group by normalized domain (one entry per service)
+  // Group by normalized domain
   const byDomain = new Map<string, GmailMessageHeader[]>()
   for (const msg of relevant) {
     const domain = extractNormalizedDomain(msg.from)
@@ -211,13 +317,11 @@ export function detectSubscriptionsFromEmails(
   const seenPlatformIds = new Set<string>()
 
   for (const [domain, msgs] of byDomain) {
-    // Sort newest first
     const sorted = [...msgs].sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
     )
     const latest = sorted[0]
 
-    // Platform lookup
     const platformId = DOMAIN_TO_PLATFORM_ID[domain]
     if (platformId && seenPlatformIds.has(platformId)) continue
     if (platformId) seenPlatformIds.add(platformId)
@@ -225,42 +329,31 @@ export function detectSubscriptionsFromEmails(
     const platform = platformId ? getPlatformById(platformId) : undefined
     const name = platform?.name ?? nameFromDomain(domain, extractDisplayName(latest.from))
 
-    // Amount — try up to 5 most recent subjects
-    let amountData: { amount: number; currency: string } | null = null
-    for (const msg of sorted.slice(0, 5)) {
-      const parsed = parseAmount(msg.subject)
-      if (parsed) { amountData = parsed; break }
-    }
+    // Amount — try subjects then snippets of up to 5 most recent messages
+    const textsForAmount = sorted.slice(0, 5).flatMap(m => [m.subject, m.snippet ?? ''])
+    const amountData = parseAmount(textsForAmount)
 
-    // Billing period — prefer platform default, then subject scan
-    let billingPeriod: BillingPeriod | null = platform?.defaultBillingPeriod ?? null
-    if (!billingPeriod) {
-      for (const msg of sorted) {
-        const parsed = parseBillingPeriod(msg.subject)
-        if (parsed) { billingPeriod = parsed; break }
-      }
-    }
+    // Billing period — platform default wins, then scan subjects + snippets
+    const textsForPeriod = sorted.flatMap(m => [m.subject, m.snippet ?? ''])
+    const billingPeriod: BillingPeriod =
+      platform?.defaultBillingPeriod ??
+      parseBillingPeriod(textsForPeriod) ??
+      'monthly'
 
-    // Confidence
     const isRecurring = sorted.length >= 2
     const confidence: DetectedSubscription['confidence'] =
       platform && isRecurring ? 'high'
-      : platform ? 'medium'
-      : isRecurring ? 'medium'
+      : platform || isRecurring ? 'medium'
       : 'low'
 
-    // Source hint: full sender domain + latest email month
     const fullDomain = extractFullDomain(latest.from) ?? domain
     const latestDate = new Date(latest.date)
     const dateHint = isNaN(latestDate.getTime())
       ? ''
-      : latestDate.toLocaleDateString('en', { month: 'short', year: 'numeric' })
+      : latestDate.toLocaleDateString('es', { month: 'short', year: 'numeric' })
     const sourceHint = dateHint ? `${fullDomain} · ${dateHint}` : fullDomain
 
-    // Logo
-    const logoUrl = platform
-      ? resolvePlatformLogoUrl(platform)
-      : null
+    const logoUrl = platform ? resolvePlatformLogoUrl(platform) : null
 
     candidates.push({
       id: `gmail-${domain}-${Math.random().toString(36).slice(2, 7)}`,
@@ -268,7 +361,7 @@ export function detectSubscriptionsFromEmails(
       matchedPlatformId: platform?.id,
       logoUrl,
       price_amount: amountData?.amount ?? (platform?.defaultPrice ?? null),
-      currency: amountData?.currency ?? null,
+      currency: amountData?.currency ?? (amountData ? null : 'EUR'),
       billing_period: billingPeriod,
       source: 'gmail',
       source_hint: sourceHint,
@@ -277,7 +370,6 @@ export function detectSubscriptionsFromEmails(
     })
   }
 
-  // 3. Sort: high confidence first, then alphabetically
   return candidates.sort((a, b) => {
     const ORDER = { high: 0, medium: 1, low: 2 }
     const diff = ORDER[a.confidence] - ORDER[b.confidence]
