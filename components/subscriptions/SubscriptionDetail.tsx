@@ -11,13 +11,14 @@ import { formatCurrency } from '@/lib/utils/currency'
 import { formatRelativeDate } from '@/lib/utils/dates'
 import { getCategoryMeta } from '@/lib/constants/categories'
 import { BILLING_PERIOD_LABELS } from '@/lib/constants/currencies'
+import { useT } from '@/lib/i18n/LocaleProvider'
 import type { SubscriptionWithCosts } from '@/types'
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  active:    { label: 'Active',    color: '#16A34A', bg: '#F0FDF4' },
-  trial:     { label: 'Trial',     color: '#D97706', bg: '#FFFBEB' },
-  paused:    { label: 'Paused',    color: '#6B7280', bg: '#F9FAFB' },
-  cancelled: { label: 'Cancelled', color: '#DC2626', bg: '#FEF2F2' },
+const STATUS_CONFIG: Record<string, { color: string; bg: string }> = {
+  active:    { color: '#16A34A', bg: '#F0FDF4' },
+  trial:     { color: '#D97706', bg: '#FFFBEB' },
+  paused:    { color: '#6B7280', bg: '#F9FAFB' },
+  cancelled: { color: '#DC2626', bg: '#FEF2F2' },
 }
 
 interface SubscriptionDetailProps {
@@ -25,6 +26,7 @@ interface SubscriptionDetailProps {
 }
 
 export default function SubscriptionDetail({ subscription: sub }: SubscriptionDetailProps) {
+  const t = useT()
   const [editOpen, setEditOpen] = useState(false)
   const router = useRouter()
   const meta = getCategoryMeta(sub.category)
@@ -63,7 +65,7 @@ export default function SubscriptionDetail({ subscription: sub }: SubscriptionDe
             style={{ color: status.color, backgroundColor: status.bg }}
           >
             <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: status.color }} />
-            {status.label}
+            {t(`status.${sub.status}` as Parameters<typeof t>[0])}
             {sub.is_shared && (
               <span className="ml-1 flex items-center gap-1 opacity-70">
                 · <Users size={11} /> {sub.shared_with_count}
@@ -84,10 +86,10 @@ export default function SubscriptionDetail({ subscription: sub }: SubscriptionDe
                 <p className="text-3xl font-bold text-[#121212] tabular-nums leading-none">
                   {formatCurrency(sub.my_monthly_cost, sub.currency)}
                 </p>
-                <p className="text-sm text-[#737373] mt-1">per month</p>
+                <p className="text-sm text-[#737373] mt-1">{t('detail.perMonth')}</p>
               </div>
               <div className="text-right">
-                <p className="text-xs text-[#737373] mb-0.5">Annually</p>
+                <p className="text-xs text-[#737373] mb-0.5">{t('detail.annually')}</p>
                 <p className="text-lg font-semibold text-[#424242] tabular-nums">
                   {formatCurrency(sub.my_annual_cost, sub.currency)}
                 </p>
@@ -99,24 +101,24 @@ export default function SubscriptionDetail({ subscription: sub }: SubscriptionDe
           <div className="bg-white rounded-2xl border border-[#E8E8E8] overflow-hidden">
             <DetailRow
               icon={<Tag size={15} />}
-              label="Category"
+              label={t('detail.category')}
               value={
                 <span className="flex items-center gap-1.5">
-                  <CategoryIcon size={13} />{meta.label}
+                  <CategoryIcon size={13} />{t(`categories.${sub.category}` as Parameters<typeof t>[0])}
                 </span>
               }
             />
             {sub.next_billing_date && (
               <DetailRow
                 icon={<Calendar size={15} />}
-                label="Next billing"
+                label={t('detail.nextBilling')}
                 value={formatRelativeDate(sub.next_billing_date)}
               />
             )}
             {sub.trial_end_date && (
               <DetailRow
                 icon={<Zap size={15} />}
-                label="Trial ends"
+                label={t('detail.trialEnds')}
                 value={formatRelativeDate(sub.trial_end_date)}
               />
             )}
@@ -125,7 +127,7 @@ export default function SubscriptionDetail({ subscription: sub }: SubscriptionDe
           {/* Notes */}
           {sub.notes && (
             <div className="bg-white rounded-2xl border border-[#E8E8E8] p-4">
-              <p className="text-xs font-medium text-[#737373] mb-2">Notes</p>
+              <p className="text-xs font-medium text-[#737373] mb-2">{t('detail.notes')}</p>
               <p className="text-sm text-[#424242] whitespace-pre-wrap leading-relaxed">{sub.notes}</p>
             </div>
           )}
@@ -141,7 +143,7 @@ export default function SubscriptionDetail({ subscription: sub }: SubscriptionDe
           onClick={() => setEditOpen(true)}
           className="w-full h-12 rounded-[10px] bg-[#3D3BF3] text-white text-sm font-semibold hover:bg-[#3230D0] active:bg-[#2B29B8] transition-colors"
         >
-          Edit subscription
+          {t('detail.edit')}
         </button>
       </div>
 
@@ -149,7 +151,7 @@ export default function SubscriptionDetail({ subscription: sub }: SubscriptionDe
       <BottomSheet
         isOpen={editOpen}
         onClose={() => setEditOpen(false)}
-        title="Edit subscription"
+        title={t('sheets.editSubscription')}
         height="full"
       >
         <SubscriptionForm

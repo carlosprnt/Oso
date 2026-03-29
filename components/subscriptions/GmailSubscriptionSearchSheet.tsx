@@ -7,6 +7,7 @@ import BottomSheet from '@/components/ui/BottomSheet'
 import GmailSubscriptionResultItem from './GmailSubscriptionResultItem'
 import { importSubscriptions } from '@/app/(dashboard)/subscriptions/actions'
 import { createClient } from '@/lib/supabase/client'
+import { useT } from '@/lib/i18n/LocaleProvider'
 import type { DetectedSubscription } from '@/types/detected-subscription'
 import type { SubscriptionFormData } from '@/types'
 
@@ -143,6 +144,7 @@ interface Props {
 }
 
 export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props) {
+  const t = useT()
   const [sheetState, setSheetState] = useState<SheetState>({ type: 'searching' })
   const [selected, setSelected] = useState<Set<string>>(new Set())
   // Token lives only in component memory — not persisted to storage
@@ -240,7 +242,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
   const selectedCount = selected.size
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} title="Search in Gmail" height="tall">
+    <BottomSheet isOpen={isOpen} onClose={onClose} title={t('sheets.searchInGmail')} height="tall">
       <AnimatePresence mode="wait">
 
         {/* ── Searching ──────────────────────────────────────────────────────── */}
@@ -252,8 +254,8 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
               <Loader2 size={24} className="text-[#3D3BF3] animate-spin" />
             </div>
             <div>
-              <p className="text-[15px] font-semibold text-[#111111]">Searching Gmail…</p>
-              <p className="text-[13px] text-[#999999] mt-1">Looking for subscription-related emails</p>
+              <p className="text-[15px] font-semibold text-[#111111]">{t('gmail.searching')}</p>
+              <p className="text-[13px] text-[#999999] mt-1">{t('gmail.searchingDesc')}</p>
             </div>
           </motion.div>
         )}
@@ -270,10 +272,9 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
               onError={e => { (e.target as HTMLImageElement).src = '/logo.png' }}
             />
             <div>
-              <p className="text-[16px] font-bold text-[#111111]">Connect Gmail</p>
+              <p className="text-[16px] font-bold text-[#111111]">{t('gmail.connectTitle')}</p>
               <p className="text-[13px] text-[#666666] mt-1.5 leading-relaxed max-w-xs mx-auto">
-                Perezoso will search your inbox for subscription receipts and suggest them to you.
-                Nothing is added without your confirmation.
+                {t('gmail.connectDesc')}
               </p>
             </div>
             <div className="w-full space-y-2.5">
@@ -282,10 +283,10 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
                 className="w-full h-12 rounded-[10px] bg-[#3D3BF3] text-white text-sm font-medium hover:bg-[#3230D0] active:bg-[#2B29B8] transition-colors flex items-center justify-center gap-2"
               >
                 <Mail size={16} />
-                Connect Gmail
+                {t('gmail.connectButton')}
               </button>
               <p className="text-[11px] text-[#AAAAAA]">
-                Read-only access · Perezoso never stores your emails
+                {t('gmail.connectDisclaimer')}
               </p>
             </div>
           </motion.div>
@@ -296,10 +297,12 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
           <motion.div key="results" {...fadeSlide} className="flex flex-col min-h-0">
             <div className="px-5 pt-1 pb-4 flex-shrink-0">
               <p className="text-[13px] font-semibold text-[#111111]">
-                {sheetState.candidates.length} possible subscription{sheetState.candidates.length !== 1 ? 's' : ''} found
+                {sheetState.candidates.length === 1
+                  ? t('gmail.found', { count: sheetState.candidates.length })
+                  : t('gmail.foundPlural', { count: sheetState.candidates.length })}
               </p>
               <p className="text-[12px] text-[#999999] mt-0.5">
-                Review and add the ones you want
+                {t('gmail.foundHint')}
               </p>
             </div>
             <div className="flex-1 overflow-y-auto px-5 pb-4 space-y-2">
@@ -321,9 +324,9 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
                   onClick={toggleAll}
                   className="text-[13px] font-medium text-[#3D3BF3] hover:text-[#3230D0]"
                 >
-                  {selected.size === sheetState.candidates.length ? 'Deselect all' : 'Select all'}
+                  {selected.size === sheetState.candidates.length ? t('gmail.deselectAll') : t('gmail.selectAll')}
                 </button>
-                <span className="text-[12px] text-[#AAAAAA]">{selectedCount} selected</span>
+                <span className="text-[12px] text-[#AAAAAA]">{t('gmail.selected', { count: selectedCount })}</span>
               </div>
               <button
                 onClick={addSelected}
@@ -336,8 +339,10 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
                 }}
               >
                 {selectedCount === 0
-                  ? 'Select subscriptions to add'
-                  : `Add ${selectedCount} subscription${selectedCount !== 1 ? 's' : ''}`}
+                  ? t('gmail.noSelection')
+                  : selectedCount === 1
+                    ? t('gmail.addSelected', { count: selectedCount })
+                    : t('gmail.addSelectedPlural', { count: selectedCount })}
               </button>
             </div>
           </motion.div>
@@ -352,7 +357,9 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
               <Loader2 size={24} className="text-[#3D3BF3] animate-spin" />
             </div>
             <p className="text-[15px] font-semibold text-[#111111]">
-              Adding {sheetState.total} subscription{sheetState.total !== 1 ? 's' : ''}…
+              {sheetState.total === 1
+                ? t('gmail.adding', { count: sheetState.total })
+                : t('gmail.addingPlural', { count: sheetState.total })}
             </p>
           </motion.div>
         )}
@@ -367,17 +374,19 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
             </div>
             <div>
               <p className="text-[16px] font-bold text-[#111111]">
-                {sheetState.count} subscription{sheetState.count !== 1 ? 's' : ''} added
+                {sheetState.count === 1
+                  ? t('gmail.done', { count: sheetState.count })
+                  : t('gmail.donePlural', { count: sheetState.count })}
               </p>
               <p className="text-[13px] text-[#666666] mt-1">
-                You can edit any of them from your subscriptions list.
+                {t('gmail.doneHint')}
               </p>
             </div>
             <button
               onClick={onClose}
               className="w-full h-12 rounded-[10px] bg-[#3D3BF3] text-white text-sm font-medium hover:bg-[#3230D0] transition-colors"
             >
-              Done
+              {t('gmail.doneButton')}
             </button>
           </motion.div>
         )}
@@ -391,10 +400,9 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
               <Mail size={28} className="text-[#AAAAAA]" />
             </div>
             <div>
-              <p className="text-[15px] font-semibold text-[#111111]">No subscriptions found</p>
+              <p className="text-[15px] font-semibold text-[#111111]">{t('gmail.empty')}</p>
               <p className="text-[13px] text-[#999999] mt-1 leading-relaxed">
-                We couldn't find obvious subscription receipts in your Gmail.
-                You can still add subscriptions manually.
+                {t('gmail.emptyDesc')}
               </p>
             </div>
             <div className="w-full space-y-2">
@@ -402,14 +410,14 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
                 onClick={onClose}
                 className="w-full h-12 rounded-[10px] bg-[#3D3BF3] text-white text-sm font-medium hover:bg-[#3230D0] transition-colors"
               >
-                Add manually
+                {t('gmail.addManually')}
               </button>
               <button
                 onClick={() => doSearch(tokenRef.current ?? undefined)}
                 className="w-full h-12 rounded-[10px] border border-[#E0E0E0] text-[#444444] text-sm font-medium hover:bg-[#F5F5F5] transition-colors flex items-center justify-center gap-1.5"
               >
                 <RefreshCw size={14} />
-                Try again
+                {t('gmail.tryAgain')}
               </button>
             </div>
           </motion.div>
@@ -424,7 +432,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
               <AlertCircle size={28} className="text-[#DC2626]" />
             </div>
             <div>
-              <p className="text-[15px] font-semibold text-[#111111]">Search failed</p>
+              <p className="text-[15px] font-semibold text-[#111111]">{t('gmail.error')}</p>
               <p className="text-[13px] text-[#999999] mt-1">{sheetState.message}</p>
             </div>
             <button
@@ -432,7 +440,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
               className="w-full h-12 rounded-[10px] bg-[#3D3BF3] text-white text-sm font-medium hover:bg-[#3230D0] transition-colors flex items-center justify-center gap-1.5"
             >
               <RefreshCw size={14} />
-              Try again
+              {t('gmail.tryAgain')}
             </button>
           </motion.div>
         )}

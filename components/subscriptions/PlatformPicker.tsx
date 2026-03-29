@@ -3,6 +3,7 @@
 import { PenLine, Mail } from 'lucide-react'
 import { PLATFORMS, resolvePlatformLogoUrl, type PlatformPreset } from '@/lib/constants/platforms'
 import SubscriptionAvatar from './SubscriptionAvatar'
+import { useT } from '@/lib/i18n/LocaleProvider'
 
 interface PlatformPickerProps {
   onSelect: (platform: PlatformPreset | null) => void
@@ -10,6 +11,7 @@ interface PlatformPickerProps {
 }
 
 export default function PlatformPicker({ onSelect, onGmailSearch }: PlatformPickerProps) {
+  const t = useT()
   return (
     <div className="flex flex-col h-full">
       {/* Action buttons — two-column large cards */}
@@ -24,8 +26,8 @@ export default function PlatformPicker({ onSelect, onGmailSearch }: PlatformPick
               <Mail size={18} className="text-white" />
             </div>
             <div>
-              <p className="text-[13px] font-semibold text-[#3D3BF3] leading-snug">Search in Gmail</p>
-              <p className="text-[11px] text-[#7B79F7] mt-0.5 leading-snug">Find receipts automatically</p>
+              <p className="text-[13px] font-semibold text-[#3D3BF3] leading-snug">{t('picker.searchGmail')}</p>
+              <p className="text-[11px] text-[#7B79F7] mt-0.5 leading-snug">{t('picker.searchGmailDesc')}</p>
             </div>
           </button>
         )}
@@ -39,8 +41,8 @@ export default function PlatformPicker({ onSelect, onGmailSearch }: PlatformPick
             <PenLine size={18} className="text-[#666666]" />
           </div>
           <div>
-            <p className="text-[13px] font-semibold text-[#111111] leading-snug">Enter manually</p>
-            <p className="text-[11px] text-[#999999] mt-0.5 leading-snug">Any service or subscription</p>
+            <p className="text-[13px] font-semibold text-[#111111] leading-snug">{t('picker.enterManually')}</p>
+            <p className="text-[11px] text-[#999999] mt-0.5 leading-snug">{t('picker.enterManuallyDesc')}</p>
           </div>
         </button>
       </div>
@@ -48,7 +50,7 @@ export default function PlatformPicker({ onSelect, onGmailSearch }: PlatformPick
       {/* Section label */}
       <div className="px-5 pb-2 flex-shrink-0">
         <p className="text-[11px] font-semibold text-[#AAAAAA] uppercase tracking-wider">
-          Popular platforms
+          {t('picker.popularPlatforms')}
         </p>
       </div>
 

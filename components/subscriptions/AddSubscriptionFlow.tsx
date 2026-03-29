@@ -6,11 +6,13 @@ import BottomSheet from '@/components/ui/BottomSheet'
 import PlatformPicker from './PlatformPicker'
 import SubscriptionForm from './SubscriptionForm'
 import GmailSubscriptionSearchSheet from './GmailSubscriptionSearchSheet'
+import { useT } from '@/lib/i18n/LocaleProvider'
 import type { PlatformPreset } from '@/lib/constants/platforms'
 
 type Step = 'closed' | 'pick' | 'form' | 'gmail'
 
 export default function AddSubscriptionFlow() {
+  const t = useT()
   const [step, setStep] = useState<Step>('closed')
   const [platform, setPlatform] = useState<PlatformPreset | null>(null)
 
@@ -19,8 +21,8 @@ export default function AddSubscriptionFlow() {
     const pending = localStorage.getItem('perezoso_gmail_pending')
     if (pending === '1') {
       localStorage.removeItem('perezoso_gmail_pending')
-      const t = setTimeout(() => setStep('gmail'), 350)
-      return () => clearTimeout(t)
+      const timer = setTimeout(() => setStep('gmail'), 350)
+      return () => clearTimeout(timer)
     }
   }, [])
 
@@ -41,11 +43,11 @@ export default function AddSubscriptionFlow() {
         className="flex items-center gap-1.5 px-4 h-12 rounded-[10px] bg-[#3D3BF3] text-white text-sm font-medium hover:bg-[#3230D0] transition-colors pressable"
       >
         <Plus size={15} />
-        Add
+        {t('common.add')}
       </button>
 
       {/* Step 1 — Platform list */}
-      <BottomSheet isOpen={step === 'pick'} onClose={close} title="Create new" height="tall">
+      <BottomSheet isOpen={step === 'pick'} onClose={close} title={t('sheets.createNew')} height="tall">
         <PlatformPicker
           onSelect={handleSelect}
           onGmailSearch={() => setStep('gmail')}
@@ -53,7 +55,7 @@ export default function AddSubscriptionFlow() {
       </BottomSheet>
 
       {/* Step 2 — Form */}
-      <BottomSheet isOpen={step === 'form'} onClose={close} title="Create new" height="tall">
+      <BottomSheet isOpen={step === 'form'} onClose={close} title={t('sheets.createNew')} height="tall">
         <SubscriptionForm mode="create" platformPreset={platform ?? undefined} onCancel={close} />
       </BottomSheet>
 

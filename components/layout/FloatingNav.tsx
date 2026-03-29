@@ -8,6 +8,7 @@ import BottomSheet from '@/components/ui/BottomSheet'
 import PlatformPicker from '@/components/subscriptions/PlatformPicker'
 import SubscriptionForm from '@/components/subscriptions/SubscriptionForm'
 import GmailSubscriptionSearchSheet from '@/components/subscriptions/GmailSubscriptionSearchSheet'
+import { useT } from '@/lib/i18n/LocaleProvider'
 import type { PlatformPreset } from '@/lib/constants/platforms'
 
 type Step = 'closed' | 'pick' | 'form' | 'gmail'
@@ -23,6 +24,7 @@ function TagHeartIcon({ active }: { active: boolean }) {
 }
 
 export default function FloatingNav() {
+  const t = useT()
   const pathname = usePathname()
   const [step, setStep] = useState<Step>('closed')
   const [platform, setPlatform] = useState<PlatformPreset | null>(null)
@@ -31,8 +33,8 @@ export default function FloatingNav() {
     const pending = localStorage.getItem('perezoso_gmail_pending')
     if (pending === '1') {
       localStorage.removeItem('perezoso_gmail_pending')
-      const t = setTimeout(() => setStep('gmail'), 350)
-      return () => clearTimeout(t)
+      const timer = setTimeout(() => setStep('gmail'), 350)
+      return () => clearTimeout(timer)
     }
   }, [])
 

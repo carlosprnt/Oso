@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { CATEGORIES } from '@/lib/constants/categories'
 import { CURRENCIES, BILLING_PERIOD_LABELS } from '@/lib/constants/currencies'
 import { AlertCircle, Calendar, ChevronDown, ChevronUp, ChevronRight, Check } from 'lucide-react'
+import { useT } from '@/lib/i18n/LocaleProvider'
 import type { Subscription, BillingPeriod, SubscriptionStatus, UserShareMode, Category } from '@/types'
 import type { PlatformPreset } from '@/lib/constants/platforms'
 import { getPrefilledPlatformValues } from '@/lib/constants/platforms'
@@ -27,6 +28,7 @@ export default function SubscriptionForm({
   platformPreset,
   onCancel,
 }: SubscriptionFormProps) {
+  const t = useT()
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -108,8 +110,8 @@ export default function SubscriptionForm({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
-    if (!name.trim()) { setError('Name is required.'); return }
-    if (!priceAmount || parseFloat(priceAmount) < 0) { setError('Enter a valid price.'); return }
+    if (!name.trim()) { setError(t('form.nameRequired')); return }
+    if (!priceAmount || parseFloat(priceAmount) < 0) { setError(t('form.invalidPrice')); return }
 
     startTransition(async () => {
       const result =
@@ -154,10 +156,10 @@ export default function SubscriptionForm({
 
       {/* ── Name ─────────────────────────────────────────── */}
       <div>
-        <label className={labelCls}>Name *</label>
+        <label className={labelCls}>{t('form.name')} *</label>
         <input
           type="text"
-          placeholder="Netflix, Spotify, Notion…"
+          placeholder={t('form.namePlaceholder')}
           value={name}
           onChange={e => setName(e.target.value)}
           autoFocus={false}
@@ -168,7 +170,7 @@ export default function SubscriptionForm({
 
       {/* ── Card colour ───────────────────────────────────── */}
       <div>
-        <label className={labelCls}>Card color</label>
+        <label className={labelCls}>{t('form.cardColor')}</label>
         <div className="flex gap-3 overflow-x-auto pb-1 -mx-5 px-5 scrollbar-hide">
           {CARD_COLOR_PRESETS.map(preset => {
             const isSelected = cardColor === preset.hex
@@ -202,7 +204,7 @@ export default function SubscriptionForm({
 
       {/* ── Amount + Period (inline row) ──────────────────── */}
       <div>
-        <label className={labelCls}>Amount *</label>
+        <label className={labelCls}>{t('form.amount')} *</label>
         <div className="flex rounded-xl border border-[#D4D4D4] focus-within:ring-2 focus-within:ring-[#121212]/10 focus-within:border-[#121212] transition-all overflow-hidden bg-white">
           <input
             type="number"
@@ -223,8 +225,8 @@ export default function SubscriptionForm({
             onChange={e => setBillingPeriod(e.target.value as BillingPeriod)}
             className="px-2 py-2.5 text-sm text-[#424242] bg-[#F5F5F5] border-l border-[#D4D4D4] outline-none cursor-pointer"
           >
-            {Object.entries(BILLING_PERIOD_LABELS).map(([v, l]) => (
-              <option key={v} value={v}>{l}</option>
+            {Object.keys(BILLING_PERIOD_LABELS).map((v) => (
+              <option key={v} value={v}>{t(`billing.${v}` as Parameters<typeof t>[0])}</option>
             ))}
           </select>
         </div>
@@ -233,7 +235,7 @@ export default function SubscriptionForm({
       {/* Custom interval */}
       {billingPeriod === 'custom' && (
         <div>
-          <label className={labelCls}>Every N months</label>
+          <label className={labelCls}>{t('form.trialEveryNMonths')}</label>
           <input
             type="number"
             min="1"
@@ -242,20 +244,20 @@ export default function SubscriptionForm({
             onChange={e => setBillingIntervalCount(e.target.value)}
             className={inputCls}
           />
-          <p className="text-xs text-[#616161] mt-1">E.g. 6 = billed every 6 months</p>
+          <p className="text-xs text-[#616161] mt-1">{t('form.trialEveryNMonthsHint')}</p>
         </div>
       )}
 
       {/* ── Category (horizontal scroll → "View all" grid) ── */}
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <p className={labelCls + ' mb-0'}>Category</p>
+          <p className={labelCls + ' mb-0'}>{t('form.category')}</p>
           <button
             type="button"
             onClick={() => setShowAllCategories(v => !v)}
             className="text-xs text-[#616161] hover:text-[#121212] transition-colors"
           >
-            {showAllCategories ? 'Show less' : 'View all'}
+            {showAllCategories ? t('form.showLess') : t('form.viewAll')}
           </button>
         </div>
 
@@ -280,7 +282,7 @@ export default function SubscriptionForm({
                   `}
                 >
                   <Icon size={15} strokeWidth={2} />
-                  {cat.label}
+                  {t(`categories.${cat.value}` as Parameters<typeof t>[0])}
                 </button>
               )
             })}
@@ -306,7 +308,7 @@ export default function SubscriptionForm({
                   `}
                 >
                   <Icon size={15} strokeWidth={2} />
-                  {cat.label}
+                  {t(`categories.${cat.value}` as Parameters<typeof t>[0])}
                 </button>
               )
             })}
@@ -316,7 +318,7 @@ export default function SubscriptionForm({
 
       {/* ── Next billing date ─────────────────────────────── */}
       <div>
-        <label className={labelCls}>Next billing date</label>
+        <label className={labelCls}>{t('form.nextBillingDate')}</label>
         <div className="relative overflow-hidden rounded-xl">
           <Calendar
             size={15}
@@ -340,7 +342,7 @@ export default function SubscriptionForm({
           className="w-full flex items-center justify-between py-2 text-sm font-medium text-[#616161] hover:text-[#121212] transition-colors"
         >
           <span className="flex items-center gap-2">
-            More options
+            {t('form.moreOptions')}
             {moreOptionsCount > 0 && !showMore && (
               <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#121212] text-white text-[10px] font-bold">
                 {moreOptionsCount}
@@ -358,17 +360,17 @@ export default function SubscriptionForm({
 
             {/* Status */}
             <div>
-              <label className={labelCls}>Status</label>
+              <label className={labelCls}>{t('form.status')}</label>
               <div className="relative">
                 <select
                   value={status}
                   onChange={e => setStatus(e.target.value as SubscriptionStatus)}
                   className={inputCls + ' appearance-none pr-9'}
                 >
-                  <option value="active">Active</option>
-                  <option value="trial">Trial</option>
-                  <option value="paused">Paused</option>
-                  <option value="cancelled">Cancelled</option>
+                  <option value="active">{t('status.active')}</option>
+                  <option value="trial">{t('status.trial')}</option>
+                  <option value="paused">{t('status.paused')}</option>
+                  <option value="cancelled">{t('status.cancelled')}</option>
                 </select>
                 <ChevronRight
                   size={14}
@@ -380,7 +382,7 @@ export default function SubscriptionForm({
             {/* Trial end date */}
             {status === 'trial' && (
               <div>
-                <label className={labelCls}>Trial end date</label>
+                <label className={labelCls}>{t('form.trialEndDate')}</label>
                 <div className="relative">
                   <Calendar
                     size={15}
@@ -415,13 +417,13 @@ export default function SubscriptionForm({
                     transition-colors duration-200
                   " />
                 </div>
-                <span className="text-sm font-medium text-[#121212]">Shared subscription</span>
+                <span className="text-sm font-medium text-[#121212]">{t('form.shared')}</span>
               </label>
 
               {isShared && (
                 <div className="pl-4 border-l-2 border-[#E5E5E5] space-y-3 animate-fade-in">
                   <div>
-                    <label className={labelCls}>People sharing (including you)</label>
+                    <label className={labelCls}>{t('form.sharedCount')}</label>
                     <input
                       type="number"
                       min="2"
@@ -429,18 +431,18 @@ export default function SubscriptionForm({
                       onChange={e => setSharedWithCount(e.target.value)}
                       className={inputCls}
                     />
-                    <p className="text-xs text-[#616161] mt-1">Minimum 2</p>
+                    <p className="text-xs text-[#616161] mt-1">{t('form.sharedCountMin')}</p>
                   </div>
                   <div>
-                    <label className={labelCls}>Split mode</label>
+                    <label className={labelCls}>{t('form.splitMode')}</label>
                     <div className="relative">
                       <select
                         value={userShareMode}
                         onChange={e => setUserShareMode(e.target.value as UserShareMode)}
                         className={inputCls + ' appearance-none pr-9'}
                       >
-                        <option value="split_evenly">Split evenly</option>
-                        <option value="custom">Custom amount</option>
+                        <option value="split_evenly">{t('form.splitEvenly')}</option>
+                        <option value="custom">{t('form.splitCustom')}</option>
                       </select>
                       <ChevronRight
                         size={14}
@@ -450,7 +452,7 @@ export default function SubscriptionForm({
                   </div>
                   {userShareMode === 'custom' && (
                     <div>
-                      <label className={labelCls}>My share ({currency})</label>
+                      <label className={labelCls}>{t('form.myShare', { currency })}</label>
                       <input
                         type="number"
                         min="0"
@@ -468,7 +470,7 @@ export default function SubscriptionForm({
 
             {/* Logo URL */}
             <div>
-              <label className={labelCls}>Logo URL</label>
+              <label className={labelCls}>{t('form.logoUrl')}</label>
               <input
                 type="url"
                 placeholder="https://…"
@@ -477,16 +479,16 @@ export default function SubscriptionForm({
                 className={inputCls}
               />
               <p className="text-xs text-[#A3A3A3] mt-1">
-                Auto-filled for known platforms. Initials shown if blank.
+                {t('form.logoUrlHint')}
               </p>
             </div>
 
             {/* Notes */}
             <div>
-              <label className={labelCls}>Notes</label>
+              <label className={labelCls}>{t('form.notes')}</label>
               <textarea
                 rows={3}
-                placeholder="Anything worth remembering…"
+                placeholder={t('form.notesPlaceholder')}
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
                 className={inputCls + ' resize-none'}
@@ -505,7 +507,7 @@ export default function SubscriptionForm({
       >
         <div className="flex gap-2">
           <Button type="submit" loading={isPending} className="flex-1">
-            {mode === 'create' ? 'Add subscription' : 'Save changes'}
+            {mode === 'create' ? t('form.addSubscription') : t('form.saveChanges')}
           </Button>
           <Button
             type="button"
@@ -513,7 +515,7 @@ export default function SubscriptionForm({
             onClick={onCancel ?? (() => router.back())}
             disabled={isPending}
           >
-            Cancel
+            {t('form.cancel')}
           </Button>
         </div>
 
@@ -529,14 +531,14 @@ export default function SubscriptionForm({
                   loading={isPending}
                   className="flex-1"
                 >
-                  Confirm delete
+                  {t('form.confirmDelete')}
                 </Button>
                 <Button
                   type="button"
                   variant="secondary"
                   onClick={() => setShowDeleteConfirm(false)}
                 >
-                  Keep it
+                  {t('form.keepIt')}
                 </Button>
               </div>
             ) : (
@@ -545,7 +547,7 @@ export default function SubscriptionForm({
                 onClick={() => setShowDeleteConfirm(true)}
                 className="w-full py-2 text-sm font-medium text-red-600 hover:text-red-700 transition-colors"
               >
-                Delete subscription
+                {t('form.delete')}
               </button>
             )}
           </div>

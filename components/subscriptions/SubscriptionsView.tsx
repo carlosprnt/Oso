@@ -14,18 +14,8 @@ import { resolveSubscriptionLogoUrl } from '@/lib/constants/platforms'
 import { formatCurrency } from '@/lib/utils/currency'
 import { CATEGORIES } from '@/lib/constants/categories'
 import { useElasticPullDown } from '@/lib/hooks/useElasticPullDown'
+import { useT } from '@/lib/i18n/LocaleProvider'
 import type { SubscriptionWithCosts, SubscriptionStatus, Category, DashboardStats } from '@/types'
-
-// ─── Category labels ───────────────────────────────────────────────────────
-const CATEGORY_LABEL: Record<string, string> = {
-  streaming: 'Streaming', music: 'Music', productivity: 'Productivity',
-  cloud: 'Cloud', ai: 'AI', health: 'Health', gaming: 'Gaming',
-  education: 'Education', mobility: 'Mobility', home: 'Home', other: 'Other',
-}
-
-const STATUS_LABEL: Record<string, string> = {
-  active: 'Active', trial: 'Trial', paused: 'Paused', cancelled: 'Cancelled',
-}
 
 const STATUS_COLOR: Record<string, string> = {
   active: '#16A34A', trial: '#D97706', paused: '#E07B1A', cancelled: '#EF4444',
@@ -52,6 +42,7 @@ interface WalletCardProps {
 }
 
 function WalletCard({ sub, isNew, index, velocityMv, isSelected, onOpen, viewMode, numSkeleton }: WalletCardProps) {
+  const t = useT()
   const [shimmer, setShimmer] = useState(isNew ?? false)
 
   useEffect(() => {
@@ -122,7 +113,7 @@ function WalletCard({ sub, isNew, index, velocityMv, isSelected, onOpen, viewMod
         <div className="flex-1 min-w-0">
           <p className="text-[21px] font-bold text-[#111111] leading-snug truncate">{sub.name}</p>
           <p className="text-[14px] text-[#999999] mt-1 leading-snug">
-            {CATEGORY_LABEL[sub.category] ?? sub.category}
+            {t(`categories.${sub.category}` as Parameters<typeof t>[0])}
           </p>
         </div>
 
@@ -144,7 +135,7 @@ function WalletCard({ sub, isNew, index, velocityMv, isSelected, onOpen, viewMod
               </p>
               <p className="text-[14px] font-semibold mt-1 leading-snug"
                 style={{ color: STATUS_COLOR[sub.status] ?? '#9CA3AF' }}>
-                {STATUS_LABEL[sub.status] ?? sub.status}
+                {t(`status.${sub.status}` as Parameters<typeof t>[0])}
               </p>
             </>
           )}
@@ -206,13 +197,6 @@ function CardStack({
 }
 
 // ─── Filter bottom sheet ───────────────────────────────────────────────────
-const STATUS_OPTIONS: Array<{ value: SubscriptionStatus | 'all'; label: string }> = [
-  { value: 'all', label: 'All' },
-  { value: 'active', label: 'Active' },
-  { value: 'trial', label: 'Trial' },
-  { value: 'paused', label: 'Paused' },
-  { value: 'cancelled', label: 'Cancelled' },
-]
 
 interface FilterSheetProps {
   currentStatus: string
@@ -221,6 +205,7 @@ interface FilterSheetProps {
 }
 
 function FilterSheet({ currentStatus, currentCategory, onClose }: FilterSheetProps) {
+  const t = useT()
   const router = useRouter()
   const pathname = usePathname()
   const [status, setStatus] = useState<SubscriptionStatus | 'all'>((currentStatus as SubscriptionStatus) ?? 'all')
@@ -262,16 +247,22 @@ function FilterSheet({ currentStatus, currentCategory, onClose }: FilterSheetPro
           <div className="w-10 h-1 bg-[#DADADA] rounded-full" />
         </div>
         <div className="flex items-center justify-between px-5 py-3 border-b border-[#F0F0F0]">
-          <h2 className="text-[17px] font-semibold text-[#111111]">Filters</h2>
+          <h2 className="text-[17px] font-semibold text-[#111111]">{t('sheets.filter')}</h2>
           <button onClick={onClose} className="w-8 h-8 rounded-2xl bg-[#F5F5F5] flex items-center justify-center">
             <X size={15} strokeWidth={2.5} className="text-[#666666]" />
           </button>
         </div>
         <div className="px-5 py-5 space-y-6 max-h-[60vh] overflow-y-auto">
           <div>
-            <p className="text-[11px] font-semibold text-[#888888] uppercase tracking-wider mb-3">Status</p>
+            <p className="text-[11px] font-semibold text-[#888888] uppercase tracking-wider mb-3">{t('subscriptions.filterStatus')}</p>
             <div className="flex flex-wrap gap-2">
-              {STATUS_OPTIONS.map(opt => (
+              {([
+                { value: 'all' as const, label: t('common.all') },
+                { value: 'active' as const, label: t('status.active') },
+                { value: 'trial' as const, label: t('status.trial') },
+                { value: 'paused' as const, label: t('status.paused') },
+                { value: 'cancelled' as const, label: t('status.cancelled') },
+              ] as Array<{ value: SubscriptionStatus | 'all'; label: string }>).map(opt => (
                 <button key={opt.value} onClick={() => setStatus(opt.value)}
                   className={`flex items-center gap-1.5 px-4 h-12 rounded-[10px] text-sm font-medium border transition-colors duration-150 ${status === opt.value ? 'bg-[#3D3BF3] text-white border-[#3D3BF3]' : 'bg-white text-[#444444] border-[#E0E0E0]'}`}>
                   {status === opt.value && <Check size={12} strokeWidth={3} />}
@@ -281,12 +272,12 @@ function FilterSheet({ currentStatus, currentCategory, onClose }: FilterSheetPro
             </div>
           </div>
           <div>
-            <p className="text-[11px] font-semibold text-[#888888] uppercase tracking-wider mb-3">Category</p>
+            <p className="text-[11px] font-semibold text-[#888888] uppercase tracking-wider mb-3">{t('subscriptions.filterCategory')}</p>
             <div className="grid grid-cols-2 gap-2">
               <button onClick={() => setCategory('all')}
                 className={`flex items-center gap-2 px-3 h-12 rounded-[10px] text-sm font-medium border transition-colors duration-150 ${category === 'all' ? 'bg-[#3D3BF3] text-white border-[#3D3BF3]' : 'bg-white text-[#444444] border-[#E0E0E0]'}`}>
                 {category === 'all' && <Check size={12} strokeWidth={3} />}
-                All categories
+                {t('subscriptions.allCategories')}
               </button>
               {CATEGORIES.map(cat => {
                 const Icon = cat.icon
@@ -295,7 +286,7 @@ function FilterSheet({ currentStatus, currentCategory, onClose }: FilterSheetPro
                   <button key={cat.value} onClick={() => setCategory(cat.value)}
                     className={`flex items-center gap-2 px-3 h-12 rounded-[10px] text-sm font-medium border transition-colors duration-150 ${active ? 'bg-[#3D3BF3] text-white border-[#3D3BF3]' : 'bg-white text-[#444444] border-[#E0E0E0]'}`}>
                     <Icon size={13} strokeWidth={2} />
-                    {cat.label}
+                    {t(`categories.${cat.value}` as Parameters<typeof t>[0])}
                   </button>
                 )
               })}
@@ -306,11 +297,11 @@ function FilterSheet({ currentStatus, currentCategory, onClose }: FilterSheetPro
           style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
           <button onClick={reset}
             className="flex-1 h-12 rounded-[10px] text-sm font-semibold text-[#444444] bg-[#F5F5F5] transition-colors active:bg-[#ECECEC]">
-            Reset
+            {t('subscriptions.reset')}
           </button>
           <button onClick={apply}
             className="flex-1 h-12 rounded-[10px] text-sm font-semibold text-white bg-[#3D3BF3] hover:bg-[#3230D0] transition-colors active:bg-[#2B29B8]">
-            Apply
+            {t('subscriptions.apply')}
           </button>
         </div>
       </motion.div>
@@ -336,6 +327,7 @@ export default function SubscriptionsView({
   currentCategory,
   newSubscriptionId,
 }: SubscriptionsViewProps) {
+  const t = useT()
   const [filterOpen, setFilterOpen] = useState(false)
   const [selectedSub, setSelectedSub] = useState<SubscriptionWithCosts | null>(null)
   const [overlayVisible, setOverlayVisible] = useState(false)
@@ -377,7 +369,7 @@ export default function SubscriptionsView({
       <div className="space-y-5">
         {/* ── Header ───────────────────────────────────────────── */}
         <div className="flex items-center justify-between">
-          <h1 className="text-[28px] font-bold text-[#111111] tracking-tight">Subscriptions</h1>
+          <h1 className="text-[28px] font-bold text-[#111111] tracking-tight">{t('subscriptions.title')}</h1>
           <button
             onClick={() => setFilterOpen(true)}
             className="relative w-10 h-10 rounded-[10px] bg-white flex items-center justify-center transition-colors active:bg-[#F0F0F0]"
@@ -394,9 +386,9 @@ export default function SubscriptionsView({
         {allCount > 0 && (
           <div className="grid grid-cols-2 gap-[8px]">
             <div className="bg-white rounded-[20px] p-4" style={{ border: '1.5px solid #E8E8E8' }}>
-              <p className="text-[13px] text-[#999999] font-medium">Total</p>
+              <p className="text-[13px] text-[#999999] font-medium">{t('subscriptions.total')}</p>
               <p className="text-[18px] font-bold text-[#111111] mt-1 leading-tight tabular-nums">
-                {allCount} subscriptions
+                {t('subscriptions.count', { count: allCount })}
               </p>
             </div>
 
@@ -407,7 +399,7 @@ export default function SubscriptionsView({
               style={{ border: '1.5px solid #E8E8E8' }}
             >
               <p className="text-[13px] text-[#999999] font-medium flex items-center gap-1.5">
-                {viewMode === 'monthly' ? 'Per month' : 'Per year'}
+                {viewMode === 'monthly' ? t('subscriptions.perMonth') : t('subscriptions.perYear')}
                 <ChevronsUpDown size={11} className="text-[#BBBBBB]" />
               </p>
               {numSkeleton ? (
@@ -443,10 +435,10 @@ export default function SubscriptionsView({
         {subscriptions.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <p className="text-sm font-medium text-[#111111] mb-1">
-              {allCount === 0 ? 'No subscriptions yet' : 'No results'}
+              {allCount === 0 ? t('subscriptions.noSubscriptions') : t('subscriptions.noResults')}
             </p>
             <p className="text-xs text-[#888888]">
-              {allCount === 0 ? 'Tap + to get started.' : 'Try adjusting your filters.'}
+              {allCount === 0 ? t('subscriptions.getStarted') : t('subscriptions.noResultsHint')}
             </p>
           </div>
         ) : (

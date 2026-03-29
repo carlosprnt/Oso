@@ -12,6 +12,7 @@ import SubscriptionAvatar from '@/components/subscriptions/SubscriptionAvatar'
 import { loadDemoData } from '@/app/(dashboard)/subscriptions/demo-action'
 import UserAvatarMenu from '@/components/dashboard/UserAvatarMenu'
 import Insights from '@/components/dashboard/Insights'
+import { getServerT } from '@/lib/i18n/server'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Dashboard' }
@@ -48,6 +49,7 @@ const CATEGORY_ICON_BG: Record<string, string> = {
 
 export default async function DashboardPage() {
   const supabase = await createClient()
+  const t = await getServerT()
 
   const { data: rawSubs } = await supabase
     .from('subscriptions')
@@ -64,19 +66,23 @@ export default async function DashboardPage() {
 
   const shareText = `My monthly subscriptions: ${formatCurrency(stats.total_monthly_cost, 'EUR')} across ${subs.length} subscriptions — tracked with Perezoso 🦥`
 
+  const upcomingSubtitle = upcoming.length === 1
+    ? t('dashboard.next30days', { count: upcoming.length })
+    : t('dashboard.next30daysPlural', { count: upcoming.length })
+
   return (
     <div className="space-y-[8px]">
       {/* Header */}
       <div className="flex items-center justify-between pb-2">
         <div>
-          <h1 className="text-2xl font-bold text-[#121212] tracking-tight">Dashboard</h1>
-          <p className="text-sm text-[#737373] mt-0.5">Your subscription overview</p>
+          <h1 className="text-2xl font-bold text-[#121212] tracking-tight">{t('dashboard.title')}</h1>
+          <p className="text-sm text-[#737373] mt-0.5">{t('dashboard.subtitle')}</p>
         </div>
         <UserAvatarMenu shareText={shareText} />
       </div>
 
       {isEmpty ? (
-        <EmptyState />
+        <EmptyState t={t} />
       ) : (
         <>
           {/* Monthly + Yearly — wide horizontal card */}
@@ -85,22 +91,22 @@ export default async function DashboardPage() {
               <div className="pr-5 border-r border-[#F0F0F0]">
                 <div className="flex items-center gap-1.5 mb-3">
                   <TrendingUp size={13} className="text-[#737373]" />
-                  <span className="text-xs font-medium text-[#737373]">Monthly</span>
+                  <span className="text-xs font-medium text-[#737373]">{t('dashboard.monthly')}</span>
                 </div>
                 <p className="text-[28px] font-bold text-[#121212] tabular-nums tracking-tight leading-none">
                   {formatCurrency(stats.total_monthly_cost, 'EUR')}
                 </p>
-                <p className="text-xs text-[#737373] mt-1.5">What you spend / mo</p>
+                <p className="text-xs text-[#737373] mt-1.5">{t('dashboard.spendPerMonth')}</p>
               </div>
               <div className="pl-5">
                 <div className="flex items-center gap-1.5 mb-3">
                   <Calendar size={13} className="text-[#737373]" />
-                  <span className="text-xs font-medium text-[#737373]">Yearly</span>
+                  <span className="text-xs font-medium text-[#737373]">{t('dashboard.yearly')}</span>
                 </div>
                 <p className="text-[28px] font-bold text-[#121212] tabular-nums tracking-tight leading-none">
                   {formatCurrency(stats.total_annual_cost, 'EUR')}
                 </p>
-                <p className="text-xs text-[#737373] mt-1.5">Projected annual cost</p>
+                <p className="text-xs text-[#737373] mt-1.5">{t('dashboard.projectedAnnual')}</p>
               </div>
             </div>
           </div>
@@ -108,15 +114,15 @@ export default async function DashboardPage() {
           {/* Active + Shared */}
           <div className="grid grid-cols-2 gap-[8px]">
             <SmallStatCard
-              label="Active"
+              label={t('dashboard.active')}
               value={String(stats.active_count + stats.trial_count)}
-              sub={`${stats.trial_count} on trial`}
+              sub={t('dashboard.onTrial', { count: stats.trial_count })}
               icon={<Zap size={13} className="text-[#737373]" />}
             />
             <SmallStatCard
-              label="Shared"
+              label={t('dashboard.shared')}
               value={formatCurrency(stats.shared_monthly_cost, 'EUR')}
-              sub="Your share / mo"
+              sub={t('dashboard.yourSharePerMonth')}
               icon={<Users size={13} className="text-[#737373]" />}
             />
           </div>
@@ -129,11 +135,11 @@ export default async function DashboardPage() {
             <div className="lg:col-span-2">
               <Card>
                 <CardHeader
-                  title="Upcoming renewals"
-                  subtitle={`Next 30 days · ${upcoming.length} renewal${upcoming.length !== 1 ? 's' : ''}`}
+                  title={t('dashboard.upcomingRenewals')}
+                  subtitle={upcomingSubtitle}
                 />
                 {upcoming.length === 0 ? (
-                  <p className="text-sm text-[#737373] py-2">No upcoming renewals in the next 30 days.</p>
+                  <p className="text-sm text-[#737373] py-2">{t('dashboard.noUpcoming')}</p>
                 ) : (
                   <div className="space-y-3">
                     {upcoming.slice(0, 6).map((r) => (
@@ -147,11 +153,11 @@ export default async function DashboardPage() {
                           <p className="text-sm font-medium text-[#121212] truncate">{r.subscription.name}</p>
                           <p className="text-xs text-[#737373]">
                             {r.days_until === 0 ? (
-                              <span className="text-[#DC2626] font-medium">Due today</span>
+                              <span className="text-[#DC2626] font-medium">{t('dashboard.dueToday')}</span>
                             ) : r.days_until === 1 ? (
-                              <span className="text-[#D97706] font-medium">Tomorrow</span>
+                              <span className="text-[#D97706] font-medium">{t('dashboard.tomorrow')}</span>
                             ) : (
-                              `in ${r.days_until} days`
+                              t('dashboard.inDays', { days: r.days_until })
                             )}
                             {' · '}{formatRelativeDate(r.subscription.next_billing_date)}
                           </p>
@@ -160,7 +166,7 @@ export default async function DashboardPage() {
                           <p className="text-sm font-semibold text-[#121212] tabular-nums">
                             {formatCurrency(r.subscription.my_monthly_cost, r.subscription.currency)}
                           </p>
-                          <p className="text-xs text-[#737373]">/ mo</p>
+                          <p className="text-xs text-[#737373]">{t('dashboard.perMonth')}</p>
                         </div>
                       </div>
                     ))}
@@ -173,7 +179,7 @@ export default async function DashboardPage() {
             <div className="space-y-[8px]">
               {/* Top categories */}
               <Card>
-                <CardHeader title="Top categories" />
+                <CardHeader title={t('dashboard.topCategories')} />
                 <div className="space-y-3.5">
                   {topCategories.map(({ category, monthly_cost }) => {
                     const meta = getCategoryMeta(category)
@@ -193,7 +199,7 @@ export default async function DashboardPage() {
                             >
                               <Icon size={12} style={{ color: barColor }} />
                             </span>
-                            {meta.label}
+                            {t(`categories.${category}` as Parameters<typeof t>[0])}
                           </span>
                           <span className="text-[15px] font-semibold text-[#121212] tabular-nums">
                             {formatCurrency(monthly_cost, 'EUR')}
@@ -214,7 +220,7 @@ export default async function DashboardPage() {
               {/* Highest cost */}
               {highest && (
                 <Card>
-                  <p className="text-xs font-medium text-[#737373] mb-3">Most expensive</p>
+                  <p className="text-xs font-medium text-[#737373] mb-3">{t('dashboard.mostExpensive')}</p>
                   <div className="flex items-center gap-3">
                     <SubscriptionAvatar name={highest.name} logoUrl={highest.logo_url} size="md" />
                     <div className="flex-1 min-w-0">
@@ -225,7 +231,7 @@ export default async function DashboardPage() {
                     </div>
                   </div>
                   <div className="mt-3 pt-3 border-t border-[#F0F0F0] flex justify-between items-center">
-                    <span className="text-xs text-[#737373]">Monthly equiv.</span>
+                    <span className="text-xs text-[#737373]">{t('dashboard.monthlyEquiv')}</span>
                     <span className="text-sm font-bold text-[#121212] tabular-nums">
                       {formatCurrency(highest.my_monthly_cost, highest.currency)}
                     </span>
@@ -269,30 +275,30 @@ function SmallStatCard({
 
 // ── Empty state ───────────────────────────────────────────────────────────────
 
-function EmptyState() {
+function EmptyState({ t }: { t: ReturnType<typeof import('@/lib/i18n/translations').getT> }) {
   return (
     <div className="flex flex-col items-center justify-center py-24 text-center animate-fade-in">
       <div className="w-16 h-16 rounded-2xl bg-[#F5F5F5] border border-[#E8E8E8] flex items-center justify-center mb-4">
         <span className="text-3xl">🦥</span>
       </div>
-      <h2 className="text-lg font-semibold text-[#121212] mb-1">No subscriptions yet</h2>
+      <h2 className="text-lg font-semibold text-[#121212] mb-1">{t('dashboard.noSubscriptions')}</h2>
       <p className="text-sm text-[#737373] max-w-xs mb-6">
-        Add your first subscription or load demo data to see how Perezoso works.
+        {t('dashboard.noSubscriptionsDesc')}
       </p>
       <div className="flex flex-col sm:flex-row gap-3">
         <Link href="/subscriptions/new">
-          <Button icon={<Plus size={15} />}>Add subscription</Button>
+          <Button icon={<Plus size={15} />}>{t('dashboard.addSubscription')}</Button>
         </Link>
-        <LoadDemoButton />
+        <LoadDemoButton t={t} />
       </div>
     </div>
   )
 }
 
-function LoadDemoButton() {
+function LoadDemoButton({ t }: { t: ReturnType<typeof import('@/lib/i18n/translations').getT> }) {
   return (
     <form action={loadDemoData}>
-      <Button type="submit" variant="secondary">Try with demo data</Button>
+      <Button type="submit" variant="secondary">{t('dashboard.tryDemo')}</Button>
     </form>
   )
 }
