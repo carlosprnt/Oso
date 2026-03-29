@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   motion, AnimatePresence, LayoutGroup,
   useScroll, useVelocity, useSpring, useTransform,
@@ -44,13 +44,14 @@ interface WalletCardProps {
   sub: SubscriptionWithCosts
   isNew?: boolean
   index: number
-  /** Spring-smoothed scroll velocity from parent */
   velocityMv: MotionValue<number>
   isSelected: boolean
   onOpen: (sub: SubscriptionWithCosts) => void
+  viewMode: 'monthly' | 'yearly'
+  numSkeleton: boolean
 }
 
-function WalletCard({ sub, isNew, index, velocityMv, isSelected, onOpen }: WalletCardProps) {
+function WalletCard({ sub, isNew, index, velocityMv, isSelected, onOpen, viewMode, numSkeleton }: WalletCardProps) {
   const [shimmer, setShimmer] = useState(isNew ?? false)
 
   useEffect(() => {
@@ -126,14 +127,27 @@ function WalletCard({ sub, isNew, index, velocityMv, isSelected, onOpen }: Walle
         </div>
 
         <div className="text-right flex-shrink-0">
-          <p className="text-[16px] font-bold text-[#111111] tabular-nums leading-snug">
-            {formatCurrency(sub.my_monthly_cost, sub.currency)}
-            <span className="text-[13px] font-normal text-[#999999] ml-0.5">/mo</span>
-          </p>
-          <p className="text-[14px] font-semibold mt-1 leading-snug"
-            style={{ color: STATUS_COLOR[sub.status] ?? '#9CA3AF' }}>
-            {STATUS_LABEL[sub.status] ?? sub.status}
-          </p>
+          {numSkeleton ? (
+            <div className="flex flex-col items-end gap-1.5">
+              <div className="h-5 w-20 rounded-lg bg-[#EFEFEF] animate-pulse" />
+              <div className="h-4 w-12 rounded-md bg-[#EFEFEF] animate-pulse" />
+            </div>
+          ) : (
+            <>
+              <p className="text-[16px] font-bold text-[#111111] tabular-nums leading-snug">
+                {viewMode === 'monthly'
+                  ? formatCurrency(sub.my_monthly_cost, sub.currency)
+                  : formatCurrency(sub.my_annual_cost, sub.currency)}
+                <span className="text-[13px] font-normal text-[#999999] ml-0.5">
+                  {viewMode === 'monthly' ? '/mo' : '/yr'}
+                </span>
+              </p>
+              <p className="text-[14px] font-semibold mt-1 leading-snug"
+                style={{ color: STATUS_COLOR[sub.status] ?? '#9CA3AF' }}>
+                {STATUS_LABEL[sub.status] ?? sub.status}
+              </p>
+            </>
+          )}
         </div>
       </motion.div>
     </motion.div>
@@ -146,11 +160,15 @@ function CardStack({
   newSubscriptionId,
   selectedSubId,
   onOpen,
+  viewMode,
+  numSkeleton,
 }: {
   subscriptions: SubscriptionWithCosts[]
   newSubscriptionId?: string
   selectedSubId: string | null
   onOpen: (sub: SubscriptionWithCosts) => void
+  viewMode: 'monthly' | 'yearly'
+  numSkeleton: boolean
 }) {
   // Organic scroll: spring-smoothed velocity drives per-card parallax
   const { scrollY } = useScroll()
@@ -178,6 +196,8 @@ function CardStack({
             velocityMv={springVelocity}
             isSelected={sub.id === selectedSubId}
             onOpen={onOpen}
+            viewMode={viewMode}
+            numSkeleton={numSkeleton}
           />
         </div>
       ))}
@@ -317,14 +337,27 @@ export default function SubscriptionsView({
   newSubscriptionId,
 }: SubscriptionsViewProps) {
   const [filterOpen, setFilterOpen] = useState(false)
-  // Track which card is expanded. `overlayVisible` controls AnimatePresence;
-  // `selectedSub` is cleared only after the exit animation completes so the
-  // card stays invisible during the collapse animation.
   const [selectedSub, setSelectedSub] = useState<SubscriptionWithCosts | null>(null)
   const [overlayVisible, setOverlayVisible] = useState(false)
-  // When closing, we break the layoutId connection so the overlay uses a clean
-  // slide-down exit instead of trying to animate back to the card position.
   const [closingSubId, setClosingSubId] = useState<string | null>(null)
+
+  // Monthly ↔ Yearly toggle with skeleton transition
+  const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly')
+  const [numSkeleton, setNumSkeleton] = useState(false)
+  const skeletonTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  function toggleViewMode() {
+    if (numSkeleton) return
+    setNumSkeleton(true)
+    skeletonTimer.current = setTimeout(() => {
+      setViewMode(prev => prev === 'monthly' ? 'yearly' : 'monthly')
+      setNumSkeleton(false)
+    }, 2000)
+  }
+
+  useEffect(() => {
+    return () => { if (skeletonTimer.current) clearTimeout(skeletonTimer.current) }
+  }, [])
 
   function openSub(sub: SubscriptionWithCosts) {
     setClosingSubId(null)
@@ -366,12 +399,27 @@ export default function SubscriptionsView({
                 {allCount} subscriptions
               </p>
             </div>
-            <div className="bg-white rounded-[20px] p-4" style={{ border: '1.5px solid #E8E8E8' }}>
-              <p className="text-[13px] text-[#999999] font-medium">Per month</p>
-              <p className="text-[18px] font-bold text-[#111111] mt-1 leading-tight tabular-nums">
-                {formatCurrency(stats.total_monthly_cost, 'EUR')}
+
+            {/* Tappable cost card — toggles monthly ↔ yearly */}
+            <button
+              onClick={toggleViewMode}
+              className="bg-white rounded-[20px] p-4 text-left active:scale-[0.97] transition-transform duration-100"
+              style={{ border: '1.5px solid #E8E8E8' }}
+            >
+              <p className="text-[13px] text-[#999999] font-medium flex items-center gap-1.5">
+                {viewMode === 'monthly' ? 'Per month' : 'Per year'}
+                <span className="text-[10px] text-[#BBBBBB]">↕</span>
               </p>
-            </div>
+              {numSkeleton ? (
+                <div className="h-[26px] w-24 rounded-lg bg-[#EFEFEF] animate-pulse mt-1" />
+              ) : (
+                <p className="text-[18px] font-bold text-[#111111] mt-1 leading-tight tabular-nums">
+                  {viewMode === 'monthly'
+                    ? formatCurrency(stats.total_monthly_cost, 'EUR')
+                    : formatCurrency(stats.total_annual_cost, 'EUR')}
+                </p>
+              )}
+            </button>
           </div>
         )}
 
@@ -407,6 +455,8 @@ export default function SubscriptionsView({
             newSubscriptionId={newSubscriptionId}
             selectedSubId={selectedSub?.id ?? null}
             onOpen={openSub}
+            viewMode={viewMode}
+            numSkeleton={numSkeleton}
           />
         )}
       </div>
