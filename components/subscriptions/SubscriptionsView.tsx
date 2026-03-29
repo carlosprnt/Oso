@@ -380,8 +380,8 @@ export default function SubscriptionsView({
           <h1 className="text-[28px] font-bold text-[#111111] tracking-tight">Subscriptions</h1>
           <button
             onClick={() => setFilterOpen(true)}
-            className="relative w-10 h-12 rounded-[10px] bg-white flex items-center justify-center transition-colors active:bg-[#F0F0F0]"
-            style={{ border: '1.5px solid #E0E0E0', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}
+            className="relative w-10 h-10 rounded-[10px] bg-white flex items-center justify-center transition-colors active:bg-[#F0F0F0]"
+            style={{ border: '1.5px solid #E0E0E0' }}
           >
             <SlidersHorizontal size={17} strokeWidth={2} className="text-[#333333]" />
             {hasActiveFilters && (
