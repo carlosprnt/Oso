@@ -14,7 +14,7 @@ import type { PlatformPreset } from '@/lib/constants/platforms'
 
 type Step = 'closed' | 'pick' | 'form' | 'gmail'
 
-const BTN_W = 64   // button width
+const BTN_W = 72   // button width
 const BTN_H = 48   // button height
 const PAD  = 8     // pill padding
 const GAP  = 8     // gap between buttons
@@ -77,7 +77,7 @@ export default function FloatingNav() {
             style={{
               padding: PAD,
               gap: GAP,
-              background: 'rgba(255,255,255,0.70)',
+              background: 'rgba(255,255,255,0.65)',
               backdropFilter: 'blur(12px)',
               WebkitBackdropFilter: 'blur(12px)',
               border: '1px solid #BCBCBC',
@@ -124,9 +124,9 @@ export default function FloatingNav() {
           aria-label="Add subscription"
           className="absolute right-4 pointer-events-auto flex items-center justify-center rounded-full bg-[#3D3BF3] active:scale-95 transition-transform duration-100"
           style={{
-            width: 48,
-            height: 48,
-            bottom: `calc(${bottomOffset} + ${PAD}px)`,
+            width: 56,
+            height: 56,
+            bottom: `calc(${bottomOffset} + 4px)`,
             boxShadow: '0 4px 16px rgba(61,59,243,0.40)',
           }}
         >
