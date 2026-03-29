@@ -220,8 +220,8 @@ export default async function DashboardPage() {
               {/* Highest cost */}
               {highest && (
                 <Card>
-                  <p className="text-xs font-medium text-[#737373] mb-3">{t('dashboard.mostExpensive')}</p>
-                  <div className="flex items-center gap-3">
+                  <CardHeader title={t('dashboard.mostExpensive')} />
+                  <div className="flex items-center gap-3 mt-3">
                     <SubscriptionAvatar name={highest.name} logoUrl={highest.logo_url} size="md" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-[#121212] truncate">{highest.name}</p>
@@ -231,9 +231,9 @@ export default async function DashboardPage() {
                     </div>
                   </div>
                   <div className="mt-3 pt-3 border-t border-[#F0F0F0] flex justify-between items-center">
-                    <span className="text-xs text-[#737373]">{t('dashboard.monthlyEquiv')}</span>
+                    <span className="text-xs text-[#737373]">{t('dashboard.annualEquiv')}</span>
                     <span className="text-sm font-bold text-[#121212] tabular-nums">
-                      {formatCurrency(highest.my_monthly_cost, highest.currency)}
+                      {formatCurrency(highest.my_annual_cost, highest.currency)}
                     </span>
                   </div>
                 </Card>
