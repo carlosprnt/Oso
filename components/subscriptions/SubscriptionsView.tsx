@@ -8,7 +8,7 @@ import {
 } from 'framer-motion'
 import { useRouter, usePathname } from 'next/navigation'
 import SubscriptionDetailOverlay from './SubscriptionDetailOverlay'
-import { SlidersHorizontal, X, Check } from 'lucide-react'
+import { SlidersHorizontal, X, Check, ChevronsUpDown } from 'lucide-react'
 import SubscriptionAvatar from '@/components/subscriptions/SubscriptionAvatar'
 import { resolveSubscriptionLogoUrl } from '@/lib/constants/platforms'
 import { formatCurrency } from '@/lib/utils/currency'
@@ -352,7 +352,7 @@ export default function SubscriptionsView({
     skeletonTimer.current = setTimeout(() => {
       setViewMode(prev => prev === 'monthly' ? 'yearly' : 'monthly')
       setNumSkeleton(false)
-    }, 2000)
+    }, 1200)
   }
 
   useEffect(() => {
@@ -408,7 +408,7 @@ export default function SubscriptionsView({
             >
               <p className="text-[13px] text-[#999999] font-medium flex items-center gap-1.5">
                 {viewMode === 'monthly' ? 'Per month' : 'Per year'}
-                <span className="text-[10px] text-[#BBBBBB]">↕</span>
+                <ChevronsUpDown size={11} className="text-[#BBBBBB]" />
               </p>
               {numSkeleton ? (
                 <div className="h-[26px] w-24 rounded-lg bg-[#EFEFEF] animate-pulse mt-1" />
