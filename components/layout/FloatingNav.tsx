@@ -53,70 +53,85 @@ export default function FloatingNav() {
 
   return (
     <>
-      {/* ── Floating pill nav — mobile only, 10px from bottom ──── */}
-      <nav className="lg:hidden fixed bottom-[10px] left-1/2 -translate-x-1/2 z-50">
-        <div
-          className="
-            flex items-center gap-2
-            bg-white/95 backdrop-blur-md
-            rounded-full px-5 py-2.5
-            border border-[#DCDCDC]
-            shadow-[0_2px_16px_rgba(0,0,0,0.12)]
-          "
-        >
-          {/* Dashboard */}
-          <Link href="/dashboard">
-            <div
-              className={`
-                w-12 h-12 rounded-full flex items-center justify-center transition-colors
-                ${isDash ? 'bg-[#EBEBEB]' : 'hover:bg-[#F5F5F5]'}
-              `}
-            >
-              <LayoutGrid
-                size={20}
-                strokeWidth={isDash ? 2.5 : 2}
-                className={isDash ? 'text-[#111111]' : 'text-[#888888]'}
-              />
-            </div>
-          </Link>
+      {/* ── Floating nav — mobile only ─────────────────────────────────────── */}
+      <nav
+        className="lg:hidden fixed bottom-0 left-0 right-0 flex items-center justify-center z-50 pointer-events-none"
+        style={{ height: 64, paddingBottom: 'env(safe-area-inset-bottom)' }}
+      >
+        {/* Wrapper — anchors the + button relative to the pill */}
+        <div className="relative pointer-events-auto">
 
-          {/* Add — goes straight to form, no platform picker */}
+          {/* Pill nav container: 152px wide, 8px padding, 8px gap */}
+          <div
+            className="flex items-center gap-2 rounded-full"
+            style={{
+              width: 152,
+              height: 64,
+              padding: 8,
+              background: 'rgba(255,255,255,0.80)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+            }}
+          >
+            {/* Dashboard */}
+            <Link href="/dashboard" aria-label={t('nav.dashboard')}>
+              <div
+                className="flex items-center justify-center rounded-full transition-colors duration-150"
+                style={{
+                  width: 58,
+                  height: 48,
+                  background: isDash ? '#111111' : '#F3F3F3',
+                }}
+              >
+                <LayoutGrid
+                  size={20}
+                  strokeWidth={isDash ? 2.5 : 2}
+                  color={isDash ? '#ffffff' : '#111111'}
+                />
+              </div>
+            </Link>
+
+            {/* Subscriptions */}
+            <Link href="/subscriptions" aria-label={t('nav.subscriptions')}>
+              <div
+                className="flex items-center justify-center rounded-full transition-colors duration-150"
+                style={{
+                  width: 58,
+                  height: 48,
+                  background: isSubs ? '#111111' : '#F3F3F3',
+                  color: isSubs ? '#ffffff' : '#111111',
+                }}
+              >
+                <TagHeartIcon active={isSubs} />
+              </div>
+            </Link>
+          </div>
+
+          {/* + button: 48px, 16px to the right of the pill, vertically centered */}
           <button
             onClick={() => setStep('pick')}
             aria-label="Add subscription"
-            className="
-              w-[108px] h-[54px] rounded-[27px]
-              bg-[#3D3BF3]
-              flex items-center justify-center
-              shadow-[0_2px_14px_rgba(61,59,243,0.38)]
-              active:scale-95 transition-transform duration-100
-            "
+            className="absolute -translate-y-1/2 flex items-center justify-center rounded-full bg-[#3D3BF3] active:scale-95 transition-transform duration-100"
+            style={{
+              width: 48,
+              height: 48,
+              left: 'calc(100% + 16px)',
+              top: '50%',
+              boxShadow: '0 4px 16px rgba(61,59,243,0.40)',
+            }}
           >
-            <Plus size={26} className="text-white" strokeWidth={2.5} />
+            <Plus size={22} color="#ffffff" strokeWidth={2.5} />
           </button>
-
-          {/* Subscriptions */}
-          <Link href="/subscriptions">
-            <div
-              className={`
-                w-12 h-12 rounded-full flex items-center justify-center transition-colors
-                ${isSubs ? 'bg-[#EBEBEB]' : 'hover:bg-[#F5F5F5]'}
-              `}
-            >
-              <TagHeartIcon active={isSubs} />
-              <span className="sr-only">Subscriptions</span>
-            </div>
-          </Link>
         </div>
       </nav>
 
-      {/* Step 1 — Platform list */}
-      <BottomSheet isOpen={step === 'pick'} onClose={close} title="Create new" height="tall">
+      {/* Step 1 — Platform picker */}
+      <BottomSheet isOpen={step === 'pick'} onClose={close} title={t('sheets.createNew')} height="tall">
         <PlatformPicker onSelect={handleSelect} onGmailSearch={() => setStep('gmail')} />
       </BottomSheet>
 
       {/* Step 2 — Form */}
-      <BottomSheet isOpen={step === 'form'} onClose={close} title="Create new" height="tall">
+      <BottomSheet isOpen={step === 'form'} onClose={close} title={t('sheets.createNew')} height="tall">
         <SubscriptionForm mode="create" platformPreset={platform ?? undefined} onCancel={close} />
       </BottomSheet>
 
