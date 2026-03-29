@@ -25,9 +25,12 @@ const SPRING = { type: 'spring' as const, stiffness: 340, damping: 32, mass: 0.8
 interface Props {
   sub: SubscriptionWithCosts
   onClose: () => void
+  /** When true, layoutId is disconnected so the exit uses a clean slide-down
+   *  instead of trying to morph back to the (possibly off-screen) card. */
+  isClosing?: boolean
 }
 
-export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
+export default function SubscriptionDetailOverlay({ sub, onClose, isClosing }: Props) {
   const [editOpen, setEditOpen] = useState(false)
   const meta = getCategoryMeta(sub.category)
   const CategoryIcon = meta.icon
@@ -35,21 +38,25 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Backdrop — exits in sync with the sheet slide-down */}
       <motion.div
         className="fixed inset-0 z-[70] bg-black/40"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
+        transition={{ duration: 0.32 }}
         onClick={onClose}
       />
 
-      {/* Bottom sheet — layoutId animates from card to here */}
+      {/* Bottom sheet.
+          Open:  layoutId active  → card morphs into sheet (App Store style).
+          Close: layoutId removed → clean spring slide-down, no layout return. */}
       <motion.div
-        layoutId={`card-${sub.id}`}
+        layoutId={isClosing ? undefined : `card-${sub.id}`}
         className="fixed bottom-0 left-0 right-0 z-[72] bg-white flex flex-col"
         style={{ borderRadius: '28px 28px 0 0', maxHeight: '92dvh' }}
+        animate={{ y: 0 }}
+        exit={{ y: '100%', transition: { type: 'spring', stiffness: 320, damping: 34, mass: 0.9 } }}
         transition={{ layout: SPRING }}
       >
         {/* Handle bar */}

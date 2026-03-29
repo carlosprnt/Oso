@@ -322,16 +322,19 @@ export default function SubscriptionsView({
   // card stays invisible during the collapse animation.
   const [selectedSub, setSelectedSub] = useState<SubscriptionWithCosts | null>(null)
   const [overlayVisible, setOverlayVisible] = useState(false)
+  // When closing, we break the layoutId connection so the overlay uses a clean
+  // slide-down exit instead of trying to animate back to the card position.
+  const [closingSubId, setClosingSubId] = useState<string | null>(null)
 
   function openSub(sub: SubscriptionWithCosts) {
+    setClosingSubId(null)
     setSelectedSub(sub)
     setOverlayVisible(true)
   }
 
   function closeSub() {
+    setClosingSubId(selectedSub?.id ?? null) // break layoutId before exit
     setOverlayVisible(false)
-    // selectedSub is cleared in onExitComplete so the card ghost stays hidden
-    // while the collapse animation plays
   }
 
   const hasActiveFilters = (currentStatus && currentStatus !== 'all') || (currentCategory && currentCategory !== 'all')
@@ -409,11 +412,12 @@ export default function SubscriptionsView({
       </div>
 
       {/* ── Card expansion overlay ────────────────────────────── */}
-      <AnimatePresence onExitComplete={() => setSelectedSub(null)}>
+      <AnimatePresence onExitComplete={() => { setSelectedSub(null); setClosingSubId(null) }}>
         {overlayVisible && selectedSub && (
           <SubscriptionDetailOverlay
             sub={selectedSub}
             onClose={closeSub}
+            isClosing={closingSubId === selectedSub.id}
           />
         )}
       </AnimatePresence>
