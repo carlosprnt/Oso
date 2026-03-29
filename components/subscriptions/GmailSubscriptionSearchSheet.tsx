@@ -263,7 +263,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
         {/* ── Not connected ──────────────────────────────────────────────────── */}
         {sheetState.type === 'not_connected' && (
           <motion.div key="not_connected" {...fadeSlide}
-            className="flex flex-col items-center px-5 py-8 text-center gap-5"
+            className="flex flex-col items-center px-5 pt-2 pb-6 text-center gap-4"
           >
             <img
               src="/1C67E800-A121-400E-BC6B-8AE7BE1BD9FE.jpeg"
@@ -394,7 +394,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
         {/* ── Empty ──────────────────────────────────────────────────────────── */}
         {sheetState.type === 'empty' && (
           <motion.div key="empty" {...fadeSlide}
-            className="flex flex-col items-center justify-center py-16 px-6 text-center gap-5"
+            className="flex flex-col items-center justify-center pt-4 pb-8 px-6 text-center gap-4"
           >
             <img
               src="/1C67E800-A121-400E-BC6B-8AE7BE1BD9FE.jpeg"
