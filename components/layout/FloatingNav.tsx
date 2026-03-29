@@ -102,7 +102,7 @@ export default function FloatingNav() {
               <div className="relative flex items-center justify-center rounded-full"
                 style={{ width: BTN_W, height: BTN_H, zIndex: 2 }}
               >
-                <LayoutGrid size={20} strokeWidth={isDash ? 2.5 : 2}
+                <LayoutGrid size={20} strokeWidth={2}
                   color={isDash ? '#ffffff' : '#111111'} />
               </div>
             </Link>
@@ -112,7 +112,7 @@ export default function FloatingNav() {
               <div className="relative flex items-center justify-center rounded-full"
                 style={{ width: BTN_W, height: BTN_H, zIndex: 2, color: isSubs ? '#ffffff' : '#111111' }}
               >
-                <TagHeartIcon active={isSubs} />
+                <TagHeartIcon active={false} />
               </div>
             </Link>
           </div>
@@ -126,7 +126,7 @@ export default function FloatingNav() {
           style={{
             width: 48,
             height: 48,
-            bottom: bottomOffset,
+            bottom: `calc(${bottomOffset} + ${PAD}px)`,
             boxShadow: '0 4px 16px rgba(61,59,243,0.40)',
           }}
         >
