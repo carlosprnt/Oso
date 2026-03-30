@@ -111,9 +111,6 @@ export default function SubscriptionDetail({ subscription: sub }: SubscriptionDe
           <div className="bg-white rounded-2xl border border-[#E8E8E8] p-4">
             <div className="flex items-end justify-between">
               <div>
-                <p className="text-xs text-[#737373] mb-1">
-                  {formatCurrency(sub.price_amount, sub.currency)} / {BILLING_PERIOD_LABELS[sub.billing_period]}
-                </p>
                 <p className="text-3xl font-bold text-[#121212] tabular-nums leading-none">
                   {formatCurrency(sub.my_monthly_cost, sub.currency)}
                 </p>

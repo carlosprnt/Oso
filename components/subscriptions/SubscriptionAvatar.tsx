@@ -47,7 +47,7 @@ export default function SubscriptionAvatar({
 
     return (
       <div
-        className={`${cls} rounded-xl overflow-hidden flex-shrink-0 ${isAuto ? 'bg-[#F5F5F5] border border-[#F0F0F0] flex items-center justify-center' : ''}`}
+        className={`${cls} rounded-xl overflow-hidden flex-shrink-0 border border-[#E0E0E0] ${isAuto ? 'bg-[#F5F5F5] flex items-center justify-center' : ''}`}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -66,7 +66,7 @@ export default function SubscriptionAvatar({
   // Initials fallback — deterministic pastel background
   return (
     <div
-      className={`${cls} rounded-xl flex-shrink-0 flex items-center justify-center select-none ${text}`}
+      className={`${cls} rounded-xl flex-shrink-0 flex items-center justify-center select-none border border-[#E0E0E0] ${text}`}
       style={{ backgroundColor: bg, color: fg }}
       aria-label={`${name} avatar`}
     >
