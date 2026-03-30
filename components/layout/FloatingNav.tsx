@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutGrid, Plus, CalendarDays } from 'lucide-react'
+import { LayoutGrid, Plus } from 'lucide-react'
 import { motion } from 'framer-motion'
 import BottomSheet from '@/components/ui/BottomSheet'
 import PlatformPicker from '@/components/subscriptions/PlatformPicker'
@@ -58,10 +58,9 @@ export default function FloatingNav() {
 
   const isDash = pathname === '/dashboard' || pathname.startsWith('/dashboard/')
   const isSubs = pathname === '/subscriptions' || pathname.startsWith('/subscriptions/')
-  const isCal  = pathname === '/calendar'  || pathname.startsWith('/calendar/')
 
-  // x offset of the sliding bg: Dashboard=0, Subscriptions=1, Calendar=2
-  const bgX = isCal ? (BTN_W + GAP) * 2 : isSubs ? BTN_W + GAP : 0
+  // x offset of the sliding bg: Dashboard=0, Subscriptions=1
+  const bgX = isSubs ? BTN_W + GAP : 0
 
   // Icon colors depend on dark mode
   const activeIconColor = isDarkMode ? '#111111' : '#ffffff'
@@ -100,10 +99,6 @@ export default function FloatingNav() {
               className="absolute rounded-full"
               style={{ width: BTN_W, height: BTN_H, top: PAD, left: PAD + BTN_W + GAP, backgroundColor: isDarkMode ? '#2C2C2E' : '#EEEEEE' }}
             />
-            <div
-              className="absolute rounded-full"
-              style={{ width: BTN_W, height: BTN_H, top: PAD, left: PAD + (BTN_W + GAP) * 2, backgroundColor: isDarkMode ? '#2C2C2E' : '#EEEEEE' }}
-            />
 
             {/* Sliding indicator */}
             <motion.div
@@ -132,15 +127,6 @@ export default function FloatingNav() {
               </div>
             </Link>
 
-            {/* Calendar button */}
-            <Link href="/calendar" aria-label={t('nav.calendar')}>
-              <div className="relative flex items-center justify-center rounded-full"
-                style={{ width: BTN_W, height: BTN_H, zIndex: 2 }}
-              >
-                <CalendarDays size={20} strokeWidth={2}
-                  color={isCal ? activeIconColor : inactiveIconColor} />
-              </div>
-            </Link>
           </div>
         </div>
 
@@ -166,7 +152,7 @@ export default function FloatingNav() {
       </BottomSheet>
 
       {/* Step 2 — Form */}
-      <BottomSheet isOpen={step === 'form'} onClose={close} title={t('sheets.createNew')} height="tall">
+      <BottomSheet isOpen={step === 'form'} onClose={close} height="full">
         <SubscriptionForm mode="create" platformPreset={platform ?? undefined} onCancel={close} />
       </BottomSheet>
 

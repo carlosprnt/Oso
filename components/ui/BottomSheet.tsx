@@ -9,7 +9,6 @@ interface BottomSheetProps {
   title?: string
   children: ReactNode
   height?: 'auto' | 'tall' | 'full'
-  /** Override z-index (default: backdrop=58, sheet=60). Use higher values inside overlays. */
   zIndex?: number
 }
 
@@ -21,22 +20,43 @@ export default function BottomSheet({
   height = 'tall',
   zIndex,
 }: BottomSheetProps) {
-  const scrollRef = useRef<HTMLDivElement>(null)
+  const scrollRef  = useRef<HTMLDivElement>(null)
+  const sheetRef   = useRef<HTMLDivElement>(null)
+  const savedScrollY = useRef(0)
+  const touchStartY  = useRef(0)
 
-  // Lock body scroll when open
+  // ── Body scroll lock (iOS-safe: position:fixed approach) ─────────────────
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden'
+      savedScrollY.current = window.scrollY
+      document.body.style.position = 'fixed'
+      document.body.style.top      = `-${savedScrollY.current}px`
+      document.body.style.left     = '0'
+      document.body.style.right    = '0'
     } else {
-      document.body.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.top      = ''
+      document.body.style.left     = ''
+      document.body.style.right    = ''
+      window.scrollTo(0, savedScrollY.current)
     }
-    return () => { document.body.style.overflow = '' }
+    return () => {
+      document.body.style.position = ''
+      document.body.style.top      = ''
+      document.body.style.left     = ''
+      document.body.style.right    = ''
+    }
   }, [isOpen])
 
-  // Reset scroll to top every time the sheet opens
+  // ── Reset scroll to top on each open ─────────────────────────────────────
   useEffect(() => {
     if (isOpen && scrollRef.current) {
       scrollRef.current.scrollTop = 0
+    }
+    // Reset sheet position when opened
+    if (isOpen && sheetRef.current) {
+      sheetRef.current.style.transform  = ''
+      sheetRef.current.style.transition = ''
     }
   }, [isOpen])
 
@@ -48,17 +68,49 @@ export default function BottomSheet({
     full: 'max-h-[92dvh]',
   }[height]
 
+  // ── Handle drag-to-dismiss ────────────────────────────────────────────────
+  function onHandleTouchStart(e: React.TouchEvent) {
+    touchStartY.current = e.touches[0].clientY
+    if (sheetRef.current) {
+      sheetRef.current.style.transition = 'none'
+    }
+  }
+
+  function onHandleTouchMove(e: React.TouchEvent) {
+    const dy = e.touches[0].clientY - touchStartY.current
+    if (dy > 0 && sheetRef.current) {
+      e.preventDefault()
+      sheetRef.current.style.transform = `translateY(${dy}px)`
+    }
+  }
+
+  function onHandleTouchEnd(e: React.TouchEvent) {
+    const dy = e.changedTouches[0].clientY - touchStartY.current
+    if (!sheetRef.current) return
+    if (dy > 120) {
+      // Animate out then close
+      sheetRef.current.style.transition = 'transform 0.28s cubic-bezier(0.4,0,1,1)'
+      sheetRef.current.style.transform  = 'translateY(100%)'
+      setTimeout(onClose, 260)
+    } else {
+      // Snap back
+      sheetRef.current.style.transition = 'transform 0.28s cubic-bezier(0.25,0.46,0.45,0.94)'
+      sheetRef.current.style.transform  = ''
+    }
+  }
+
   return (
     <>
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/50 dark:bg-black/70 animate-backdrop-in"
-        style={{ zIndex: zIndex ? zIndex - 1 : 58 }}
+        style={{ zIndex: zIndex ? zIndex - 2 : 58 }}
         onClick={onClose}
       />
 
       {/* Sheet */}
       <div
+        ref={sheetRef}
         className={`
           fixed bottom-0 left-0 right-0
           bg-white dark:bg-[#1C1C1E] rounded-t-[28px]
@@ -67,11 +119,15 @@ export default function BottomSheet({
           animate-slide-up
         `}
         style={{ zIndex: zIndex ?? 60, paddingBottom: 'env(safe-area-inset-bottom)' }}
-        // Prevent touch events from reaching the backdrop
         onClick={e => e.stopPropagation()}
       >
-        {/* Handle bar */}
-        <div className="flex-shrink-0 flex justify-center pt-3 pb-1">
+        {/* Handle — drag zone */}
+        <div
+          className="flex-shrink-0 flex justify-center pt-3 pb-2 touch-none select-none"
+          onTouchStart={onHandleTouchStart}
+          onTouchMove={onHandleTouchMove}
+          onTouchEnd={onHandleTouchEnd}
+        >
           <div className="w-10 h-1 bg-[#D4D4D4] dark:bg-[#3A3A3C] rounded-full" />
         </div>
 
@@ -88,11 +144,15 @@ export default function BottomSheet({
           </div>
         )}
 
-        {/* Scrollable content — always starts at top */}
+        {/* Scrollable content */}
         <div
           ref={scrollRef}
-          className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain"
-          style={{ WebkitOverflowScrolling: 'touch' }}
+          className="flex-1 overflow-x-hidden"
+          style={{
+            overflowY: 'auto',
+            WebkitOverflowScrolling: 'touch',
+            overscrollBehavior: 'contain',
+          }}
         >
           {children}
         </div>

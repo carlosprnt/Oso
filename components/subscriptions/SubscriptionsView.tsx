@@ -8,7 +8,9 @@ import {
 } from 'framer-motion'
 import { useRouter, usePathname } from 'next/navigation'
 import SubscriptionDetailOverlay from './SubscriptionDetailOverlay'
-import { SlidersHorizontal, X, Check, ChevronsUpDown } from 'lucide-react'
+import { SlidersHorizontal, CalendarDays, X, Check, ChevronsUpDown } from 'lucide-react'
+import BottomSheet from '@/components/ui/BottomSheet'
+import CalendarView from '@/components/calendar/CalendarView'
 import SubscriptionAvatar from '@/components/subscriptions/SubscriptionAvatar'
 import { resolveSubscriptionLogoUrl } from '@/lib/constants/platforms'
 import { formatCurrency } from '@/lib/utils/currency'
@@ -51,7 +53,7 @@ const STATUS_COLOR: Record<string, string> = {
 }
 
 // ─── Sorting ───────────────────────────────────────────────────────────────
-type SortMode = 'alphabetical' | 'recently_added' | 'recently_updated' | 'price_high' | 'price_low'
+type SortMode = 'alphabetical' | 'recently_added' | 'recently_updated' | 'price_high' | 'price_low' | 'by_category'
 
 function sortSubscriptions(subs: SubscriptionWithCosts[], mode: SortMode): SubscriptionWithCosts[] {
   const s = [...subs]
@@ -66,6 +68,8 @@ function sortSubscriptions(subs: SubscriptionWithCosts[], mode: SortMode): Subsc
       return s.sort((a, b) => b.my_monthly_cost - a.my_monthly_cost)
     case 'price_low':
       return s.sort((a, b) => a.my_monthly_cost - b.my_monthly_cost)
+    case 'by_category':
+      return s.sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name))
   }
 }
 
@@ -161,11 +165,12 @@ function WalletCard({ sub, isNew, index, velocityMv, isSelected, onOpen, viewMod
           <SubscriptionAvatar
             name={sub.name}
             logoUrl={resolveSubscriptionLogoUrl(sub.name, sub.logo_url)}
-            size="lg"
+            size="md48"
+            corner="rounded-2xl"
           />
 
           <div className="flex-1 min-w-0">
-            <p className="text-[21px] font-bold text-[#111111] dark:text-[#F2F2F7] leading-snug truncate">{sub.name}</p>
+            <p className="text-[16px] font-bold text-[#111111] dark:text-[#F2F2F7] leading-snug truncate">{sub.name}</p>
             <p className="text-[14px] text-[#999999] dark:text-[#636366] mt-1 leading-snug">
               {t(`categories.${sub.category}` as Parameters<typeof t>[0])}
             </p>
@@ -187,10 +192,12 @@ function WalletCard({ sub, isNew, index, velocityMv, isSelected, onOpen, viewMod
                     {viewMode === 'monthly' ? '/mo' : '/yr'}
                   </span>
                 </p>
-                <p className="text-[14px] font-semibold mt-1 leading-snug"
-                  style={{ color: STATUS_COLOR[sub.status] ?? '#9CA3AF' }}>
-                  {t(`status.${sub.status}` as Parameters<typeof t>[0])}
-                </p>
+                {sub.status !== 'active' && (
+                  <p className="text-[14px] font-semibold mt-1 leading-snug"
+                    style={{ color: STATUS_COLOR[sub.status] ?? '#9CA3AF' }}>
+                    {t(`status.${sub.status}` as Parameters<typeof t>[0])}
+                  </p>
+                )}
               </>
             )}
           </div>
@@ -400,6 +407,7 @@ function SortDropdown({
 
   const options: { mode: SortMode; label: string }[] = [
     { mode: 'alphabetical',     label: t('subscriptions.sortAlphabetical') },
+    { mode: 'by_category',      label: t('subscriptions.sortByCategory') },
     { mode: 'recently_added',   label: t('subscriptions.sortRecentlyAdded') },
     { mode: 'recently_updated', label: t('subscriptions.sortRecentlyUpdated') },
     { mode: 'price_high',       label: t('subscriptions.sortPriceHigh') },
@@ -475,6 +483,7 @@ export default function SubscriptionsView({
 }: SubscriptionsViewProps) {
   const t = useT()
   const [filterOpen, setFilterOpen] = useState(false)
+  const [calendarOpen, setCalendarOpen] = useState(false)
   const [sortMode, setSortMode] = useState<SortMode>('alphabetical')
   const [selectedSub, setSelectedSub] = useState<SubscriptionWithCosts | null>(null)
   const [overlayVisible, setOverlayVisible] = useState(false)
@@ -520,16 +529,25 @@ export default function SubscriptionsView({
         <div>
           <div className="flex items-center justify-between">
             <h1 className="text-[28px] font-bold text-[#111111] dark:text-[#F2F2F7] tracking-tight">{t('subscriptions.title')}</h1>
-            <button
-              onClick={() => setFilterOpen(true)}
-              className="relative w-10 h-10 rounded-full bg-white dark:bg-[#1C1C1E] flex items-center justify-center transition-colors active:bg-[#F0F0F0] dark:active:bg-[#2C2C2E]"
-              style={{ border: '1.5px solid var(--border-nav-btn)' }}
-            >
-              <SlidersHorizontal size={17} strokeWidth={2} className="text-[#333333] dark:text-[#F2F2F7]" />
-              {hasActiveFilters && (
-                <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#3D3BF3] border-2 border-white" />
-              )}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCalendarOpen(true)}
+                className="w-10 h-10 rounded-full bg-white dark:bg-[#1C1C1E] flex items-center justify-center transition-colors active:bg-[#F0F0F0] dark:active:bg-[#2C2C2E]"
+                style={{ border: '1.5px solid var(--border-nav-btn)' }}
+              >
+                <CalendarDays size={17} strokeWidth={2} className="text-[#333333] dark:text-[#F2F2F7]" />
+              </button>
+              <button
+                onClick={() => setFilterOpen(true)}
+                className="relative w-10 h-10 rounded-full bg-white dark:bg-[#1C1C1E] flex items-center justify-center transition-colors active:bg-[#F0F0F0] dark:active:bg-[#2C2C2E]"
+                style={{ border: '1.5px solid var(--border-nav-btn)' }}
+              >
+                <SlidersHorizontal size={17} strokeWidth={2} className="text-[#333333] dark:text-[#F2F2F7]" />
+                {hasActiveFilters && (
+                  <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#3D3BF3] border-2 border-white" />
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Sort control */}
@@ -538,30 +556,32 @@ export default function SubscriptionsView({
           </div>
         </div>
 
-        {/* ── Summary cards ────────────────────────────────────── */}
+        {/* ── Summary card (merged) ─────────────────────────────── */}
         {allCount > 0 && (
-          <div className="grid grid-cols-2 gap-[8px]">
-            <div className="bg-white dark:bg-[#1C1C1E] rounded-[20px] p-4" style={{ border: '1.5px solid var(--border-card)' }}>
+          <div
+            className="bg-white dark:bg-[#1C1C1E] rounded-[20px] p-4 flex items-center justify-between"
+            style={{ border: '1.5px solid var(--border-card)' }}
+          >
+            <div>
               <p className="text-[13px] text-[#999999] dark:text-[#636366] font-medium">{t('subscriptions.total')}</p>
-              <p className="text-[22px] font-bold text-[#111111] dark:text-[#F2F2F7] mt-1 leading-tight tabular-nums">
+              <p className="text-[22px] font-bold text-[#111111] dark:text-[#F2F2F7] mt-0.5 leading-tight tabular-nums">
                 {allCount}
               </p>
             </div>
 
-            {/* Tappable cost card — toggles monthly ↔ yearly */}
+            {/* Tappable cost section — toggles monthly ↔ yearly */}
             <button
               onClick={toggleViewMode}
-              className="bg-white dark:bg-[#1C1C1E] rounded-[20px] p-4 text-left active:scale-[0.97] transition-transform duration-100"
-              style={{ border: '1.5px solid var(--border-card)' }}
+              className="text-right active:opacity-60 transition-opacity duration-100"
             >
-              <p className="text-[13px] text-[#999999] dark:text-[#636366] font-medium flex items-center gap-1.5">
+              <p className="text-[13px] text-[#999999] dark:text-[#636366] font-medium flex items-center justify-end gap-1.5">
                 {viewMode === 'monthly' ? t('subscriptions.perMonth') : t('subscriptions.perYear')}
                 <ChevronsUpDown size={11} className="text-[#BBBBBB] dark:text-[#636366]" />
               </p>
               {numSkeleton ? (
-                <div className="h-[26px] w-24 rounded-lg bg-[#EFEFEF] dark:bg-[#2C2C2E] animate-pulse mt-1" />
+                <div className="h-[26px] w-24 rounded-lg bg-[#EFEFEF] dark:bg-[#2C2C2E] animate-pulse mt-0.5" />
               ) : (
-                <p className="text-[18px] font-bold text-[#111111] dark:text-[#F2F2F7] mt-1 leading-tight tabular-nums">
+                <p className="text-[22px] font-bold text-[#111111] dark:text-[#F2F2F7] mt-0.5 leading-tight tabular-nums">
                   {viewMode === 'monthly'
                     ? formatCurrency(stats.total_monthly_cost, 'EUR')
                     : formatCurrency(stats.total_annual_cost, 'EUR')}
@@ -630,6 +650,11 @@ export default function SubscriptionsView({
           />
         )}
       </AnimatePresence>
+
+      {/* ── Calendar bottom sheet ─────────────────────────────── */}
+      <BottomSheet isOpen={calendarOpen} onClose={() => setCalendarOpen(false)} height="full">
+        <CalendarView subscriptions={subscriptions} />
+      </BottomSheet>
 
     </LayoutGroup>
   )

@@ -68,6 +68,7 @@ const en = {
     sortRecentlyUpdated: 'Recently updated',
     sortPriceHigh: 'Highest price',
     sortPriceLow: 'Lowest price',
+    sortByCategory: 'Category',
   },
   detail: {
     category: 'Category',
@@ -267,6 +268,7 @@ const es: typeof en = {
     sortRecentlyUpdated: 'Actualizado recientemente',
     sortPriceHigh: 'Mayor precio',
     sortPriceLow: 'Menor precio',
+    sortByCategory: 'Categoría',
   },
   detail: {
     category: 'Categoría',
