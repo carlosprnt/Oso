@@ -34,7 +34,7 @@ export default async function DashboardLayout({
 
   return (
     <LocaleProvider locale={detectedLocale}>
-      <div className="min-h-screen bg-[#F7F8FA]">
+      <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#111111]">
         <Sidebar profile={profile as Profile | null} />
 
         {/* Main content — offset by sidebar width on desktop */}

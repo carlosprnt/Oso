@@ -24,9 +24,9 @@ export function Card({
     <div
       onClick={onClick}
       className={`
-        bg-white rounded-2xl border border-[#E8E8E8]
+        bg-white dark:bg-[#1C1C1E] rounded-2xl border border-[#E8E8E8] dark:border-[#2C2C2E]
         ${PADDING[padding]}
-        ${hover ? 'hover:border-[#A3A3A3] hover:bg-[#FAFAFA] transition-colors duration-150' : ''}
+        ${hover ? 'hover:border-[#A3A3A3] hover:bg-[#FAFAFA] dark:hover:bg-[#232325] dark:hover:border-[#3A3A3C] transition-colors duration-150' : ''}
         ${onClick ? 'cursor-pointer pressable' : ''}
         ${className}
       `}
@@ -50,9 +50,9 @@ export function CardHeader({
   return (
     <div className={`flex items-center justify-between mb-4 ${className}`}>
       <div>
-        <h3 className="text-[17px] font-bold text-[#121212] tracking-tight leading-tight">{title}</h3>
+        <h3 className="text-[17px] font-bold text-[#121212] dark:text-[#F2F2F7] tracking-tight leading-tight">{title}</h3>
         {subtitle && (
-          <p className="text-xs text-[#616161] mt-0.5">{subtitle}</p>
+          <p className="text-xs text-[#616161] dark:text-[#636366] mt-0.5">{subtitle}</p>
         )}
       </div>
       {action && <div>{action}</div>}

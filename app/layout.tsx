@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { cookies } from 'next/headers'
 import './globals.css'
+import { ThemeProvider } from '@/components/ui/ThemeProvider'
 
 export const metadata: Metadata = {
   title: {
@@ -38,6 +39,11 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem('perezoso_theme')==='dark')document.documentElement.classList.add('dark')}catch(e){}`
+          }}
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
@@ -45,7 +51,7 @@ export default async function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body><ThemeProvider>{children}</ThemeProvider></body>
     </html>
   )
 }

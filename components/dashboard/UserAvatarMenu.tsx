@@ -2,10 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { LogOut, Share2 } from 'lucide-react'
+import { LogOut, Share2, Moon, Sun } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import Image from 'next/image'
 import { getInitials, getAvatarPastel } from '@/lib/utils/logos'
+import { useTheme } from '@/components/ui/ThemeProvider'
 
 interface UserAvatarMenuProps {
   /** Pre-formatted share text (e.g. monthly spend summary) */
@@ -14,6 +15,7 @@ interface UserAvatarMenuProps {
 
 export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
   const router = useRouter()
+  const { theme, toggle } = useTheme()
   const [open, setOpen] = useState(false)
   const [imgError, setImgError] = useState(false)
   const [user, setUser] = useState<{
@@ -98,24 +100,31 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
 
       {/* Dropdown menu */}
       {open && (
-        <div className="absolute top-full right-0 mt-2 w-56 bg-white rounded-2xl border border-[#E5E5E5] shadow-[0_4px_24px_rgba(0,0,0,0.12)] overflow-hidden z-50 animate-fade-in-scale">
+        <div className="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-[#1C1C1E] rounded-2xl border border-[#E5E5E5] dark:border-[#2C2C2E] shadow-[0_4px_24px_rgba(0,0,0,0.12)] overflow-hidden z-50 animate-fade-in-scale">
           {/* User name */}
-          <div className="px-4 py-3 border-b border-[#F0F0F0]">
-            <p className="text-sm font-semibold text-[#121212] truncate">{name}</p>
+          <div className="px-4 py-3 border-b border-[#F0F0F0] dark:border-[#2C2C2E]">
+            <p className="text-sm font-semibold text-[#121212] dark:text-[#F2F2F7] truncate">{name}</p>
           </div>
 
           {/* Actions */}
           <div className="py-1.5">
             <button
-              onClick={handleShare}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#424242] hover:bg-[#F5F5F5] transition-colors text-left"
+              onClick={() => { toggle(); setOpen(false) }}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#424242] dark:text-[#AEAEB2] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors text-left"
             >
-              <Share2 size={15} className="text-[#616161]" />
+              {theme === 'dark' ? <Sun size={15} className="text-[#616161] dark:text-[#636366]" /> : <Moon size={15} className="text-[#616161]" />}
+              {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+            </button>
+            <button
+              onClick={handleShare}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#424242] dark:text-[#AEAEB2] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors text-left"
+            >
+              <Share2 size={15} className="text-[#616161] dark:text-[#636366]" />
               Share data
             </button>
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors text-left"
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-left"
             >
               <LogOut size={15} />
               Logout
