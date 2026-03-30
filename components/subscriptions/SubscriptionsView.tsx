@@ -14,8 +14,37 @@ import { resolveSubscriptionLogoUrl } from '@/lib/constants/platforms'
 import { formatCurrency } from '@/lib/utils/currency'
 import { CATEGORIES } from '@/lib/constants/categories'
 import { useElasticPullDown } from '@/lib/hooks/useElasticPullDown'
-import { useT } from '@/lib/i18n/LocaleProvider'
+import { useT, useLocale } from '@/lib/i18n/LocaleProvider'
 import type { SubscriptionWithCosts, SubscriptionStatus, Category, DashboardStats } from '@/types'
+
+// ─── Billing helpers ──────────────────────────────────────────────────────────
+function billingPeriodDays(period: string, intervalCount: number): number {
+  const base: Record<string, number> = { weekly: 7, monthly: 30, quarterly: 91, yearly: 365 }
+  return (base[period] ?? 30) * intervalCount
+}
+
+function billingProgress(nextBillingDate: string | null, period: string, intervalCount: number): number {
+  if (!nextBillingDate) return 0
+  const today = new Date(); today.setHours(0, 0, 0, 0)
+  const next = new Date(nextBillingDate); next.setHours(0, 0, 0, 0)
+  const totalDays = billingPeriodDays(period, intervalCount)
+  const daysLeft = Math.max(0, Math.round((next.getTime() - today.getTime()) / 86_400_000))
+  return Math.min(1, Math.max(0, (totalDays - daysLeft) / totalDays))
+}
+
+function daysUntilBilling(nextBillingDate: string | null): number {
+  if (!nextBillingDate) return 0
+  const today = new Date(); today.setHours(0, 0, 0, 0)
+  const next = new Date(nextBillingDate); next.setHours(0, 0, 0, 0)
+  return Math.max(0, Math.round((next.getTime() - today.getTime()) / 86_400_000))
+}
+
+function formatShortDate(dateStr: string | null, locale: string): string {
+  if (!dateStr) return ''
+  return new Date(dateStr).toLocaleDateString(locale === 'es' ? 'es-ES' : 'en-US', {
+    day: 'numeric', month: 'short', year: 'numeric',
+  })
+}
 
 const STATUS_COLOR: Record<string, string> = {
   active: '#16A34A', trial: '#D97706', paused: '#E07B1A', cancelled: '#EF4444',
@@ -43,7 +72,13 @@ interface WalletCardProps {
 
 function WalletCard({ sub, isNew, index, velocityMv, isSelected, onOpen, viewMode, numSkeleton }: WalletCardProps) {
   const t = useT()
+  const locale = useLocale()
   const [shimmer, setShimmer] = useState(isNew ?? false)
+
+  // Billing
+  const progress = billingProgress(sub.next_billing_date, sub.billing_period, sub.billing_interval_count)
+  const daysLeft = daysUntilBilling(sub.next_billing_date)
+  const nextDateFormatted = formatShortDate(sub.next_billing_date, locale)
 
   useEffect(() => {
     if (!isNew) return
@@ -65,7 +100,7 @@ function WalletCard({ sub, isNew, index, velocityMv, isSelected, onOpen, viewMod
       <motion.div
         layoutId={`card-${sub.id}`}
         onClick={() => onOpen(sub)}
-        className="w-full bg-white px-5 pt-5 pb-7 flex items-start gap-5 relative overflow-hidden cursor-pointer"
+        className="w-full bg-white px-5 pt-5 pb-5 flex flex-col relative overflow-hidden cursor-pointer"
         style={{
           border: '1.5px solid #E8E8E8',
           borderRadius: 28,
@@ -104,42 +139,64 @@ function WalletCard({ sub, isNew, index, velocityMv, isSelected, onOpen, viewMod
           />
         )}
 
-        <SubscriptionAvatar
-          name={sub.name}
-          logoUrl={resolveSubscriptionLogoUrl(sub.name, sub.logo_url)}
-          size="lg"
-        />
+        {/* Top row */}
+        <div className="flex items-start gap-5 flex-1">
+          <SubscriptionAvatar
+            name={sub.name}
+            logoUrl={resolveSubscriptionLogoUrl(sub.name, sub.logo_url)}
+            size="lg"
+          />
 
-        <div className="flex-1 min-w-0">
-          <p className="text-[21px] font-bold text-[#111111] leading-snug truncate">{sub.name}</p>
-          <p className="text-[14px] text-[#999999] mt-1 leading-snug">
-            {t(`categories.${sub.category}` as Parameters<typeof t>[0])}
-          </p>
+          <div className="flex-1 min-w-0">
+            <p className="text-[21px] font-bold text-[#111111] leading-snug truncate">{sub.name}</p>
+            <p className="text-[14px] text-[#999999] mt-1 leading-snug">
+              {t(`categories.${sub.category}` as Parameters<typeof t>[0])}
+            </p>
+          </div>
+
+          <div className="text-right flex-shrink-0">
+            {numSkeleton ? (
+              <div className="flex flex-col items-end gap-1.5">
+                <div className="h-5 w-20 rounded-lg bg-[#EFEFEF] animate-pulse" />
+                <div className="h-4 w-12 rounded-md bg-[#EFEFEF] animate-pulse" />
+              </div>
+            ) : (
+              <>
+                <p className="text-[16px] font-bold text-[#111111] tabular-nums leading-snug">
+                  {viewMode === 'monthly'
+                    ? formatCurrency(sub.my_monthly_cost, sub.currency)
+                    : formatCurrency(sub.my_annual_cost, sub.currency)}
+                  <span className="text-[13px] font-normal text-[#999999] ml-0.5">
+                    {viewMode === 'monthly' ? '/mo' : '/yr'}
+                  </span>
+                </p>
+                <p className="text-[14px] font-semibold mt-1 leading-snug"
+                  style={{ color: STATUS_COLOR[sub.status] ?? '#9CA3AF' }}>
+                  {t(`status.${sub.status}` as Parameters<typeof t>[0])}
+                </p>
+              </>
+            )}
+          </div>
         </div>
 
-        <div className="text-right flex-shrink-0">
-          {numSkeleton ? (
-            <div className="flex flex-col items-end gap-1.5">
-              <div className="h-5 w-20 rounded-lg bg-[#EFEFEF] animate-pulse" />
-              <div className="h-4 w-12 rounded-md bg-[#EFEFEF] animate-pulse" />
+        {/* Billing progress */}
+        {sub.next_billing_date && (
+          <div className="mt-4">
+            <div className="w-full rounded-full overflow-hidden" style={{ height: 4, background: 'rgba(0,0,0,0.08)' }}>
+              <div className="h-full rounded-full" style={{ width: `${Math.round(progress * 100)}%`, background: 'rgba(0,0,0,0.30)' }} />
             </div>
-          ) : (
-            <>
-              <p className="text-[16px] font-bold text-[#111111] tabular-nums leading-snug">
-                {viewMode === 'monthly'
-                  ? formatCurrency(sub.my_monthly_cost, sub.currency)
-                  : formatCurrency(sub.my_annual_cost, sub.currency)}
-                <span className="text-[13px] font-normal text-[#999999] ml-0.5">
-                  {viewMode === 'monthly' ? '/mo' : '/yr'}
-                </span>
-              </p>
-              <p className="text-[14px] font-semibold mt-1 leading-snug"
-                style={{ color: STATUS_COLOR[sub.status] ?? '#9CA3AF' }}>
-                {t(`status.${sub.status}` as Parameters<typeof t>[0])}
-              </p>
-            </>
-          )}
-        </div>
+            <div className="flex justify-between items-center mt-1.5">
+              <span className="text-[12px] text-[#999999]">
+                {daysLeft === 0
+                  ? t('dashboard.dueToday')
+                  : daysLeft === 1
+                  ? t('dashboard.tomorrow')
+                  : t('dashboard.inDays').replace('{days}', String(daysLeft))}
+              </span>
+              <span className="text-[12px] text-[#999999]">{nextDateFormatted}</span>
+            </div>
+          </div>
+        )}
       </motion.div>
     </motion.div>
   )
