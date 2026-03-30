@@ -16,11 +16,6 @@ function billingPeriodDays(period: string, intervalCount: number): number {
   return (base[period] ?? 30) * Math.max(1, intervalCount)
 }
 
-/**
- * Returns the day-of-month for a subscription's billing occurrence
- * in the given (year, month). Projects forward/backward from next_billing_date.
- * Returns null if the subscription has no billing date.
- */
 function getBillingDayInMonth(
   sub: SubscriptionWithCosts,
   year: number,
@@ -33,14 +28,11 @@ function getBillingDayInMonth(
   let date = new Date(ny, nm - 1, nd)
   const monthStart = new Date(year, month, 1)
   const monthEnd = new Date(year, month + 1, 0)
-
   const periodDays = billingPeriodDays(sub.billing_period, sub.billing_interval_count)
 
-  // Project backward until we reach or pass monthEnd
   while (date > monthEnd && periodDays > 0) {
     date = new Date(date.getTime() - periodDays * 86_400_000)
   }
-  // Project forward until we reach or pass monthStart
   while (date < monthStart && periodDays > 0) {
     date = new Date(date.getTime() + periodDays * 86_400_000)
   }
@@ -49,7 +41,6 @@ function getBillingDayInMonth(
   return null
 }
 
-/** Maps each day-of-month to the subscriptions renewing that day. */
 function buildDayMap(
   subs: SubscriptionWithCosts[],
   year: number,
@@ -68,7 +59,7 @@ function buildDayMap(
 
 function getFirstDayOfWeek(year: number, month: number): number {
   const d = new Date(year, month, 1).getDay()
-  return d === 0 ? 6 : d - 1 // Convert Sun=0 → 6, Mon=1 → 0
+  return d === 0 ? 6 : d - 1
 }
 
 function getDaysInMonth(year: number, month: number): number {
@@ -85,16 +76,16 @@ function TinyAvatar({ name, logoUrl }: { name: string; logoUrl: string | null })
   if (logoUrl) {
     return (
       <div
-        className="w-[18px] h-[18px] rounded-[4px] overflow-hidden border border-[#E0E0E0] flex-shrink-0 flex items-center justify-center"
+        className="w-[20px] h-[20px] rounded-[5px] overflow-hidden flex-shrink-0 flex items-center justify-center border border-[#E4E4E4]"
         style={{ background: isAuto ? '#F5F5F5' : 'transparent' }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={logoUrl}
           alt={name}
-          width={18}
-          height={18}
-          className={isAuto ? 'w-[85%] h-[85%] object-contain' : 'w-full h-full object-cover'}
+          width={20}
+          height={20}
+          className={isAuto ? 'w-[84%] h-[84%] object-contain' : 'w-full h-full object-cover'}
           loading="lazy"
         />
       </div>
@@ -103,7 +94,7 @@ function TinyAvatar({ name, logoUrl }: { name: string; logoUrl: string | null })
 
   return (
     <div
-      className="w-[18px] h-[18px] rounded-[4px] flex-shrink-0 flex items-center justify-center text-[8px] font-bold border border-[#E0E0E0]"
+      className="w-[20px] h-[20px] rounded-[5px] flex-shrink-0 flex items-center justify-center text-[8px] font-bold border border-[#E4E4E4]"
       style={{ backgroundColor: bg, color: fg }}
     >
       {initial}
@@ -127,30 +118,36 @@ function DayCell({ day, isToday, subscriptions, onClick }: DayCellProps) {
     <button
       onClick={hasSubs ? onClick : undefined}
       className={`
-        flex flex-col items-center pt-2 pb-2 min-h-[56px] bg-white
-        transition-colors duration-100
-        ${hasSubs ? 'active:bg-[#F7F8FA]' : 'cursor-default'}
+        flex flex-col items-start p-2 rounded-[12px] min-h-[80px]
+        transition-all duration-100 select-none
+        ${hasSubs ? 'active:scale-[0.96] cursor-pointer' : 'cursor-default'}
+        bg-white
       `}
     >
-      {/* Day number */}
+      {/* Day number — circle highlight for today */}
       <span
         className={`
-          w-7 h-7 flex items-center justify-center rounded-full text-[13px] font-medium leading-none
-          ${isToday ? 'bg-[#3D3BF3] text-white font-semibold' : hasSubs ? 'text-[#121212]' : 'text-[#888888]'}
+          w-[27px] h-[27px] flex items-center justify-center rounded-full
+          text-[13px] font-medium leading-none flex-shrink-0
+          ${isToday
+            ? 'bg-[#3D3BF3] text-white font-semibold'
+            : hasSubs
+              ? 'text-[#121212]'
+              : 'text-[#A0A0A0]'}
         `}
       >
         {day}
       </span>
 
-      {/* Subscription indicators */}
+      {/* Subscription indicators — pushed to bottom */}
       {hasSubs && (
-        <div className="flex items-center gap-[2px] mt-1.5">
+        <div className="flex items-center gap-[3px] mt-auto pt-1">
           <TinyAvatar
             name={subscriptions[0].name}
             logoUrl={resolveSubscriptionLogoUrl(subscriptions[0].name, subscriptions[0].logo_url)}
           />
           {subscriptions.length > 1 && (
-            <span className="text-[9px] font-semibold text-[#888888] leading-none">
+            <span className="text-[9px] font-semibold text-[#888888] leading-none bg-[#F0F0F0] px-[5px] py-[3px] rounded-full">
               +{subscriptions.length - 1}
             </span>
           )}
@@ -180,7 +177,6 @@ export default function CalendarView({ subscriptions }: Props) {
     [subscriptions, year, month],
   )
 
-  // Total charges in this month (sum of price_amount for each billing occurrence)
   const monthTotal = useMemo(() => {
     let total = 0
     const currency = subscriptions[0]?.currency ?? 'EUR'
@@ -202,12 +198,12 @@ export default function CalendarView({ subscriptions }: Props) {
   const firstDayOffset = getFirstDayOfWeek(year, month)
   const daysInMonth = getDaysInMonth(year, month)
 
-  // Build flat cell array: nulls for empty cells before day 1
   const cells: (number | null)[] = [
     ...Array(firstDayOffset).fill(null),
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
   ]
   while (cells.length % 7 !== 0) cells.push(null)
+  const numWeeks = cells.length / 7
 
   const dateLocale = locale === 'es' ? 'es-ES' : 'en-US'
   const monthName = new Date(year, month, 1).toLocaleDateString(dateLocale, { month: 'long' })
@@ -219,88 +215,110 @@ export default function CalendarView({ subscriptions }: Props) {
 
   const selectedSubs = selectedDay !== null ? (dayMap[selectedDay] ?? []) : []
 
+  const totalSubsThisMonth = Object.values(dayMap).flat().length
+
   return (
-    <div>
-      {/* Page title */}
-      <div className="mb-1">
-        <h1 className="text-[28px] font-bold text-[#121212] tracking-tight capitalize">
-          {monthName}{yearLabel}
-        </h1>
+    <div className="flex flex-col" style={{ minHeight: 'calc(100dvh - 160px)' }}>
+
+      {/* ── Page header: month title + navigation ─────────────────────────── */}
+      <div className="mb-1 flex-shrink-0">
+        <div className="flex items-center gap-2.5">
+          <h1 className="text-[32px] font-bold text-[#121212] tracking-tight capitalize leading-none">
+            {monthName}{yearLabel}
+          </h1>
+          {/* Inline prev/next — live in the header, NOT inside the calendar card */}
+          <div className="flex items-center gap-0.5 self-end mb-0.5">
+            <button
+              onClick={prevMonth}
+              className="w-7 h-7 flex items-center justify-center rounded-lg text-[#A0A0A0] active:text-[#121212] active:bg-[#EBEBEB] transition-colors"
+              aria-label="Previous month"
+            >
+              <ChevronLeft size={17} strokeWidth={2.5} />
+            </button>
+            <button
+              onClick={nextMonth}
+              className="w-7 h-7 flex items-center justify-center rounded-lg text-[#A0A0A0] active:text-[#121212] active:bg-[#EBEBEB] transition-colors"
+              aria-label="Next month"
+            >
+              <ChevronRight size={17} strokeWidth={2.5} />
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Month summary */}
-      <div className="flex items-center gap-3 mb-5">
-        <span className="text-sm text-[#121212]">
+      {/* ── Month summary ─────────────────────────────────────────────────── */}
+      <div className="flex items-center gap-3 mb-4 flex-shrink-0">
+        <span className="text-[14px] text-[#121212]">
           <span className="font-semibold tabular-nums">
             {formatCurrency(monthTotal.amount, monthTotal.currency)}
           </span>
           {' '}
           <span className="text-[#888888]">{t('calendar.total')}</span>
         </span>
-        <span className="w-px h-3.5 bg-[#D4D4D4]" />
-        <span className="text-sm text-[#888888]">
-          {Object.keys(dayMap).length === 0
-            ? t('calendar.noRenewals')
-            : `${Object.values(dayMap).flat().length} subs.`}
-        </span>
+        {totalSubsThisMonth > 0 && (
+          <>
+            <span className="w-px h-3.5 bg-[#D4D4D4]" />
+            <span className="text-[14px] text-[#888888]">
+              {totalSubsThisMonth}{' '}
+              {totalSubsThisMonth === 1
+                ? (locale === 'es' ? 'renovación' : 'renewal')
+                : (locale === 'es' ? 'renovaciones' : 'renewals')}
+            </span>
+          </>
+        )}
+        {totalSubsThisMonth === 0 && (
+          <>
+            <span className="w-px h-3.5 bg-[#D4D4D4]" />
+            <span className="text-[14px] text-[#888888]">{t('calendar.noRenewals')}</span>
+          </>
+        )}
       </div>
 
-      {/* Calendar card */}
-      <div className="bg-white rounded-[20px] border border-[#E8E8E8] overflow-hidden">
-        {/* Month navigation header */}
-        <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-[#F0F0F0]">
-          <button
-            onClick={prevMonth}
-            className="w-8 h-8 flex items-center justify-center rounded-xl bg-[#F5F5F5] active:bg-[#EBEBEB] transition-colors"
+      {/* ── Weekday labels — free-floating, no container ──────────────────── */}
+      <div className="grid grid-cols-7 mb-2 flex-shrink-0">
+        {weekdays.map(label => (
+          <div
+            key={label}
+            className="text-center text-[11px] font-medium text-[#A0A0A0] tracking-wide py-1"
           >
-            <ChevronLeft size={16} className="text-[#424242]" />
-          </button>
-          <span className="text-[15px] font-semibold text-[#121212] capitalize">
-            {monthName}{yearLabel}
-          </span>
-          <button
-            onClick={nextMonth}
-            className="w-8 h-8 flex items-center justify-center rounded-xl bg-[#F5F5F5] active:bg-[#EBEBEB] transition-colors"
-          >
-            <ChevronRight size={16} className="text-[#424242]" />
-          </button>
-        </div>
+            {label}
+          </div>
+        ))}
+      </div>
 
-        {/* Weekday labels */}
-        <div className="grid grid-cols-7 border-b border-[#F0F0F0]">
-          {weekdays.map(label => (
-            <div
-              key={label}
-              className="text-center text-[11px] font-medium text-[#A0A0A0] py-2.5 tracking-wide"
-            >
-              {label}
-            </div>
-          ))}
-        </div>
+      {/* ── Calendar grid — cells float directly on page background ──────── */}
+      {/* No card wrapper. Cells are individual rounded tiles with gap spacing. */}
+      <div
+        className="flex-1"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(7, 1fr)',
+          gridTemplateRows: `repeat(${numWeeks}, 1fr)`,
+          gap: '5px',
+          minHeight: `${numWeeks * 80 + (numWeeks - 1) * 5}px`,
+        }}
+      >
+        {cells.map((day, i) => {
+          // Empty cells before day 1 or after last day — invisible spacer
+          if (!day) {
+            return <div key={i} />
+          }
+          const isToday =
+            year === today.getFullYear() &&
+            month === today.getMonth() &&
+            day === today.getDate()
+          const subsForDay = dayMap[day] ?? []
 
-        {/* Calendar grid — 1px gap to show the bg-[#F0F0F0] as grid lines */}
-        <div className="grid grid-cols-7 gap-px bg-[#F0F0F0]">
-          {cells.map((day, i) => {
-            if (!day) {
-              return <div key={i} className="bg-white min-h-[56px]" />
-            }
-            const isToday =
-              year === today.getFullYear() &&
-              month === today.getMonth() &&
-              day === today.getDate()
-            const subsForDay = dayMap[day] ?? []
-
-            return (
-              <DayCell
-                key={i}
-                day={day}
-                isToday={isToday}
-                subscriptions={subsForDay}
-                onClick={() => setSelectedDay(day)}
-              />
-            )
-          })}
-        </div>
+          return (
+            <DayCell
+              key={i}
+              day={day}
+              isToday={isToday}
+              subscriptions={subsForDay}
+              onClick={() => setSelectedDay(day)}
+            />
+          )
+        })}
       </div>
 
       {/* Day detail sheet */}

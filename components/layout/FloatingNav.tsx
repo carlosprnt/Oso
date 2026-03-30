@@ -54,11 +54,11 @@ export default function FloatingNav() {
   }
 
   const isDash = pathname === '/dashboard' || pathname.startsWith('/dashboard/')
-  const isCal  = pathname === '/calendar'  || pathname.startsWith('/calendar/')
   const isSubs = pathname === '/subscriptions' || pathname.startsWith('/subscriptions/')
+  const isCal  = pathname === '/calendar'  || pathname.startsWith('/calendar/')
 
-  // x offset of the sliding black bg: 3 positions
-  const bgX = isSubs ? (BTN_W + GAP) * 2 : isCal ? BTN_W + GAP : 0
+  // x offset of the sliding black bg: Dashboard=0, Subscriptions=1, Calendar=2
+  const bgX = isCal ? (BTN_W + GAP) * 2 : isSubs ? BTN_W + GAP : 0
 
   // Bottom offset: 16px + safe-area
   const bottomOffset = 'calc(16px + env(safe-area-inset-bottom))'
@@ -69,8 +69,8 @@ export default function FloatingNav() {
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 pointer-events-none"
         style={{ height: `calc(${BTN_H + PAD * 2}px + 16px + env(safe-area-inset-bottom))` }}
       >
-        {/* Pill — centered, 16px from bottom */}
-        <div className="absolute left-1/2 -translate-x-1/2 pointer-events-auto"
+        {/* Pill — left-aligned at 20px, 16px from bottom */}
+        <div className="absolute left-5 pointer-events-auto"
           style={{ bottom: bottomOffset }}
         >
           <div
@@ -110,6 +110,15 @@ export default function FloatingNav() {
               </div>
             </Link>
 
+            {/* Subscriptions button */}
+            <Link href="/subscriptions" aria-label={t('nav.subscriptions')}>
+              <div className="relative flex items-center justify-center rounded-full"
+                style={{ width: BTN_W, height: BTN_H, zIndex: 2, color: isSubs ? '#ffffff' : '#111111' }}
+              >
+                <TagHeartIcon active={false} />
+              </div>
+            </Link>
+
             {/* Calendar button */}
             <Link href="/calendar" aria-label={t('nav.calendar')}>
               <div className="relative flex items-center justify-center rounded-full"
@@ -117,15 +126,6 @@ export default function FloatingNav() {
               >
                 <CalendarDays size={20} strokeWidth={2}
                   color={isCal ? '#ffffff' : '#111111'} />
-              </div>
-            </Link>
-
-            {/* Subscriptions button */}
-            <Link href="/subscriptions" aria-label={t('nav.subscriptions')}>
-              <div className="relative flex items-center justify-center rounded-full"
-                style={{ width: BTN_W, height: BTN_H, zIndex: 2, color: isSubs ? '#ffffff' : '#111111' }}
-              >
-                <TagHeartIcon active={false} />
               </div>
             </Link>
           </div>

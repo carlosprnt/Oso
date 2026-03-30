@@ -10,8 +10,8 @@ import type { Profile } from '@/types'
 
 const NAV_ITEMS = [
   { href: '/dashboard',     icon: LayoutDashboard, label: 'Dashboard' },
-  { href: '/calendar',      icon: CalendarDays,    label: 'Calendar' },
   { href: '/subscriptions', icon: CreditCard,      label: 'Subscriptions' },
+  { href: '/calendar',      icon: CalendarDays,    label: 'Calendar' },
 ]
 
 interface SidebarProps {
