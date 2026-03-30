@@ -386,71 +386,72 @@ function FilterSheet({ currentStatus, currentCategory, onClose }: FilterSheetPro
   )
 }
 
-// ─── Sort bottom sheet ─────────────────────────────────────────────────────
-function SortSheet({
+// ─── Sort dropdown ─────────────────────────────────────────────────────────
+function SortDropdown({
   current,
   onSelect,
-  onClose,
 }: {
   current: SortMode
   onSelect: (mode: SortMode) => void
-  onClose: () => void
 }) {
   const t = useT()
+  const [open, setOpen] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const options: { mode: SortMode; label: string }[] = [
-    { mode: 'alphabetical',    label: t('subscriptions.sortAlphabetical') },
-    { mode: 'recently_added',  label: t('subscriptions.sortRecentlyAdded') },
-    { mode: 'recently_updated',label: t('subscriptions.sortRecentlyUpdated') },
-    { mode: 'price_high',      label: t('subscriptions.sortPriceHigh') },
-    { mode: 'price_low',       label: t('subscriptions.sortPriceLow') },
+    { mode: 'alphabetical',     label: t('subscriptions.sortAlphabetical') },
+    { mode: 'recently_added',   label: t('subscriptions.sortRecentlyAdded') },
+    { mode: 'recently_updated', label: t('subscriptions.sortRecentlyUpdated') },
+    { mode: 'price_high',       label: t('subscriptions.sortPriceHigh') },
+    { mode: 'price_low',        label: t('subscriptions.sortPriceLow') },
   ]
 
+  const currentLabel = options.find(o => o.mode === current)?.label ?? ''
+
+  // Close on outside click
   useEffect(() => {
-    document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = '' }
-  }, [])
+    function handler(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    if (open) document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
 
   return (
-    <AnimatePresence>
-      <motion.div
-        className="fixed inset-0 bg-black/40 z-[59]"
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        onClick={onClose}
-      />
-      <motion.div
-        className="fixed bottom-0 left-0 right-0 z-[60] bg-white rounded-t-[28px]"
-        style={{ border: '1px solid #E5E5E5', borderBottom: 'none' }}
-        initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-        transition={{ type: 'spring', stiffness: 380, damping: 36 }}
+    <div className="relative" ref={containerRef}>
+      {/* Trigger */}
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="flex items-center gap-1 active:opacity-60 transition-opacity"
       >
-        <div className="flex justify-center pt-3 pb-1">
-          <div className="w-10 h-1 bg-[#DADADA] rounded-full" />
+        <span className="text-[13px] text-[#999999]">{t('subscriptions.sortBy')} ·</span>
+        <span className="text-[13px] font-medium text-[#444444]">{currentLabel}</span>
+        <ChevronsUpDown size={11} className="text-[#BBBBBB] ml-0.5" />
+      </button>
+
+      {/* Dropdown */}
+      {open && (
+        <div className="absolute top-full left-0 mt-2 w-52 bg-white rounded-2xl border border-[#E5E5E5] shadow-[0_4px_24px_rgba(0,0,0,0.12)] overflow-hidden z-50 animate-fade-in-scale">
+          <div className="py-1.5">
+            {options.map(({ mode, label }) => {
+              const active = current === mode
+              return (
+                <button
+                  key={mode}
+                  onClick={() => { onSelect(mode); setOpen(false) }}
+                  className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors text-left ${active ? 'text-[#3D3BF3] font-semibold bg-[#F0F0FF]' : 'text-[#424242] font-medium hover:bg-[#F5F5F5]'}`}
+                >
+                  {label}
+                  {active && <Check size={13} strokeWidth={2.5} className="text-[#3D3BF3] flex-shrink-0" />}
+                </button>
+              )
+            })}
+          </div>
         </div>
-        <div className="flex items-center justify-between px-5 py-3 border-b border-[#F0F0F0]">
-          <h2 className="text-[17px] font-semibold text-[#111111]">{t('subscriptions.sortBy')}</h2>
-          <button onClick={onClose} className="w-8 h-8 rounded-2xl bg-[#F5F5F5] flex items-center justify-center">
-            <X size={15} strokeWidth={2.5} className="text-[#666666]" />
-          </button>
-        </div>
-        <div className="px-5 py-3 space-y-1" style={{ paddingBottom: 'max(20px, env(safe-area-inset-bottom))' }}>
-          {options.map(({ mode, label }) => {
-            const active = current === mode
-            return (
-              <button
-                key={mode}
-                onClick={() => { onSelect(mode); onClose() }}
-                className={`w-full flex items-center justify-between px-4 h-12 rounded-[12px] text-[15px] transition-colors duration-100 ${active ? 'bg-[#F0F0FF] text-[#3D3BF3] font-semibold' : 'text-[#111111] font-medium active:bg-[#F5F5F5]'}`}
-              >
-                {label}
-                {active && <Check size={16} strokeWidth={2.5} className="text-[#3D3BF3]" />}
-              </button>
-            )
-          })}
-        </div>
-      </motion.div>
-    </AnimatePresence>
+      )}
+    </div>
   )
 }
 
@@ -474,7 +475,6 @@ export default function SubscriptionsView({
 }: SubscriptionsViewProps) {
   const t = useT()
   const [filterOpen, setFilterOpen] = useState(false)
-  const [sortOpen, setSortOpen] = useState(false)
   const [sortMode, setSortMode] = useState<SortMode>('alphabetical')
   const [selectedSub, setSelectedSub] = useState<SubscriptionWithCosts | null>(null)
   const [overlayVisible, setOverlayVisible] = useState(false)
@@ -513,14 +513,6 @@ export default function SubscriptionsView({
 
   const sortedSubscriptions = sortSubscriptions(subscriptions, sortMode)
 
-  const SORT_LABELS: Record<SortMode, string> = {
-    alphabetical:    t('subscriptions.sortAlphabetical'),
-    recently_added:  t('subscriptions.sortRecentlyAdded'),
-    recently_updated:t('subscriptions.sortRecentlyUpdated'),
-    price_high:      t('subscriptions.sortPriceHigh'),
-    price_low:       t('subscriptions.sortPriceLow'),
-  }
-
   return (
     <LayoutGroup>
       <div className="space-y-5">
@@ -541,14 +533,9 @@ export default function SubscriptionsView({
           </div>
 
           {/* Sort control */}
-          <button
-            onClick={() => setSortOpen(true)}
-            className="mt-1.5 flex items-center gap-1 active:opacity-60 transition-opacity"
-          >
-            <span className="text-[13px] text-[#999999]">{t('subscriptions.sortBy')} ·</span>
-            <span className="text-[13px] font-medium text-[#444444]">{SORT_LABELS[sortMode]}</span>
-            <ChevronsUpDown size={11} className="text-[#BBBBBB] ml-0.5" />
-          </button>
+          <div className="mt-0.5">
+            <SortDropdown current={sortMode} onSelect={setSortMode} />
+          </div>
         </div>
 
         {/* ── Summary cards ────────────────────────────────────── */}
@@ -644,16 +631,6 @@ export default function SubscriptionsView({
         )}
       </AnimatePresence>
 
-      {/* ── Sort bottom sheet ─────────────────────────────────── */}
-      <AnimatePresence>
-        {sortOpen && (
-          <SortSheet
-            current={sortMode}
-            onSelect={setSortMode}
-            onClose={() => setSortOpen(false)}
-          />
-        )}
-      </AnimatePresence>
     </LayoutGroup>
   )
 }
