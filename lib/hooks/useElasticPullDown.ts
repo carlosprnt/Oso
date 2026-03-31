@@ -31,6 +31,9 @@ export function useElasticPullDown(): MotionValue<number> {
     }
 
     const onTouchMove = (e: TouchEvent) => {
+      // Don't interfere when a modal is open (body scroll is locked)
+      if (document.body.style.overflow === 'hidden') return
+
       const delta = e.touches[0].clientY - startYRef.current
 
       // Not pulling downward — cancel any active pull
