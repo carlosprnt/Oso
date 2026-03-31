@@ -4,11 +4,9 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { createSubscription, updateSubscription, deleteSubscription } from '@/app/(dashboard)/subscriptions/actions'
 import { CATEGORIES } from '@/lib/constants/categories'
-import { BILLING_PERIOD_LABELS } from '@/lib/constants/currencies'
-import { AlertCircle, ChevronsUpDown } from 'lucide-react'
+import { CURRENCIES, BILLING_PERIOD_LABELS } from '@/lib/constants/currencies'
+import { AlertCircle, ChevronsUpDown, X } from 'lucide-react'
 import { useT, useLocale } from '@/lib/i18n/LocaleProvider'
-import SubscriptionAvatar from '@/components/subscriptions/SubscriptionAvatar'
-import { resolveSubscriptionLogoUrl } from '@/lib/constants/platforms'
 import type { Subscription, BillingPeriod, SubscriptionStatus, UserShareMode, Category } from '@/types'
 import type { PlatformPreset } from '@/lib/constants/platforms'
 import { getPrefilledPlatformValues } from '@/lib/constants/platforms'
@@ -206,6 +204,7 @@ export default function SubscriptionForm({
     subscription?.trial_end_date ?? '',
   )
   const [notes, setNotes] = useState(subscription?.notes ?? '')
+  const [currency, setCurrency] = useState(subscription?.currency ?? 'EUR')
 
   // ── Derived ───────────────────────────────────────────────────────────────
   const isTrial = status === 'trial'
@@ -224,7 +223,7 @@ export default function SubscriptionForm({
       card_color: null,
       category,
       price_amount: parseFloat(priceAmount) || 0,
-      currency: 'EUR',
+      currency,
       billing_period: billingPeriod,
       billing_interval_count: parseInt(billingIntervalCount) || 1,
       next_billing_date: nextBillingDate || null,
@@ -263,28 +262,31 @@ export default function SubscriptionForm({
     })
   }
 
+  // font-size:16px prevents iOS Safari from zooming on focus
   const selectCls =
-    'absolute inset-0 w-full h-full opacity-0 cursor-pointer appearance-none'
+    'absolute inset-0 w-full h-full opacity-0 cursor-pointer appearance-none text-[16px]'
+
+  const currencySymbol = CURRENCIES.find(c => c.code === currency)?.symbol ?? currency
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col min-h-0">
+    <form onSubmit={handleSubmit} className="flex flex-col" style={{ minHeight: '100%' }}>
 
-      {/* ── Header: title + save button ──────────────────────────────────── */}
-      <div className="flex-shrink-0 flex items-center justify-between px-5 pt-2 pb-4">
-        <h1 className="text-[28px] font-bold text-[#111111] dark:text-[#F2F2F7] tracking-tight leading-tight">
+      {/* ── Header: title + close ────────────────────────────────────────── */}
+      <div className="flex-shrink-0 flex items-center justify-between px-5 pt-3 pb-3">
+        <h2 className="text-[17px] font-semibold text-[#111111] dark:text-[#F2F2F7]">
           {mode === 'create' ? t('sheets.createNew') : t('sheets.editSubscription')}
-        </h1>
+        </h2>
         <button
-          type="submit"
-          disabled={isPending}
-          className="px-5 py-2 rounded-full bg-[#EFEFEF] dark:bg-[#2C2C2E] text-[#111111] dark:text-[#F2F2F7] text-[15px] font-medium disabled:opacity-40 active:bg-[#E0E0E0] dark:active:bg-[#3A3A3C] transition-colors"
+          type="button"
+          onClick={onCancel ?? (() => router.back())}
+          className="w-8 h-8 rounded-full bg-[#F5F5F5] dark:bg-[#2C2C2E] flex items-center justify-center text-[#666666] dark:text-[#AEAEB2] transition-colors active:bg-[#EBEBEB] dark:active:bg-[#3A3A3C]"
         >
-          {isPending ? '…' : t('form.saveChanges')}
+          <X size={16} strokeWidth={2.5} />
         </button>
       </div>
 
       {/* ── Scrollable body ──────────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto overscroll-contain pb-10">
+      <div className="flex-1 pb-4">
 
         {/* Error */}
         {error && (
@@ -294,37 +296,45 @@ export default function SubscriptionForm({
           </div>
         )}
 
-        {/* ── Hero card: avatar + name + price ────────────────────────── */}
-        <div className="mx-5 mb-3 bg-[#F5F5F5] dark:bg-[#1C1C1E] rounded-2xl p-4 flex items-center gap-3 border border-[#EFEFEF] dark:border-[#2C2C2E]">
-          <SubscriptionAvatar
-            name={name || 'New'}
-            logoUrl={resolveSubscriptionLogoUrl(name, logoUrl || null)}
-            size="lg"
-            corner="rounded-[12px]"
+        {/* ── Hero card: name + price (no avatar) ─────────────────────── */}
+        <div className="mx-5 mb-3 bg-[#F5F5F5] dark:bg-[#1C1C1E] rounded-2xl px-4 py-4 border border-[#EFEFEF] dark:border-[#2C2C2E]">
+          <input
+            type="text"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="Nombre suscripción"
+            autoFocus={false}
+            className="w-full bg-transparent text-[17px] font-semibold text-[#111111] dark:text-[#F2F2F7] placeholder:text-[#BBBBBB] dark:placeholder:text-[#636366] outline-none leading-snug"
+            style={{ fontSize: 17 }}
           />
-          <div className="flex-1 min-w-0">
-            <input
-              type="text"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              placeholder={t('form.namePlaceholder')}
-              autoFocus={false}
-              className="w-full bg-transparent text-[17px] font-semibold text-[#111111] dark:text-[#F2F2F7] placeholder:text-[#BBBBBB] dark:placeholder:text-[#636366] outline-none leading-snug"
-            />
-            <div className="flex items-center gap-2 mt-1.5">
-              <span className="bg-[#E8E8E8] dark:bg-[#2C2C2E] text-[#555555] dark:text-[#AEAEB2] text-[12px] font-semibold px-2 py-0.5 rounded-lg">
-                €
+          <div className="flex items-center gap-2 mt-2">
+            {/* Currency — tappable pill with transparent select overlay */}
+            <div className="relative flex-shrink-0">
+              <span className="bg-[#E8E8E8] dark:bg-[#2C2C2E] text-[#555555] dark:text-[#AEAEB2] text-[15px] font-semibold px-2.5 py-1 rounded-lg flex items-center gap-0.5">
+                {currencySymbol}
+                <ChevronsUpDown size={11} className="text-[#999999] dark:text-[#636366]" />
               </span>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={priceAmount}
-                onChange={e => setPriceAmount(e.target.value)}
-                placeholder="0.00"
-                className="bg-transparent text-[15px] text-[#555555] dark:text-[#AEAEB2] placeholder:text-[#BBBBBB] dark:placeholder:text-[#636366] outline-none w-28 tabular-nums"
-              />
+              <select
+                value={currency}
+                onChange={e => setCurrency(e.target.value)}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer appearance-none"
+                style={{ fontSize: 16 }}
+              >
+                {CURRENCIES.map(c => (
+                  <option key={c.code} value={c.code}>{c.symbol} {c.name}</option>
+                ))}
+              </select>
             </div>
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              value={priceAmount}
+              onChange={e => setPriceAmount(e.target.value)}
+              placeholder="0.00"
+              className="bg-transparent text-[17px] font-semibold text-[#111111] dark:text-[#F2F2F7] placeholder:text-[#BBBBBB] dark:placeholder:text-[#636366] outline-none flex-1 tabular-nums"
+              style={{ fontSize: 17 }}
+            />
           </div>
         </div>
 
@@ -358,7 +368,7 @@ export default function SubscriptionForm({
                 min="1"
                 value={billingIntervalCount}
                 onChange={e => setBillingIntervalCount(e.target.value)}
-                className="bg-[#EFEFEF] dark:bg-[#2C2C2E] rounded-xl px-3 py-1.5 text-[15px] text-[#111111] dark:text-[#F2F2F7] outline-none w-20 text-right tabular-nums"
+                className="bg-[#EFEFEF] dark:bg-[#2C2C2E] rounded-xl px-3 py-1.5 text-[16px] text-[#111111] dark:text-[#F2F2F7] outline-none w-20 text-right tabular-nums" style={{ fontSize: 16 }}
               />
             </Row>
           )}
@@ -431,7 +441,7 @@ export default function SubscriptionForm({
                   min="2"
                   value={sharedWithCount}
                   onChange={e => setSharedWithCount(e.target.value)}
-                  className="bg-[#EFEFEF] dark:bg-[#2C2C2E] rounded-xl px-3 py-1.5 text-[15px] text-[#111111] dark:text-[#F2F2F7] outline-none w-20 text-right tabular-nums"
+                  className="bg-[#EFEFEF] dark:bg-[#2C2C2E] rounded-xl px-3 py-1.5 text-[16px] text-[#111111] dark:text-[#F2F2F7] outline-none w-20 text-right tabular-nums" style={{ fontSize: 16 }}
                 />
               </Row>
               <SelectRow
@@ -457,7 +467,7 @@ export default function SubscriptionForm({
                     value={userShareAmount}
                     onChange={e => setUserShareAmount(e.target.value)}
                     placeholder="4.99"
-                    className="bg-[#EFEFEF] dark:bg-[#2C2C2E] rounded-xl px-3 py-1.5 text-[15px] text-[#111111] dark:text-[#F2F2F7] placeholder:text-[#BBBBBB] dark:placeholder:text-[#636366] outline-none w-24 text-right tabular-nums"
+                    className="bg-[#EFEFEF] dark:bg-[#2C2C2E] rounded-xl px-3 py-1.5 text-[16px] text-[#111111] dark:text-[#F2F2F7] placeholder:text-[#BBBBBB] dark:placeholder:text-[#636366] outline-none w-24 text-right tabular-nums" style={{ fontSize: 16 }}
                   />
                 </Row>
               )}
@@ -473,7 +483,7 @@ export default function SubscriptionForm({
               value={logoUrl}
               onChange={e => setLogoUrl(e.target.value)}
               placeholder="https://…"
-              className="bg-transparent text-[15px] text-[#555555] dark:text-[#AEAEB2] placeholder:text-[#BBBBBB] dark:placeholder:text-[#636366] outline-none text-right w-40 truncate"
+              className="bg-transparent text-[16px] text-[#555555] dark:text-[#AEAEB2] placeholder:text-[#BBBBBB] dark:placeholder:text-[#636366] outline-none text-right w-40 truncate" style={{ fontSize: 16 }}
             />
           </Row>
           <Row label={t('form.notes')} last>
@@ -482,7 +492,7 @@ export default function SubscriptionForm({
               value={notes}
               onChange={e => setNotes(e.target.value)}
               placeholder={t('form.notesPlaceholder')}
-              className="bg-transparent text-[15px] text-[#555555] dark:text-[#AEAEB2] placeholder:text-[#BBBBBB] dark:placeholder:text-[#636366] outline-none text-right w-40 truncate"
+              className="bg-transparent text-[16px] text-[#555555] dark:text-[#AEAEB2] placeholder:text-[#BBBBBB] dark:placeholder:text-[#636366] outline-none text-right w-40 truncate" style={{ fontSize: 16 }}
             />
           </Row>
         </Section>
@@ -541,18 +551,22 @@ export default function SubscriptionForm({
           </div>
         )}
 
-        {/* ── Cancel ──────────────────────────────────────────────────── */}
-        <div className="mx-5 mb-2">
-          <button
-            type="button"
-            onClick={onCancel ?? (() => router.back())}
-            className="w-full h-12 rounded-2xl bg-[#F5F5F5] dark:bg-[#1C1C1E] text-[#444444] dark:text-[#AEAEB2] text-sm font-medium active:bg-[#EBEBEB] dark:active:bg-[#2C2C2E] transition-colors"
-          >
-            {t('form.cancel')}
-          </button>
-        </div>
-
       </div>
+
+      {/* ── Save button — sticky at the bottom of the scroll container ── */}
+      <div
+        className="flex-shrink-0 sticky bottom-0 px-5 pt-3 pb-5 bg-white dark:bg-[#1C1C1E] border-t border-[#EFEFEF] dark:border-[#2C2C2E]"
+        style={{ paddingBottom: 'max(20px, env(safe-area-inset-bottom))' }}
+      >
+        <button
+          type="submit"
+          disabled={isPending}
+          className="w-full h-12 rounded-full bg-[#3D3BF3] text-white text-[15px] font-semibold disabled:opacity-40 active:bg-[#3230D0] transition-colors"
+        >
+          {isPending ? '…' : t('form.saveChanges')}
+        </button>
+      </div>
+
     </form>
   )
 }
