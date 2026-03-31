@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import {
@@ -99,6 +99,21 @@ export default function SubscriptionDetailOverlay({ sub, onClose, isClosing }: P
   const t = useT()
   const locale = useLocale()
   const [editOpen, setEditOpen] = useState(false)
+  const savedScrollY = useRef(0)
+
+  // Lock body scroll while overlay is open
+  useEffect(() => {
+    savedScrollY.current = window.scrollY
+    document.body.style.position = 'fixed'
+    document.body.style.top = `-${savedScrollY.current}px`
+    document.body.style.width = '100%'
+    return () => {
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.width = ''
+      window.scrollTo(0, savedScrollY.current)
+    }
+  }, [])
 
   const billingProg = billingProgress(sub.next_billing_date, sub.billing_period, sub.billing_interval_count)
   const daysLeft = daysUntilBilling(sub.next_billing_date)
