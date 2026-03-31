@@ -84,7 +84,7 @@ export default function Insights({ subscriptions, stats }: InsightsProps) {
     : ''
 
   return (
-    <div className="bg-white dark:bg-[#1C1C1E] rounded-[20px] border border-[#E8E8E8] dark:border-[#2C2C2E] overflow-hidden">
+    <div className="bg-white dark:bg-[#1C1C1E] rounded-[20px] overflow-hidden">
       <div className="grid grid-cols-2">
 
         {/* ① Highest cost */}
