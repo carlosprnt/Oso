@@ -3,7 +3,7 @@ import { enrichSubscriptions, getDashboardStats, getTopSpendCategories, getUpcom
 import { formatCurrency } from '@/lib/utils/currency'
 import type { Subscription } from '@/types'
 import Link from 'next/link'
-import { TrendingUp, Calendar, Users, Zap, Plus } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import UpcomingRenewals from '@/components/dashboard/UpcomingRenewals'
@@ -12,6 +12,7 @@ import TopCategoriesSection from '@/components/dashboard/TopCategoriesSection'
 import { loadDemoData } from '@/app/(dashboard)/subscriptions/demo-action'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import DashboardCardStack from '@/components/dashboard/DashboardCardStack'
+import DashboardSummaryHero from '@/components/dashboard/DashboardSummaryHero'
 import Insights from '@/components/dashboard/Insights'
 import { getServerT } from '@/lib/i18n/server'
 import type { Metadata } from 'next'
@@ -25,6 +26,7 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser()
   const fullName: string = user?.user_metadata?.full_name ?? user?.email?.split('@')[0] ?? ''
   const firstName = fullName.split(' ')[0]
+  const avatarUrl: string | null = user?.user_metadata?.avatar_url ?? null
 
   const { data: rawSubs } = await supabase
     .from('subscriptions')
@@ -36,11 +38,13 @@ export default async function DashboardPage() {
   const topCategories = getTopSpendCategories(subs, 4)
   const upcoming = getUpcomingRenewals(subs, 365)
   const top3 = getTopExpensiveSubscriptions(subs, 3)
+  const sharedCount = subs.filter(
+    s => s.is_shared && (s.status === 'active' || s.status === 'trial')
+  ).length
 
   const isEmpty = subs.length === 0
 
   const shareText = `My monthly subscriptions: ${formatCurrency(stats.total_monthly_cost, 'EUR')} across ${subs.length} subscriptions — tracked with Perezoso 🦥`
-
   const greeting = firstName ? `Hola, ${firstName}` : t('dashboard.title')
 
   const categoryRows = topCategories.map(({ category, monthly_cost }) => ({
@@ -51,113 +55,58 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      {/* Header — sticky, fades as cards scroll over */}
+      {/* Sticky header — fades as content scrolls over */}
       <DashboardHeader
         title={greeting}
         subtitle={t('dashboard.subtitle')}
         shareText={shareText}
       />
 
-      {/* Content — higher z-index, scrolls over the header */}
       <DashboardCardStack>
-
-      {isEmpty ? (
-        <EmptyState t={t} />
-      ) : (
-        <>
-          {/* Monthly + Yearly */}
-          <div className="bg-white dark:bg-[#1C1C1E] rounded-2xl border border-[#E8E8E8] dark:border-[#2C2C2E] p-5">
-            <div className="grid grid-cols-2">
-              <div className="pr-5">
-                <div className="flex items-center gap-1.5 mb-3">
-                  <TrendingUp size={13} className="text-[#737373] dark:text-[#636366]" />
-                  <span className="text-xs font-medium text-[#737373] dark:text-[#636366]">{t('dashboard.monthly')}</span>
-                </div>
-                <p className="text-[28px] font-bold text-[#121212] dark:text-[#F2F2F7] tabular-nums tracking-tight leading-none">
-                  {formatCurrency(stats.total_monthly_cost, 'EUR')}
-                </p>
-              </div>
-              <div className="flex">
-                {/* Vertical divider with inset margin */}
-                <div className="w-px bg-[#F0F0F0] dark:bg-[#2C2C2E] my-3 flex-shrink-0" />
-                <div className="pl-5 flex-1">
-                  <div className="flex items-center gap-1.5 mb-3">
-                    <Calendar size={13} className="text-[#737373] dark:text-[#636366]" />
-                    <span className="text-xs font-medium text-[#737373] dark:text-[#636366]">{t('dashboard.yearly')}</span>
-                  </div>
-                  <p className="text-[28px] font-bold text-[#121212] dark:text-[#F2F2F7] tabular-nums tracking-tight leading-none">
-                    {formatCurrency(stats.total_annual_cost, 'EUR')}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Active + Shared */}
-          <div className="grid grid-cols-2 gap-[8px]">
-            <SmallStatCard
-              label={t('dashboard.active')}
-              value={String(stats.active_count + stats.trial_count)}
-              sub={t('dashboard.onTrial', { count: stats.trial_count })}
-              icon={<Zap size={13} className="text-[#737373]" />}
+        {isEmpty ? (
+          <EmptyState t={t} />
+        ) : (
+          <>
+            {/* Editorial summary hero */}
+            <DashboardSummaryHero
+              firstName={firstName}
+              fullName={fullName}
+              avatarUrl={avatarUrl}
+              stats={stats}
+              sharedCount={sharedCount}
             />
-            <SmallStatCard
-              label={t('dashboard.shared')}
-              value={formatCurrency(stats.shared_monthly_cost, 'EUR')}
-              sub={t('dashboard.yourSharePerMonth')}
-              icon={<Users size={13} className="text-[#737373]" />}
-            />
-          </div>
 
-          {/* Insights */}
-          <Insights subscriptions={subs} stats={stats} />
+            {/* Insights grid */}
+            <Insights subscriptions={subs} stats={stats} />
 
-          <div className="grid lg:grid-cols-3 gap-[8px]">
-            {/* Upcoming renewals */}
-            <div className="lg:col-span-2">
-              <Card>
-                <CardHeader title={t('dashboard.upcomingRenewals')} />
-                <UpcomingRenewals renewals={upcoming} />
-              </Card>
+            {/* Renewals + Categories */}
+            <div className="grid lg:grid-cols-3 gap-[8px]">
+              <div className="lg:col-span-2">
+                <Card>
+                  <CardHeader title={t('dashboard.upcomingRenewals')} />
+                  <UpcomingRenewals renewals={upcoming} />
+                </Card>
+              </div>
+              <div className="space-y-[8px]">
+                <Card>
+                  <CardHeader title={t('dashboard.topCategories')} />
+                  <TopCategoriesSection categories={categoryRows} />
+                </Card>
+              </div>
             </div>
 
-            {/* Right column */}
-            <div className="space-y-[8px]">
-              {/* Top categories */}
-              <Card>
-                <CardHeader title={t('dashboard.topCategories')} />
-                <TopCategoriesSection categories={categoryRows} />
-              </Card>
-            </div>
-          </div>
-
-          {/* Top 3 most expensive */}
-          {top3.length > 0 && (
-            <div className="overflow-x-hidden mt-3">
-              <h3 className="text-[17px] font-bold text-[#121212] dark:text-[#F2F2F7] tracking-tight leading-tight mb-4">
-                {t('dashboard.topExpensive')}
-              </h3>
-              <TopExpensiveSection subscriptions={top3} />
-            </div>
-          )}
-        </>
-      )}
+            {/* Top 3 most expensive */}
+            {top3.length > 0 && (
+              <div className="overflow-x-hidden mt-3">
+                <h3 className="text-[17px] font-bold text-[#121212] dark:text-[#F2F2F7] tracking-tight leading-tight mb-4">
+                  {t('dashboard.topExpensive')}
+                </h3>
+                <TopExpensiveSection subscriptions={top3} />
+              </div>
+            )}
+          </>
+        )}
       </DashboardCardStack>
-    </div>
-  )
-}
-
-// ── Small stat card ───────────────────────────────────────────────────────────
-
-function SmallStatCard({ label, value, sub, icon }: { label: string; value: string; sub: string; icon: React.ReactNode }) {
-  return (
-    <div className="bg-white dark:bg-[#1C1C1E] rounded-2xl border border-[#E8E8E8] dark:border-[#2C2C2E] p-4">
-      <div className="flex items-center gap-1.5 mb-2.5">
-        {icon}
-        <span className="text-xs font-medium text-[#737373] dark:text-[#636366]">{label}</span>
-      </div>
-      <p className="text-[22px] font-bold text-[#121212] dark:text-[#F2F2F7] tabular-nums tracking-tight leading-none">{value}</p>
-      <p className="text-xs text-[#737373] dark:text-[#636366] mt-1.5">{sub}</p>
     </div>
   )
 }
