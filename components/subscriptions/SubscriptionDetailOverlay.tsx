@@ -14,6 +14,7 @@ import { formatCurrency } from '@/lib/utils/currency'
 import { formatRelativeDate } from '@/lib/utils/dates'
 import { getCategoryMeta } from '@/lib/constants/categories'
 import { BILLING_PERIOD_LABELS } from '@/lib/constants/currencies'
+import { useBrandTint } from '@/lib/hooks/useBrandTint'
 
 const BILLING_PERIOD_LABELS_ES: Record<string, string> = {
   monthly: 'Mensual', yearly: 'Anual', quarterly: 'Trimestral',
@@ -93,6 +94,8 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
   const locale = useLocale()
   const [editOpen, setEditOpen] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const logoUrl = resolveSubscriptionLogoUrl(sub.name, sub.logo_url)
+  const brandTint = useBrandTint(logoUrl)
 
   // Lock body scroll. We use overflow:hidden (not position:fixed) so iOS
   // never enters the broken fixed-body scroll mode.
@@ -149,6 +152,7 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
           width: '100%',
           borderRadius: '24px 24px 0 0',
           overflow: 'hidden',
+          position: 'relative',
         }}
         className="bg-white dark:bg-[#1C1C1E]"
         initial={{ transform: 'translateY(100%)' }}
@@ -157,8 +161,25 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
         transition={{ type: 'spring', stiffness: 340, damping: 32, mass: 0.85 }}
         onClick={(e) => e.stopPropagation()}   // don't close when tapping sheet
       >
+        {/* Atmospheric brand tint — blurred gradient behind the upper content */}
+        {brandTint.ready && (
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              top: 0, left: 0, right: 0,
+              height: 300,
+              background: brandTint.gradient,
+              filter: 'blur(28px)',
+              opacity: 0.55,
+              pointerEvents: 'none',
+              zIndex: 0,
+            }}
+          />
+        )}
+
         {/* Handle */}
-        <div style={{ flexShrink: 0, display: 'flex', justifyContent: 'center', padding: '12px 0 4px' }}>
+        <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, display: 'flex', justifyContent: 'center', padding: '12px 0 4px' }}>
           <div className="w-10 h-1 bg-[#D4D4D4] dark:bg-[#3A3A3C] rounded-full" />
         </div>
 
