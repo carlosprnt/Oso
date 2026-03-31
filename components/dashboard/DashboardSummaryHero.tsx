@@ -60,19 +60,19 @@ export default function DashboardSummaryHero({
         Tienes{' '}
         <span className="text-[#3D3BF3] dark:text-[#8B89FF]">
           {total} {total === 1 ? 'suscripción activa' : 'suscripciones activas'}
-        </span>
-        {hasSave ? (
+        </span>.
+        {hasSave && (
           <>
-            , y ahorras{' '}
+            {' '}Compartir{' '}
+            <span className="text-[#3D3BF3] dark:text-[#8B89FF]">
+              {sharedCount}
+            </span>
+            {' '}te ahorra{' '}
             <span className="text-[#3D3BF3] dark:text-[#8B89FF]">
               {savings} al mes
-            </span>
-            {' '}por compartir{' '}
-            <span className="text-[#3D3BF3] dark:text-[#8B89FF]">
-              {sharedCount} {sharedCount === 1 ? 'suscripción' : 'suscripciones'}
             </span>.
           </>
-        ) : '.'}
+        )}
       </p>
     </motion.div>
   )
