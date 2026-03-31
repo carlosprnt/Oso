@@ -77,7 +77,7 @@ function sortSubscriptions(subs: SubscriptionWithCosts[], mode: SortMode): Subsc
 // ─── Stack geometry ────────────────────────────────────────────────────────
 // Cards have content-driven height. Each card peeks ~92px from behind the next.
 // STACK_MARGIN = -(avg_card_height - peek) ≈ -(180 - 92) = -88px
-const STACK_MARGIN = '-88px'
+const STACK_MARGIN_PX = -88
 
 const CARD_SPRING = { type: 'spring' as const, stiffness: 340, damping: 32, mass: 0.85 }
 
@@ -257,16 +257,20 @@ function CardStack({
   const rawVelocity = useVelocity(scrollY)
   const springVelocity = useSpring(rawVelocity, { stiffness: 180, damping: 28 })
 
+  // Expand card gap as user scrolls down — up to 10px extra separation
+  const gapExtra = useTransform(scrollY, [0, 400], [0, 10])
+  const dynamicMargin = useTransform(gapExtra, v => `${STACK_MARGIN_PX + v}px`)
+
   // Pull-down elastic: whole stack translates downward when over-pulling at top
   const elasticY = useElasticPullDown()
 
   return (
     <motion.div className="relative" style={{ y: elasticY }}>
       {subscriptions.map((sub, i) => (
-        <div
+        <motion.div
           key={sub.id}
           style={{
-            marginTop: i === 0 ? 0 : STACK_MARGIN,
+            marginTop: i === 0 ? 0 : dynamicMargin,
             zIndex: i + 1,
             position: 'relative',
           }}
@@ -281,7 +285,7 @@ function CardStack({
             viewMode={viewMode}
             numSkeleton={numSkeleton}
           />
-        </div>
+        </motion.div>
       ))}
     </motion.div>
   )
