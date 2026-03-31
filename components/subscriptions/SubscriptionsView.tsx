@@ -260,7 +260,7 @@ function CardStack({
   // Expand gap relative to when the stack itself starts scrolling through viewport
   const stackRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: stackRef, offset: ['start 0.9', 'end start'] })
-  const gapExtra = useTransform(scrollYProgress, [0, 0.04], [24, 0])
+  const gapExtra = useTransform(scrollYProgress, [0, 0.04], [0, 24])
   const dynamicMargin = useTransform(gapExtra, v => `${STACK_MARGIN_PX + v}px`)
 
   // Pull-down elastic: whole stack translates downward when over-pulling at top
