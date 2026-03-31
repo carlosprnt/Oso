@@ -21,6 +21,7 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
   const [menuPos, setMenuPos] = useState({ top: 0, right: 0 })
   const [user, setUser] = useState<{ name: string; avatarUrl: string | null } | null>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const supabase = createClient()
@@ -37,9 +38,9 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
   // Close on outside click
   useEffect(() => {
     function handler(e: MouseEvent) {
-      if (buttonRef.current && !buttonRef.current.contains(e.target as Node)) {
-        setOpen(false)
-      }
+      const insideButton = buttonRef.current?.contains(e.target as Node)
+      const insideDropdown = dropdownRef.current?.contains(e.target as Node)
+      if (!insideButton && !insideDropdown) setOpen(false)
     }
     if (open) document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
@@ -77,6 +78,7 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
 
   const dropdown = open ? (
     <div
+      ref={dropdownRef}
       style={{ position: 'fixed', top: menuPos.top, right: menuPos.right, zIndex: 9999 }}
       className="w-56 bg-white dark:bg-[#1C1C1E] rounded-2xl border border-[#E5E5E5] dark:border-[#2C2C2E] shadow-[0_4px_24px_rgba(0,0,0,0.12)] overflow-hidden animate-fade-in-scale"
     >

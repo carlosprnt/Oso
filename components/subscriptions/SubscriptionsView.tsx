@@ -7,6 +7,7 @@ import {
   type MotionValue,
 } from 'framer-motion'
 import { useRouter, usePathname } from 'next/navigation'
+import { useEffectiveScrollY } from '@/lib/hooks/useEffectiveScrollY'
 import SubscriptionDetailOverlay from './SubscriptionDetailOverlay'
 import { SlidersHorizontal, CalendarDays, Check, ChevronsUpDown } from 'lucide-react'
 import BottomSheet from '@/components/ui/BottomSheet'
@@ -472,7 +473,7 @@ export default function SubscriptionsView({
   const [sortMode, setSortMode] = useState<SortMode>('alphabetical')
 
   // ── Header scroll-fade: content scrolls OVER the header ──────────────────
-  const { scrollY } = useScroll()
+  const scrollY = useEffectiveScrollY()
   const headerOpacity      = useTransform(scrollY, [0, 130], [1, 0])
   const headerBlurPx       = useTransform(scrollY, [0, 130], [0, 8])
   const headerFilter       = useMotionTemplate`blur(${headerBlurPx}px)`

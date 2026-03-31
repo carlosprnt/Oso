@@ -1,6 +1,7 @@
 'use client'
 
-import { motion, useScroll, useTransform, useMotionTemplate } from 'framer-motion'
+import { motion, useTransform, useMotionTemplate } from 'framer-motion'
+import { useEffectiveScrollY } from '@/lib/hooks/useEffectiveScrollY'
 import UserAvatarMenu from './UserAvatarMenu'
 
 interface Props {
@@ -10,7 +11,7 @@ interface Props {
 }
 
 export default function DashboardHeader({ title, subtitle, shareText }: Props) {
-  const { scrollY } = useScroll()
+  const scrollY = useEffectiveScrollY()
   const opacity       = useTransform(scrollY, [0, 130], [1, 0])
   const blurPx        = useTransform(scrollY, [0, 130], [0, 8])
   const filter        = useMotionTemplate`blur(${blurPx}px)`
