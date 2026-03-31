@@ -6,7 +6,7 @@ import { formatCurrency } from '@/lib/utils/currency'
 import UserAvatarMenu from '@/components/dashboard/UserAvatarMenu'
 import type { DashboardStats } from '@/types'
 
-// ── Money confetti ────────────────────────────────────────────────────────────
+// ── Money confetti (canvas) ───────────────────────────────────────────────────
 function spawnMoneyConfetti(originX: number, originY: number) {
   if (typeof window === 'undefined') return
   const canvas = document.createElement('canvas')
@@ -20,14 +20,9 @@ function spawnMoneyConfetti(originX: number, originY: number) {
   const EMOJIS = ['💸', '💵', '💶', '💰', '🤑', '💴']
   const COUNT  = 32
 
-  interface P {
-    x: number; y: number; vx: number; vy: number
-    rot: number; rotV: number; emoji: string; size: number; alpha: number
-  }
-
+  interface P { x: number; y: number; vx: number; vy: number; rot: number; rotV: number; emoji: string; size: number; alpha: number }
   const particles: P[] = Array.from({ length: COUNT }, () => ({
-    x: originX,
-    y: originY,
+    x: originX, y: originY,
     vx: (Math.random() - 0.5) * 14,
     vy: -(Math.random() * 18 + 6),
     rot: Math.random() * 360,
@@ -38,34 +33,102 @@ function spawnMoneyConfetti(originX: number, originY: number) {
   }))
 
   let frame = 0
-  const MAX_FRAMES = 130
-
+  const MAX = 130
   function tick() {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     let alive = false
     for (const p of particles) {
-      p.vy  += 0.55        // gravity
-      p.vx  *= 0.98        // air resistance
-      p.x   += p.vx
-      p.y   += p.vy
-      p.rot += p.rotV
-      p.alpha = Math.max(0, 1 - frame / MAX_FRAMES)
+      p.vy += 0.55; p.vx *= 0.98; p.x += p.vx; p.y += p.vy; p.rot += p.rotV
+      p.alpha = Math.max(0, 1 - frame / MAX)
       if (p.alpha > 0) {
         alive = true
+        ctx.save(); ctx.globalAlpha = p.alpha; ctx.font = `${p.size}px serif`
+        ctx.translate(p.x, p.y); ctx.rotate((p.rot * Math.PI) / 180)
+        ctx.fillText(p.emoji, -p.size / 2, p.size / 2); ctx.restore()
+      }
+    }
+    frame++
+    if (alive && frame < MAX) requestAnimationFrame(tick)
+    else canvas.remove()
+  }
+  requestAnimationFrame(tick)
+}
+
+// ── Logo confetti (canvas) ────────────────────────────────────────────────────
+function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+  ctx.beginPath()
+  ctx.moveTo(x + r, y)
+  ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r)
+  ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h)
+  ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r)
+  ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y)
+  ctx.closePath()
+}
+
+function spawnLogoConfetti(originX: number, originY: number, logoUrls: string[]) {
+  if (typeof window === 'undefined' || logoUrls.length === 0) return
+  const canvas = document.createElement('canvas')
+  canvas.style.cssText =
+    'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999'
+  canvas.width  = window.innerWidth
+  canvas.height = window.innerHeight
+  document.body.appendChild(canvas)
+  const ctx = canvas.getContext('2d')!
+
+  // Preload all logo images
+  const imgs = logoUrls.map(url => {
+    const img = new Image(); img.crossOrigin = 'anonymous'; img.src = url; return img
+  })
+
+  const COUNT = Math.max(24, logoUrls.length * 2)
+  interface P { x: number; y: number; vx: number; vy: number; rot: number; rotV: number; size: number; alpha: number; img: HTMLImageElement }
+  const particles: P[] = Array.from({ length: COUNT }, (_, i) => ({
+    x: originX, y: originY,
+    vx: (Math.random() - 0.5) * 14,
+    vy: -(Math.random() * 18 + 6),
+    rot: Math.random() * 360,
+    rotV: (Math.random() - 0.5) * 10,
+    size: Math.random() * 10 + 26,
+    alpha: 1,
+    img: imgs[i % imgs.length],
+  }))
+
+  let frame = 0
+  const MAX = 130
+  function tick() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    let alive = false
+    for (const p of particles) {
+      p.vy += 0.55; p.vx *= 0.98; p.x += p.vx; p.y += p.vy; p.rot += p.rotV
+      p.alpha = Math.max(0, 1 - frame / MAX)
+      if (p.alpha > 0) {
+        alive = true
+        const half = p.size / 2
+        const r    = p.size * 0.22
         ctx.save()
         ctx.globalAlpha = p.alpha
-        ctx.font        = `${p.size}px serif`
         ctx.translate(p.x, p.y)
         ctx.rotate((p.rot * Math.PI) / 180)
-        ctx.fillText(p.emoji, -p.size / 2, p.size / 2)
+        if (p.img.complete && p.img.naturalWidth > 0) {
+          // White background + rounded clip
+          ctx.shadowColor = 'rgba(0,0,0,0.15)'; ctx.shadowBlur = 4
+          roundRect(ctx, -half, -half, p.size, p.size, r)
+          ctx.fillStyle = '#fff'; ctx.fill()
+          ctx.shadowBlur = 0
+          ctx.clip()
+          ctx.drawImage(p.img, -half, -half, p.size, p.size)
+        } else {
+          // Fallback: accent-colored square
+          roundRect(ctx, -half, -half, p.size, p.size, r)
+          ctx.fillStyle = '#3D3BF3'; ctx.fill()
+        }
         ctx.restore()
       }
     }
     frame++
-    if (alive && frame < MAX_FRAMES) requestAnimationFrame(tick)
+    if (alive && frame < MAX) requestAnimationFrame(tick)
     else canvas.remove()
   }
-
   requestAnimationFrame(tick)
 }
 
@@ -76,6 +139,7 @@ interface Props {
   sharedCount: number
   shareText: string
   currency?: string
+  logoUrls?: string[]
 }
 
 export default function DashboardSummaryHero({
@@ -84,11 +148,11 @@ export default function DashboardSummaryHero({
   sharedCount,
   shareText,
   currency = 'EUR',
+  logoUrls = [],
 }: Props) {
   const ref     = useRef<HTMLDivElement>(null)
   const scrollY = useEffectiveScrollY()
 
-  // Savings toggle: monthly ↔ skeleton (1.5s) ↔ annual
   const [savingsPeriod, setSavingsPeriod] = useState<'monthly' | 'annual'>('monthly')
   const [showSkeleton, setShowSkeleton]   = useState(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -97,8 +161,8 @@ export default function DashboardSummaryHero({
     return scrollY.on('change', (v: number) => {
       if (!ref.current) return
       const opacity = Math.max(0, Math.min(1, 1 - v / 220))
-      ref.current.style.opacity        = String(opacity)
-      ref.current.style.pointerEvents  = opacity < 0.05 ? 'none' : 'auto'
+      ref.current.style.opacity       = String(opacity)
+      ref.current.style.pointerEvents = opacity < 0.05 ? 'none' : 'auto'
     })
   }, [scrollY])
 
@@ -116,6 +180,10 @@ export default function DashboardSummaryHero({
 
   function handleAmountTap(e: React.MouseEvent) {
     spawnMoneyConfetti(e.clientX, e.clientY)
+  }
+
+  function handleSubsTap(e: React.MouseEvent) {
+    spawnLogoConfetti(e.clientX, e.clientY, logoUrls)
   }
 
   const monthly    = formatCurrency(stats.total_monthly_cost, currency)
@@ -140,20 +208,14 @@ export default function DashboardSummaryHero({
         <UserAvatarMenu shareText={shareText} />
       </div>
 
-      {/* Main statement — monthly + annual are tappable (confetti) */}
+      {/* Main statement — tapping figures spawns money confetti */}
       <p className="text-[33px] font-bold text-[#121212] dark:text-[#F2F2F7] leading-[1.2] tracking-tight mb-4">
         Tu gasto mensual es de{' '}
-        <button
-          onClick={handleAmountTap}
-          className="inline align-baseline cursor-pointer select-none active:scale-95 transition-transform"
-        >
+        <button onClick={handleAmountTap} className="inline align-baseline cursor-pointer select-none active:scale-95 transition-transform">
           <span className="text-[#3D3BF3] dark:text-[#8B89FF]">{monthly}</span>
         </button>
         {' '}y al año gastas{' '}
-        <button
-          onClick={handleAmountTap}
-          className="inline align-baseline cursor-pointer select-none active:scale-95 transition-transform"
-        >
+        <button onClick={handleAmountTap} className="inline align-baseline cursor-pointer select-none active:scale-95 transition-transform">
           <span className="text-[#3D3BF3] dark:text-[#8B89FF]">{annual}</span>
         </button>.
       </p>
@@ -161,9 +223,12 @@ export default function DashboardSummaryHero({
       {/* Supporting statement */}
       <p className="text-[18px] font-bold text-black dark:text-[#F2F2F7] leading-relaxed">
         Tienes{' '}
-        <span className="text-[#3D3BF3] dark:text-[#8B89FF]">
-          {total} {total === 1 ? 'suscripción activa' : 'suscripciones activas'}
-        </span>.
+        {/* Tapping active count spawns logo confetti */}
+        <button onClick={handleSubsTap} className="inline align-baseline cursor-pointer select-none active:scale-95 transition-transform">
+          <span className="text-[#3D3BF3] dark:text-[#8B89FF]">
+            {total} {total === 1 ? 'suscripción activa' : 'suscripciones activas'}
+          </span>
+        </button>.
         {hasSave && (
           <>
             {' '}Compartir{' '}

@@ -92,8 +92,8 @@ export default function TopCategoriesSection({ categories }: { categories: Categ
         ))}
       </div>
 
-      {/* Legend — 20px padding sides + bottom */}
-      <div className="space-y-0.5 px-5 pb-5">
+      {/* Legend — aligned with bar */}
+      <div className="space-y-0.5">
         {segments.map((seg, i) => {
           const isActive = active === i
           return (

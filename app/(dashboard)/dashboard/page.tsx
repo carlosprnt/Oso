@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { enrichSubscriptions, getDashboardStats, getTopSpendCategories, getUpcomingRenewals, getTopExpensiveSubscriptions } from '@/lib/calculations/subscriptions'
 import { formatCurrency } from '@/lib/utils/currency'
+import { resolveSubscriptionLogoUrl } from '@/lib/constants/platforms'
 import type { Subscription } from '@/types'
 import Link from 'next/link'
 import { Plus } from 'lucide-react'
@@ -41,6 +42,11 @@ export default async function DashboardPage() {
 
   const isEmpty = subs.length === 0
 
+  const activeLogoUrls = subs
+    .filter(s => s.status === 'active' || s.status === 'trial')
+    .map(s => resolveSubscriptionLogoUrl(s.name, s.logo_url))
+    .filter((u): u is string => !!u)
+
   const shareText = `My monthly subscriptions: ${formatCurrency(stats.total_monthly_cost, 'EUR')} across ${subs.length} subscriptions — tracked with Perezoso 🦥`
 
   const categoryRows = topCategories.map(({ category, monthly_cost }) => ({
@@ -58,6 +64,7 @@ export default async function DashboardPage() {
           stats={stats}
           sharedCount={sharedCount}
           shareText={shareText}
+          logoUrls={activeLogoUrls}
         />
       )}
 
