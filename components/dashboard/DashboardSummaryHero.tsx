@@ -160,8 +160,11 @@ export default function DashboardSummaryHero({
   useEffect(() => {
     return scrollY.on('change', (v: number) => {
       if (!ref.current) return
-      const opacity = Math.max(0, Math.min(1, 1 - v / 220))
+      const progress = Math.max(0, Math.min(1, v / 220))
+      const opacity  = 1 - progress
+      const blur     = progress * 12  // 0→12px
       ref.current.style.opacity       = String(opacity)
+      ref.current.style.filter        = blur > 0.1 ? `blur(${blur.toFixed(1)}px)` : ''
       ref.current.style.pointerEvents = opacity < 0.05 ? 'none' : 'auto'
     })
   }, [scrollY])
