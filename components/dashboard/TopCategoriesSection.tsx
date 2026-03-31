@@ -5,6 +5,7 @@ import { motion, useInView } from 'framer-motion'
 import { getCategoryMeta } from '@/lib/constants/categories'
 import { formatCurrency } from '@/lib/utils/currency'
 import { useT } from '@/lib/i18n/LocaleProvider'
+import type { Category } from '@/types'
 
 // Pastel fill colors for category progress bars
 const CATEGORY_BAR_COLOR: Record<string, string> = {
@@ -49,7 +50,7 @@ function CategoryBar({ category, monthly_cost, pct }: CategoryRow) {
   const t = useT()
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-20px' })
-  const meta = getCategoryMeta(category)
+  const meta = getCategoryMeta(category as Category)
   const Icon = meta.icon
   const barColor = CATEGORY_BAR_COLOR[category] ?? '#D1D5DB'
   const iconBg   = CATEGORY_ICON_BG[category]  ?? '#F3F4F6'
