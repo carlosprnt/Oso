@@ -6,6 +6,70 @@ import { formatCurrency } from '@/lib/utils/currency'
 import UserAvatarMenu from '@/components/dashboard/UserAvatarMenu'
 import type { DashboardStats } from '@/types'
 
+// ── Money confetti ────────────────────────────────────────────────────────────
+function spawnMoneyConfetti(originX: number, originY: number) {
+  if (typeof window === 'undefined') return
+  const canvas = document.createElement('canvas')
+  canvas.style.cssText =
+    'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999'
+  canvas.width  = window.innerWidth
+  canvas.height = window.innerHeight
+  document.body.appendChild(canvas)
+  const ctx = canvas.getContext('2d')!
+
+  const EMOJIS = ['💸', '💵', '💶', '💰', '🤑', '💴']
+  const COUNT  = 32
+
+  interface P {
+    x: number; y: number; vx: number; vy: number
+    rot: number; rotV: number; emoji: string; size: number; alpha: number
+  }
+
+  const particles: P[] = Array.from({ length: COUNT }, () => ({
+    x: originX,
+    y: originY,
+    vx: (Math.random() - 0.5) * 14,
+    vy: -(Math.random() * 18 + 6),
+    rot: Math.random() * 360,
+    rotV: (Math.random() - 0.5) * 12,
+    emoji: EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
+    size: Math.random() * 14 + 18,
+    alpha: 1,
+  }))
+
+  let frame = 0
+  const MAX_FRAMES = 130
+
+  function tick() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    let alive = false
+    for (const p of particles) {
+      p.vy  += 0.55        // gravity
+      p.vx  *= 0.98        // air resistance
+      p.x   += p.vx
+      p.y   += p.vy
+      p.rot += p.rotV
+      p.alpha = Math.max(0, 1 - frame / MAX_FRAMES)
+      if (p.alpha > 0) {
+        alive = true
+        ctx.save()
+        ctx.globalAlpha = p.alpha
+        ctx.font        = `${p.size}px serif`
+        ctx.translate(p.x, p.y)
+        ctx.rotate((p.rot * Math.PI) / 180)
+        ctx.fillText(p.emoji, -p.size / 2, p.size / 2)
+        ctx.restore()
+      }
+    }
+    frame++
+    if (alive && frame < MAX_FRAMES) requestAnimationFrame(tick)
+    else canvas.remove()
+  }
+
+  requestAnimationFrame(tick)
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
 interface Props {
   firstName: string
   stats: DashboardStats
@@ -25,20 +89,19 @@ export default function DashboardSummaryHero({
   const scrollY = useEffectiveScrollY()
 
   // Savings toggle: monthly ↔ skeleton (1.5s) ↔ annual
-  const [savingsPeriod, setSavingsPeriod]   = useState<'monthly' | 'annual'>('monthly')
-  const [showSkeleton, setShowSkeleton]     = useState(false)
+  const [savingsPeriod, setSavingsPeriod] = useState<'monthly' | 'annual'>('monthly')
+  const [showSkeleton, setShowSkeleton]   = useState(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     return scrollY.on('change', (v: number) => {
       if (!ref.current) return
       const opacity = Math.max(0, Math.min(1, 1 - v / 220))
-      ref.current.style.opacity = String(opacity)
-      ref.current.style.pointerEvents = opacity < 0.05 ? 'none' : 'auto'
+      ref.current.style.opacity        = String(opacity)
+      ref.current.style.pointerEvents  = opacity < 0.05 ? 'none' : 'auto'
     })
   }, [scrollY])
 
-  // Cleanup timer on unmount
   useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current) }, [])
 
   function handleSavingsTap() {
@@ -51,22 +114,25 @@ export default function DashboardSummaryHero({
     }, 1500)
   }
 
-  const monthly       = formatCurrency(stats.total_monthly_cost, currency)
-  const annual        = formatCurrency(stats.total_annual_cost, currency)
-  const savingsMo     = formatCurrency(stats.shared_monthly_cost, currency)
-  const savingsYr     = formatCurrency(stats.shared_monthly_cost * 12, currency)
-  const total         = stats.active_count + stats.trial_count
-  const hasSave       = stats.shared_monthly_cost > 0.01 && sharedCount > 0
-  const name          = firstName || 'de nuevo'
+  function handleAmountTap(e: React.MouseEvent) {
+    spawnMoneyConfetti(e.clientX, e.clientY)
+  }
 
-  const savingsLabel  = savingsPeriod === 'monthly' ? `${savingsMo} al mes` : `${savingsYr} al año`
+  const monthly    = formatCurrency(stats.total_monthly_cost, currency)
+  const annual     = formatCurrency(stats.total_annual_cost, currency)
+  const savingsMo  = formatCurrency(stats.shared_monthly_cost, currency)
+  const savingsYr  = formatCurrency(stats.shared_monthly_cost * 12, currency)
+  const total      = stats.active_count + stats.trial_count
+  const hasSave    = stats.shared_monthly_cost > 0.01 && sharedCount > 0
+  const name       = firstName || 'de nuevo'
+  const savingsLabel = savingsPeriod === 'monthly' ? `${savingsMo} al mes` : `${savingsYr} al año`
 
   return (
     <div
       ref={ref}
       className="sticky top-0 pb-5 bg-[#F7F8FA] dark:bg-[#111111]"
     >
-      {/* Row: greeting + avatar */}
+      {/* Greeting + avatar */}
       <div className="flex items-center justify-between mb-3">
         <p className="text-[17px] font-bold text-black dark:text-[#F2F2F7]">
           Hola, {name}.
@@ -74,12 +140,22 @@ export default function DashboardSummaryHero({
         <UserAvatarMenu shareText={shareText} />
       </div>
 
-      {/* Main statement */}
+      {/* Main statement — monthly + annual are tappable (confetti) */}
       <p className="text-[33px] font-bold text-[#121212] dark:text-[#F2F2F7] leading-[1.2] tracking-tight mb-4">
         Tu gasto mensual es de{' '}
-        <span className="text-[#3D3BF3] dark:text-[#8B89FF]">{monthly}</span>
+        <button
+          onClick={handleAmountTap}
+          className="inline align-baseline cursor-pointer select-none active:scale-95 transition-transform"
+        >
+          <span className="text-[#3D3BF3] dark:text-[#8B89FF]">{monthly}</span>
+        </button>
         {' '}y al año gastas{' '}
-        <span className="text-[#3D3BF3] dark:text-[#8B89FF]">{annual}</span>.
+        <button
+          onClick={handleAmountTap}
+          className="inline align-baseline cursor-pointer select-none active:scale-95 transition-transform"
+        >
+          <span className="text-[#3D3BF3] dark:text-[#8B89FF]">{annual}</span>
+        </button>.
       </p>
 
       {/* Supporting statement */}
@@ -96,7 +172,7 @@ export default function DashboardSummaryHero({
             <button
               onClick={handleSavingsTap}
               className="inline align-baseline cursor-pointer select-none"
-              aria-label={`Cambiar entre ahorro mensual y anual`}
+              aria-label="Cambiar entre ahorro mensual y anual"
             >
               {showSkeleton ? (
                 <span
@@ -104,7 +180,7 @@ export default function DashboardSummaryHero({
                   style={{ width: '7ch', height: '1em', verticalAlign: 'baseline' }}
                 />
               ) : (
-                <span className="text-[#3D3BF3] dark:text-[#8B89FF] underline decoration-dotted underline-offset-2">
+                <span className="text-[#3D3BF3] dark:text-[#8B89FF]">
                   {savingsLabel}
                 </span>
               )}
