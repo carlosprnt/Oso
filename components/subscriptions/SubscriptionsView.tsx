@@ -402,15 +402,22 @@ function SortDropdown({
 
   const currentLabel = options.find(o => o.mode === current)?.label ?? ''
 
-  // Close on outside click
+  // Close on outside click or scroll
   useEffect(() => {
-    function handler(e: MouseEvent) {
+    function onMouseDown(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setOpen(false)
       }
     }
-    if (open) document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
+    function onScroll() { setOpen(false) }
+    if (open) {
+      document.addEventListener('mousedown', onMouseDown)
+      window.addEventListener('scroll', onScroll, { passive: true })
+    }
+    return () => {
+      document.removeEventListener('mousedown', onMouseDown)
+      window.removeEventListener('scroll', onScroll)
+    }
   }, [open])
 
   return (
