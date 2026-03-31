@@ -1,35 +1,73 @@
-import { Skeleton, SkeletonCard } from '@/components/ui/Skeleton'
-
 export default function SubscriptionsLoading() {
+  const S = 'bg-[#EBEBEB] dark:bg-[#2C2C2E] animate-pulse'
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-2">
-          <Skeleton className="h-8 w-44" />
-          <Skeleton className="h-4 w-48" />
+    <div className="bg-[#F7F8FA] dark:bg-[#111111]">
+      {/* ── Sticky header ── */}
+      <div className="sticky top-0 z-[20] pb-4 bg-[#F7F8FA] dark:bg-[#111111]">
+        {/* Title + icon buttons */}
+        <div className="flex items-center justify-between pt-2">
+          <div className={`${S} h-9 w-48 rounded-xl`} />
+          <div className="flex items-center gap-2">
+            <div className={`${S} w-10 h-10 rounded-full`} />
+            <div className={`${S} w-10 h-10 rounded-full`} />
+          </div>
         </div>
-        <Skeleton className="h-9 w-20 rounded-xl" />
+
+        {/* Summary card */}
+        <div className="mt-3 bg-white dark:bg-[#1C1C1E] rounded-[20px] p-4 flex items-center gap-5">
+          <div>
+            <div className={`${S} h-3.5 w-16 rounded-md mb-2`} />
+            <div className={`${S} h-7 w-8 rounded-lg`} />
+          </div>
+          <div className="w-px self-stretch bg-[#EFEFEF] dark:bg-[#2C2C2E] my-1" />
+          <div>
+            <div className={`${S} h-3.5 w-20 rounded-md mb-2`} />
+            <div className={`${S} h-7 w-28 rounded-lg`} />
+          </div>
+        </div>
       </div>
 
-      {/* Filter pills */}
-      <div className="flex gap-2 flex-wrap">
-        {[...Array(5)].map((_, i) => (
-          <Skeleton key={i} className={`h-8 rounded-xl ${i === 0 ? 'w-12' : 'w-20'}`} />
-        ))}
-      </div>
-      <div className="flex gap-2 flex-wrap">
-        {[...Array(6)].map((_, i) => (
-          <Skeleton key={i} className="h-8 w-24 rounded-xl" />
-        ))}
+      {/* Sort control */}
+      <div className="mt-2 mb-[9px]">
+        <div className={`${S} h-4 w-36 rounded-md`} />
       </div>
 
-      {/* Cards */}
-      <div className="space-y-3">
-        {[...Array(6)].map((_, i) => (
-          <SkeletonCard key={i} />
-        ))}
-      </div>
+      {/* ── Stacked cards ── */}
+      {[...Array(5)].map((_, i) => (
+        <div
+          key={i}
+          style={{ marginTop: i === 0 ? 0 : -76, zIndex: i + 1, position: 'relative' }}
+        >
+          <div
+            className="w-full bg-white dark:bg-[#1C1C1E] px-5 pt-5 pb-5 rounded-[28px]"
+            style={{ border: '1.5px solid var(--border-card)' }}
+          >
+            {/* Top row: avatar + name/category + price */}
+            <div className="flex items-start gap-5">
+              <div className={`${S} w-12 h-12 rounded-2xl flex-shrink-0`} />
+              <div className="flex-1 min-w-0 pt-0.5">
+                <div className={`${S} h-4 w-32 rounded-md mb-2`} />
+                <div className={`${S} h-3.5 w-20 rounded-md`} />
+              </div>
+              <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+                <div className={`${S} h-5 w-20 rounded-lg`} />
+                <div className={`${S} h-4 w-10 rounded-md`} />
+              </div>
+            </div>
+
+            {/* Billing progress */}
+            <div className="mt-5">
+              <div className={`${S} h-3 w-24 rounded-md mb-2`} />
+              <div className={`${S} h-1 w-full rounded-full`} />
+              <div className="flex justify-between items-center mt-1.5">
+                <div className={`${S} h-3 w-16 rounded-md`} />
+                <div className={`${S} h-3 w-24 rounded-md`} />
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   )
 }
