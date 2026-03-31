@@ -146,12 +146,8 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
       <motion.div
         style={{
           width: '100%',
-          maxHeight: '92dvh',
-          background: 'var(--sheet-bg, white)',
           borderRadius: '24px 24px 0 0',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',         // clips the scroll container to the sheet bounds
+          overflow: 'hidden',
         }}
         className="bg-white dark:bg-[#1C1C1E]"
         initial={{ transform: 'translateY(100%)' }}
@@ -166,21 +162,18 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
         </div>
 
         {/*
-         * Single scroll container that owns everything below the handle.
-         * Rules:
-         *  - flex:1 + minHeight:0  → fills remaining sheet height; minHeight:0
-         *    is mandatory so iOS Safari creates a real scroll context instead of
-         *    using content height as the implicit minimum.
-         *  - overflowY:'auto'      → native scroll, no JS touch hacks needed
-         *  - overscrollBehavior:'contain' → bounce stays inside; doesn't chain up
+         * Scroll container.
+         * Uses explicit max-height (reference pattern) instead of flex-1/min-h-0
+         * so iOS Safari always has an unambiguous, fixed scroll boundary.
+         * -webkit-overflow-scrolling:touch re-enables momentum scroll on iOS.
          */}
         <div
           ref={scrollRef}
           style={{
-            flex: 1,
-            minHeight: 0,
+            maxHeight: 'calc(92dvh - 20px)',   // 20px = handle bar
             overflowY: 'auto',
             overscrollBehavior: 'contain',
+            WebkitOverflowScrolling: 'touch',
           }}
         >
           {/* Close button */}
