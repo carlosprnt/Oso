@@ -161,22 +161,19 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
         transition={{ type: 'spring', stiffness: 340, damping: 32, mass: 0.85 }}
         onClick={(e) => e.stopPropagation()}   // don't close when tapping sheet
       >
-        {/* Atmospheric brand tint — blurred gradient behind the upper content */}
-        {brandTint.ready && (
-          <div
-            aria-hidden
-            style={{
-              position: 'absolute',
-              top: 0, left: 0, right: 0,
-              height: 300,
-              background: brandTint.gradient,
-              filter: 'blur(28px)',
-              opacity: 0.55,
-              pointerEvents: 'none',
-              zIndex: 0,
-            }}
-          />
-        )}
+        {/* Atmospheric brand tint — gradient behind the upper content */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            top: 0, left: 0, right: 0,
+            height: 360,
+            background: brandTint.gradient,
+            opacity: 0.80,
+            pointerEvents: 'none',
+            zIndex: 0,
+          }}
+        />
 
         {/* Handle */}
         <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, display: 'flex', justifyContent: 'center', padding: '12px 0 4px' }}>

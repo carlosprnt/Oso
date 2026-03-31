@@ -99,13 +99,13 @@ export async function extractLogoDominantColor(
 
 /**
  * Converts a raw logo color into a soft UI tint:
- * – Saturation  →  clamped to 25–38 % (removes harshness)
- * – Lightness   →  pushed to 62–74 % (keeps text legible over it)
+ * – Saturation  →  clamped to 40–55 % (keeps hue readable)
+ * – Lightness   →  pushed to 78–88 % (pastel range, legible over white)
  */
 export function getSafeUiTintFromColor(r: number, g: number, b: number): string {
-  const [h, s, l] = rgbToHsl(r, g, b)
-  const safeS = Math.min(s * 0.65, 0.38)               // desaturate significantly
-  const safeL = Math.max(0.62, Math.min(l * 0.9 + 0.12, 0.74))  // lighten/clamp
+  const [h, s] = rgbToHsl(r, g, b)
+  const safeS = Math.max(0.40, Math.min(s, 0.55))
+  const safeL = 0.83
   const [fr, fg, fb] = hslToRgb(h, safeS, safeL)
   return `rgb(${fr}, ${fg}, ${fb})`
 }
@@ -114,17 +114,17 @@ export function getSafeUiTintFromColor(r: number, g: number, b: number): string 
 
 /**
  * Builds the CSS gradient string for the branded atmospheric tint.
- * A radial "glow" at the top center fades into nothing; a narrow linear
- * strip at the very top gives it a slight edge warmth.
+ * Radial glow centered at the top edge fades to transparent, layered over
+ * a short linear strip for extra warmth right at the very top.
  */
 export function buildBrandedDetailGradient(tintColor: string): string {
   return [
-    `radial-gradient(ellipse 160% 90% at 50% -5%, ${tintColor} 0%, transparent 68%)`,
-    `linear-gradient(to bottom, ${tintColor} 0%, transparent 35%)`,
+    `radial-gradient(ellipse 150% 75% at 50% 0%, ${tintColor} 0%, transparent 70%)`,
+    `linear-gradient(to bottom, ${tintColor} 0%, transparent 40%)`,
   ].join(', ')
 }
 
 /** Fallback gradient — a barely-there warm neutral, used when extraction fails */
 export function getFallbackDetailTint(): string {
-  return 'radial-gradient(ellipse 160% 90% at 50% -5%, rgb(210, 210, 218) 0%, transparent 68%)'
+  return 'radial-gradient(ellipse 150% 75% at 50% 0%, rgb(220, 218, 228) 0%, transparent 70%)'
 }

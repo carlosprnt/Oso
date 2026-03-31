@@ -16,15 +16,15 @@ export interface BrandTint {
 }
 
 const FALLBACK: BrandTint = { gradient: getFallbackDetailTint(), ready: true }
-const PENDING: BrandTint  = { gradient: '',                     ready: false }
 
 /**
  * Extracts a soft atmospheric tint color from a logo URL and returns it as
  * a CSS gradient string. Falls back gracefully on CORS failures or when no
  * sufficiently colorful pixel is found.
+ * Starts with the fallback so the layer is always visible immediately.
  */
 export function useBrandTint(logoUrl: string | null | undefined): BrandTint {
-  const [tint, setTint] = useState<BrandTint>(PENDING)
+  const [tint, setTint] = useState<BrandTint>(FALLBACK)
 
   useEffect(() => {
     if (!logoUrl) { setTint(FALLBACK); return }
