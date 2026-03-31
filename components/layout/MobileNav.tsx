@@ -42,7 +42,7 @@ export default function MobileNav() {
               <Icon
                 size={20}
                 strokeWidth={isActive ? 2.5 : 2}
-                className={isActive ? 'text-[#121212] dark:text-[#F2F2F7]' : 'text-[#888888] dark:text-[#636366]'}
+                className={isActive ? 'text-[#121212] dark:text-[#F2F2F7]' : 'text-[#888888] dark:text-[#8E8E93]'}
               />
             </div>
             <span

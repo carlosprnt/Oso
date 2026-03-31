@@ -42,14 +42,14 @@ export default function PlatformPicker({ onSelect, onGmailSearch }: PlatformPick
           </div>
           <div>
             <p className="text-[13px] font-semibold text-[#111111] dark:text-[#F2F2F7] leading-snug">{t('picker.enterManually')}</p>
-            <p className="text-[11px] text-[#999999] dark:text-[#636366] mt-0.5 leading-snug">{t('picker.enterManuallyDesc')}</p>
+            <p className="text-[11px] text-[#999999] dark:text-[#8E8E93] mt-0.5 leading-snug">{t('picker.enterManuallyDesc')}</p>
           </div>
         </button>
       </div>
 
       {/* Section label */}
       <div className="px-5 pb-2 flex-shrink-0">
-        <p className="text-[11px] font-semibold text-[#AAAAAA] dark:text-[#636366] uppercase tracking-wider">
+        <p className="text-[11px] font-semibold text-[#AAAAAA] dark:text-[#8E8E93] uppercase tracking-wider">
           {t('picker.popularPlatforms')}
         </p>
       </div>

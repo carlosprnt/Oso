@@ -24,7 +24,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       )}
       <div className="relative flex items-center">
         {prefix && (
-          <span className="absolute left-3 text-sm text-[#616161] dark:text-[#636366] select-none pointer-events-none">
+          <span className="absolute left-3 text-sm text-[#616161] dark:text-[#8E8E93] select-none pointer-events-none">
             {prefix}
           </span>
         )}
@@ -46,7 +46,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           {...props}
         />
         {suffix && (
-          <span className="absolute right-3 text-sm text-[#616161] dark:text-[#636366] select-none pointer-events-none">
+          <span className="absolute right-3 text-sm text-[#616161] dark:text-[#8E8E93] select-none pointer-events-none">
             {suffix}
           </span>
         )}
@@ -54,7 +54,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       {error ? (
         <p className="mt-1 text-xs text-[#991B1B] dark:text-red-400">{error}</p>
       ) : hint ? (
-        <p className="mt-1 text-xs text-[#616161] dark:text-[#636366]">{hint}</p>
+        <p className="mt-1 text-xs text-[#616161] dark:text-[#8E8E93]">{hint}</p>
       ) : null}
     </div>
   )
@@ -101,7 +101,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
       {error ? (
         <p className="mt-1 text-xs text-[#991B1B] dark:text-red-400">{error}</p>
       ) : hint ? (
-        <p className="mt-1 text-xs text-[#616161] dark:text-[#636366]">{hint}</p>
+        <p className="mt-1 text-xs text-[#616161] dark:text-[#8E8E93]">{hint}</p>
       ) : null}
     </div>
   )
@@ -141,7 +141,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         {error ? (
           <p className="mt-1 text-xs text-[#991B1B] dark:text-red-400">{error}</p>
         ) : hint ? (
-          <p className="mt-1 text-xs text-[#616161] dark:text-[#636366]">{hint}</p>
+          <p className="mt-1 text-xs text-[#616161] dark:text-[#8E8E93]">{hint}</p>
         ) : null}
       </div>
     )

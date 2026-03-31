@@ -96,9 +96,9 @@ export default function CalendarDaySheet({
               <span className="text-[13px] font-semibold text-[#3D3BF3] tabular-nums">
                 {formatCurrency(dayTotal, currency)}
               </span>
-              <span className="text-[13px] text-[#888888] dark:text-[#636366]">{t('calendar.total').toLowerCase()}</span>
+              <span className="text-[13px] text-[#888888] dark:text-[#8E8E93]">{t('calendar.total').toLowerCase()}</span>
               <span className="w-px h-3 bg-[#D4D4D4] dark:bg-[#3A3A3C]" />
-              <span className="text-[13px] text-[#888888] dark:text-[#636366]">{daysLeftLabel}</span>
+              <span className="text-[13px] text-[#888888] dark:text-[#8E8E93]">{daysLeftLabel}</span>
             </div>
           </div>
           <button
@@ -167,7 +167,7 @@ function SubscriptionRow({
       />
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-[#121212] dark:text-[#F2F2F7] truncate">{sub.name}</p>
-        <p className="text-xs text-[#888888] dark:text-[#636366] mt-0.5">
+        <p className="text-xs text-[#888888] dark:text-[#8E8E93] mt-0.5">
           {daysLeftLabel}
           <span className="mx-1">·</span>
           {dateLabel}

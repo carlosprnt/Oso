@@ -255,7 +255,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
             </div>
             <div>
               <p className="text-[15px] font-semibold text-[#111111] dark:text-[#F2F2F7]">{t('gmail.searching')}</p>
-              <p className="text-[13px] text-[#999999] dark:text-[#636366] mt-1">{t('gmail.searchingDesc')}</p>
+              <p className="text-[13px] text-[#999999] dark:text-[#8E8E93] mt-1">{t('gmail.searchingDesc')}</p>
             </div>
           </motion.div>
         )}
@@ -285,7 +285,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
                 <Mail size={16} />
                 {t('gmail.connectButton')}
               </button>
-              <p className="text-[11px] text-[#AAAAAA] dark:text-[#636366]">
+              <p className="text-[11px] text-[#AAAAAA] dark:text-[#8E8E93]">
                 {t('gmail.connectDisclaimer')}
               </p>
             </div>
@@ -301,7 +301,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
                   ? t('gmail.found', { count: sheetState.candidates.length })
                   : t('gmail.foundPlural', { count: sheetState.candidates.length })}
               </p>
-              <p className="text-[12px] text-[#999999] dark:text-[#636366] mt-0.5">
+              <p className="text-[12px] text-[#999999] dark:text-[#8E8E93] mt-0.5">
                 {t('gmail.foundHint')}
               </p>
             </div>
@@ -326,7 +326,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
                 >
                   {selected.size === sheetState.candidates.length ? t('gmail.deselectAll') : t('gmail.selectAll')}
                 </button>
-                <span className="text-[12px] text-[#AAAAAA] dark:text-[#636366]">{t('gmail.selected', { count: selectedCount })}</span>
+                <span className="text-[12px] text-[#AAAAAA] dark:text-[#8E8E93]">{t('gmail.selected', { count: selectedCount })}</span>
               </div>
               <button
                 onClick={addSelected}
@@ -404,7 +404,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
             />
             <div>
               <p className="text-[15px] font-semibold text-[#111111] dark:text-[#F2F2F7]">{t('gmail.empty')}</p>
-              <p className="text-[13px] text-[#999999] dark:text-[#636366] mt-1 leading-relaxed">
+              <p className="text-[13px] text-[#999999] dark:text-[#8E8E93] mt-1 leading-relaxed">
                 {t('gmail.emptyDesc')}
               </p>
             </div>
@@ -436,7 +436,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
             </div>
             <div>
               <p className="text-[15px] font-semibold text-[#111111] dark:text-[#F2F2F7]">{t('gmail.error')}</p>
-              <p className="text-[13px] text-[#999999] dark:text-[#636366] mt-1">{sheetState.message}</p>
+              <p className="text-[13px] text-[#999999] dark:text-[#8E8E93] mt-1">{sheetState.message}</p>
             </div>
             <button
               onClick={() => doSearch(tokenRef.current ?? undefined)}

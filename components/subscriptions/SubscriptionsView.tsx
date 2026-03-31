@@ -178,7 +178,7 @@ function WalletCard({ sub, isNew, index, velocityMv, isSelected, onOpen, viewMod
 
           <div className="flex-1 min-w-0">
             <p className="text-[16px] font-bold text-[#111111] dark:text-[#F2F2F7] leading-snug truncate">{sub.name}</p>
-            <p className="text-[14px] text-[#999999] dark:text-[#636366] mt-1 leading-snug">
+            <p className="text-[14px] text-[#999999] dark:text-[#8E8E93] mt-1 leading-snug">
               {t(`categories.${sub.category}` as Parameters<typeof t>[0])}
             </p>
           </div>
@@ -195,7 +195,7 @@ function WalletCard({ sub, isNew, index, velocityMv, isSelected, onOpen, viewMod
                   {viewMode === 'monthly'
                     ? formatCurrency(sub.my_monthly_cost, sub.currency)
                     : formatCurrency(sub.my_annual_cost, sub.currency)}
-                  <span className="text-[13px] font-normal text-[#999999] dark:text-[#636366] ml-0.5">
+                  <span className="text-[13px] font-normal text-[#999999] dark:text-[#8E8E93] ml-0.5">
                     {viewMode === 'monthly' ? '/mo' : '/yr'}
                   </span>
                 </p>
@@ -213,21 +213,21 @@ function WalletCard({ sub, isNew, index, velocityMv, isSelected, onOpen, viewMod
         {/* Billing progress */}
         {sub.next_billing_date && (
           <div className="mt-5">
-            <p className="text-[11px] font-semibold text-[#888888] dark:text-[#636366] uppercase tracking-wider mb-2">
+            <p className="text-[11px] font-semibold text-[#888888] dark:text-[#8E8E93] uppercase tracking-wider mb-2">
               {t('detail.nextBillingSection')}
             </p>
             <div className="w-full rounded-full overflow-hidden" style={{ height: 4, background: 'rgba(0,0,0,0.07)' }}>
               <div className="h-full rounded-full" style={{ width: `${Math.round(progress * 100)}%`, background: '#22C55E' }} />
             </div>
             <div className="flex justify-between items-center mt-1.5">
-              <span className="text-[12px] text-[#999999] dark:text-[#636366]">
+              <span className="text-[12px] text-[#999999] dark:text-[#8E8E93]">
                 {daysLeft === 0
                   ? t('dashboard.dueToday')
                   : daysLeft === 1
                   ? t('dashboard.tomorrow')
                   : t('dashboard.inDays').replace('{days}', String(daysLeft))}
               </span>
-              <span className="text-[12px] text-[#999999] dark:text-[#636366]">{nextDateFormatted}</span>
+              <span className="text-[12px] text-[#999999] dark:text-[#8E8E93]">{nextDateFormatted}</span>
             </div>
           </div>
         )}
@@ -338,7 +338,7 @@ function FilterSheet({ isOpen, currentStatus, currentCategory, onClose }: Filter
     <BottomSheet isOpen={isOpen} onClose={onClose} title={t('sheets.filter')} footer={footer}>
       <div className="px-5 pt-2 pb-5 space-y-6">
         <div>
-          <p className="text-[11px] font-semibold text-[#888888] dark:text-[#636366] uppercase tracking-wider mb-3">{t('subscriptions.filterStatus')}</p>
+          <p className="text-[11px] font-semibold text-[#888888] dark:text-[#8E8E93] uppercase tracking-wider mb-3">{t('subscriptions.filterStatus')}</p>
           <div className="flex flex-wrap gap-2">
             {([
               { value: 'active' as const, label: t('status.active') },
@@ -355,7 +355,7 @@ function FilterSheet({ isOpen, currentStatus, currentCategory, onClose }: Filter
           </div>
         </div>
         <div>
-          <p className="text-[11px] font-semibold text-[#888888] dark:text-[#636366] uppercase tracking-wider mb-3">{t('subscriptions.filterCategory')}</p>
+          <p className="text-[11px] font-semibold text-[#888888] dark:text-[#8E8E93] uppercase tracking-wider mb-3">{t('subscriptions.filterCategory')}</p>
           <div className="grid grid-cols-2 gap-2">
             {CATEGORIES.map(cat => {
               const Icon = cat.icon
@@ -422,9 +422,9 @@ function SortDropdown({
         onClick={() => setOpen(o => !o)}
         className="flex items-center gap-1 active:opacity-60 transition-opacity"
       >
-        <span className="text-[13px] text-[#999999] dark:text-[#636366]">{t('subscriptions.sortBy')}:</span>
+        <span className="text-[13px] text-[#999999] dark:text-[#8E8E93]">{t('subscriptions.sortBy')}:</span>
         <span className="text-[13px] text-[#444444] dark:text-[#AEAEB2]">{currentLabel}</span>
-        <ChevronsUpDown size={11} className="text-[#BBBBBB] dark:text-[#636366] ml-0.5" />
+        <ChevronsUpDown size={11} className="text-[#BBBBBB] dark:text-[#8E8E93] ml-0.5" />
       </button>
 
       {/* Dropdown */}
@@ -553,7 +553,7 @@ export default function SubscriptionsView({
         {allCount > 0 && (
           <div className="mt-3 bg-white dark:bg-[#1C1C1E] border border-[#EFEFEF] dark:border-[#2C2C2E] rounded-[20px] p-4 flex items-center gap-5">
             <div>
-              <p className="text-[13px] text-[#999999] dark:text-[#636366] font-medium">{t('subscriptions.total')}</p>
+              <p className="text-[13px] text-[#999999] dark:text-[#8E8E93] font-medium">{t('subscriptions.total')}</p>
               <p className="text-[22px] font-bold text-[#111111] dark:text-[#F2F2F7] mt-0.5 leading-tight tabular-nums">
                 {allCount}
               </p>
@@ -563,9 +563,9 @@ export default function SubscriptionsView({
               onClick={toggleViewMode}
               className="text-left active:opacity-60 transition-opacity duration-100"
             >
-              <p className="text-[13px] text-[#999999] dark:text-[#636366] font-medium flex items-center gap-1.5">
+              <p className="text-[13px] text-[#999999] dark:text-[#8E8E93] font-medium flex items-center gap-1.5">
                 {viewMode === 'monthly' ? t('subscriptions.perMonth') : t('subscriptions.perYear')}
-                <ChevronsUpDown size={11} className="text-[#BBBBBB] dark:text-[#636366]" />
+                <ChevronsUpDown size={11} className="text-[#BBBBBB] dark:text-[#8E8E93]" />
               </p>
               {numSkeleton ? (
                 <div className="h-[26px] w-24 rounded-lg bg-[#EFEFEF] dark:bg-[#2C2C2E] animate-pulse mt-0.5" />
@@ -610,7 +610,7 @@ export default function SubscriptionsView({
             <p className="text-sm font-medium text-[#111111] dark:text-[#F2F2F7] mb-1">
               {allCount === 0 ? t('subscriptions.noSubscriptions') : t('subscriptions.noResults')}
             </p>
-            <p className="text-xs text-[#888888] dark:text-[#636366]">
+            <p className="text-xs text-[#888888] dark:text-[#8E8E93]">
               {allCount === 0 ? t('subscriptions.getStarted') : t('subscriptions.noResultsHint')}
             </p>
           </div>

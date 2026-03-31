@@ -97,14 +97,14 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
           onClick={() => { toggle(); setOpen(false) }}
           className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#424242] dark:text-[#AEAEB2] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors text-left"
         >
-          {theme === 'dark' ? <Sun size={15} className="text-[#616161] dark:text-[#636366]" /> : <Moon size={15} className="text-[#616161]" />}
+          {theme === 'dark' ? <Sun size={15} className="text-[#616161] dark:text-[#8E8E93]" /> : <Moon size={15} className="text-[#616161]" />}
           {theme === 'dark' ? 'Light mode' : 'Dark mode'}
         </button>
         <button
           onClick={handleShare}
           className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#424242] dark:text-[#AEAEB2] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors text-left"
         >
-          <Share2 size={15} className="text-[#616161] dark:text-[#636366]" />
+          <Share2 size={15} className="text-[#616161] dark:text-[#8E8E93]" />
           Share data
         </button>
         <button

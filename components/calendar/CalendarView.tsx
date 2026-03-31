@@ -137,7 +137,7 @@ function DayCell({ day, isToday, subscriptions, onClick }: DayCellProps) {
       <span
         className={`
           text-[13px] font-medium leading-none flex-shrink-0
-          ${isToday ? 'text-[#3D3BF3] font-semibold' : hasSubs ? 'text-[#121212] dark:text-[#F2F2F7]' : 'text-[#A0A0A0] dark:text-[#636366]'}
+          ${isToday ? 'text-[#3D3BF3] font-semibold' : hasSubs ? 'text-[#121212] dark:text-[#F2F2F7]' : 'text-[#A0A0A0] dark:text-[#8E8E93]'}
         `}
       >
         {day}
@@ -152,7 +152,7 @@ function DayCell({ day, isToday, subscriptions, onClick }: DayCellProps) {
             size={32}
           />
           {subscriptions.length > 1 && (
-            <span className="text-[9px] font-semibold text-[#888888] dark:text-[#636366] leading-none bg-[#F0F0F0] dark:bg-[#2C2C2E] px-[5px] py-[3px] rounded-full">
+            <span className="text-[9px] font-semibold text-[#888888] dark:text-[#8E8E93] leading-none bg-[#F0F0F0] dark:bg-[#2C2C2E] px-[5px] py-[3px] rounded-full">
               +{subscriptions.length - 1}
             </span>
           )}
@@ -255,14 +255,14 @@ export default function CalendarView({ subscriptions }: Props) {
 
       {/* ── Month summary — unified subtitle style ────────────────────────── */}
       <div className="flex items-center gap-3 mb-4 flex-shrink-0">
-        <span className="text-[13px] text-[#888888] dark:text-[#636366]">
+        <span className="text-[13px] text-[#888888] dark:text-[#8E8E93]">
           <span className="tabular-nums">
             {formatCurrency(monthTotal.amount, monthTotal.currency)}
           </span>
           {' '}{t('calendar.total').toLowerCase()}
         </span>
         <span className="w-px h-3 bg-[#D4D4D4] dark:bg-[#3A3A3C]" />
-        <span className="text-[13px] text-[#888888] dark:text-[#636366]">
+        <span className="text-[13px] text-[#888888] dark:text-[#8E8E93]">
           {totalSubsThisMonth === 0
             ? t('calendar.noRenewals')
             : `${totalSubsThisMonth} ${totalSubsThisMonth === 1
@@ -276,7 +276,7 @@ export default function CalendarView({ subscriptions }: Props) {
         {weekdays.map(label => (
           <div
             key={label}
-            className="text-center text-[11px] font-medium text-[#A0A0A0] dark:text-[#636366] tracking-wide py-1"
+            className="text-center text-[11px] font-medium text-[#A0A0A0] dark:text-[#8E8E93] tracking-wide py-1"
           >
             {label}
           </div>

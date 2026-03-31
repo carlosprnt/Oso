@@ -51,7 +51,7 @@ export default function GmailSubscriptionResultItem({ candidate, selected, onTog
         <p className="text-[14px] font-semibold text-[#111111] dark:text-[#F2F2F7] leading-snug truncate">
           {candidate.name}
         </p>
-        <p className="text-[12px] text-[#A0A0A0] dark:text-[#636366] mt-0.5 leading-snug truncate">
+        <p className="text-[12px] text-[#A0A0A0] dark:text-[#8E8E93] mt-0.5 leading-snug truncate">
           {CONFIDENCE_LABEL[candidate.confidence]}
           {candidate.source_hint}
         </p>
@@ -65,7 +65,7 @@ export default function GmailSubscriptionResultItem({ candidate, selected, onTog
               <p className="text-[14px] font-semibold text-[#111111] dark:text-[#F2F2F7] tabular-nums leading-none">
                 {formatCurrency(candidate.price_amount!, candidate.currency ?? 'EUR')}
               </p>
-              <p className="text-[11px] text-[#AAAAAA] dark:text-[#636366] mt-0.5 leading-none">
+              <p className="text-[11px] text-[#AAAAAA] dark:text-[#8E8E93] mt-0.5 leading-none">
                 {BILLING_SHORT[candidate.billing_period ?? 'monthly'] ?? '/mo'}
               </p>
             </>

@@ -57,7 +57,7 @@ function SectionCard({ title, children }: { title: string; children: React.React
   return (
     <div className="bg-white dark:bg-[#1C1C1E] rounded-2xl border border-[#E8E8E8] dark:border-[#2C2C2E] overflow-hidden">
       <div className="px-4 pt-3.5 pb-2.5">
-        <p className="text-[11px] font-semibold text-[#A0A0A0] dark:text-[#636366] uppercase tracking-wider">{title}</p>
+        <p className="text-[11px] font-semibold text-[#A0A0A0] dark:text-[#8E8E93] uppercase tracking-wider">{title}</p>
       </div>
       <div className="border-t border-[#F0F0F0] dark:border-[#232325]">{children}</div>
     </div>
@@ -77,7 +77,7 @@ function DetailRow({
 }) {
   return (
     <div className={`flex items-center gap-3 px-4 py-3.5 ${last ? '' : 'border-b border-[#F0F0F0] dark:border-[#232325]'}`}>
-      <span className="text-[#C0C0C0] dark:text-[#636366] flex-shrink-0">{icon}</span>
+      <span className="text-[#C0C0C0] dark:text-[#8E8E93] flex-shrink-0">{icon}</span>
       <span className="text-sm text-[#737373] dark:text-[#AEAEB2] flex-1 leading-tight">{label}</span>
       <span className="text-sm font-medium text-[#121212] dark:text-[#F2F2F7] text-right leading-tight">{value}</span>
     </div>
@@ -230,7 +230,7 @@ export default function SubscriptionDetail({ subscription: sub }: SubscriptionDe
                 </div>
                 <div className="flex justify-between items-center mt-2">
                   <span className="text-xs font-semibold text-[#121212] dark:text-[#F2F2F7]">{daysLabel}</span>
-                  <span className="text-xs text-[#A0A0A0] dark:text-[#636366]">{nextDateFormatted}</span>
+                  <span className="text-xs text-[#A0A0A0] dark:text-[#8E8E93]">{nextDateFormatted}</span>
                 </div>
               </div>
             )}
@@ -263,7 +263,7 @@ export default function SubscriptionDetail({ subscription: sub }: SubscriptionDe
           {sub.notes && (
             <div className="bg-white dark:bg-[#1C1C1E] rounded-2xl border border-[#E8E8E8] dark:border-[#2C2C2E] overflow-hidden">
               <div className="px-4 pt-3.5 pb-2.5">
-                <p className="text-[11px] font-semibold text-[#A0A0A0] dark:text-[#636366] uppercase tracking-wider">{t('detail.notes')}</p>
+                <p className="text-[11px] font-semibold text-[#A0A0A0] dark:text-[#8E8E93] uppercase tracking-wider">{t('detail.notes')}</p>
               </div>
               <div className="border-t border-[#F0F0F0] dark:border-[#232325] px-4 py-4">
                 <p className="text-sm text-[#424242] dark:text-[#AEAEB2] whitespace-pre-wrap leading-relaxed">{sub.notes}</p>

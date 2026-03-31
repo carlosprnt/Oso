@@ -70,7 +70,7 @@ function SelectRow({
       <span className="text-[16px] text-[#111111] dark:text-[#F2F2F7] pointer-events-none">{label}</span>
       <div className="flex items-center gap-1 flex-shrink-0 ml-4 pointer-events-none">
         <span className="text-[15px] text-[#666666] dark:text-[#AEAEB2]">{value}</span>
-        <ChevronsUpDown size={13} className="text-[#999999] dark:text-[#636366]" />
+        <ChevronsUpDown size={13} className="text-[#999999] dark:text-[#8E8E93]" />
       </div>
       {/* Transparent native select covers the entire row */}
       <div className="absolute inset-0">{children}</div>
@@ -363,7 +363,7 @@ export default function SubscriptionForm({
             <div className="relative flex-shrink-0">
               <span className="bg-[#E8E8E8] dark:bg-[#2C2C2E] text-[#555555] dark:text-[#AEAEB2] text-[15px] font-semibold px-2.5 py-1 rounded-lg flex items-center gap-0.5">
                 {currencySymbol}
-                <ChevronsUpDown size={11} className="text-[#999999] dark:text-[#636366]" />
+                <ChevronsUpDown size={11} className="text-[#999999] dark:text-[#8E8E93]" />
               </span>
               <select
                 value={currency}
@@ -540,7 +540,7 @@ export default function SubscriptionForm({
               <button
                 type="button"
                 onClick={() => setLogoUrl('')}
-                className="ml-1 flex-shrink-0 text-[#BBBBBB] dark:text-[#636366] active:text-[#888888] transition-colors"
+                className="ml-1 flex-shrink-0 text-[#BBBBBB] dark:text-[#8E8E93] active:text-[#888888] transition-colors"
               >
                 <X size={15} strokeWidth={2.5} />
               </button>
