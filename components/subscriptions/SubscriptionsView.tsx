@@ -586,8 +586,8 @@ export default function SubscriptionsView({
         )}
       </motion.div>
 
-      {/* Sort control — just above cards, no gap */}
-      <div className="relative z-[1] mt-2 mb-0">
+      {/* Sort control — just above cards */}
+      <div className="relative z-[30] mt-2 mb-[9px]">
         <SortDropdown current={sortMode} onSelect={setSortMode} />
       </div>
 
