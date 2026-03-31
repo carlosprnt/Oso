@@ -77,13 +77,8 @@ function CellLogo({ name, logoUrl, size }: { name: string; logoUrl: string | nul
   if (logoUrl) {
     return (
       <div
-        className="overflow-hidden flex-shrink-0 flex items-center justify-center border border-[#E4E4E4] dark:border-[#3A3A3C] dark:bg-white"
-        style={{
-          width: size,
-          height: size,
-          borderRadius: r,
-          background: isAuto ? '#F5F5F5' : 'transparent',
-        }}
+        className={`overflow-hidden flex-shrink-0 flex items-center justify-center border border-[#E4E4E4] dark:border-[#3A3A3C] dark:bg-white ${isAuto ? 'bg-[#F5F5F5]' : 'bg-transparent'}`}
+        style={{ width: size, height: size, borderRadius: r }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
