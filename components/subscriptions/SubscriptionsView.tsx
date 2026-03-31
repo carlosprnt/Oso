@@ -547,11 +547,6 @@ export default function SubscriptionsView({
           </div>
         </div>
 
-        {/* Sort control */}
-        <div className="mt-0.5">
-          <SortDropdown current={sortMode} onSelect={setSortMode} />
-        </div>
-
         {/* Summary card */}
         {allCount > 0 && (
           <div className="mt-3 bg-white dark:bg-[#1C1C1E] border border-[#EFEFEF] dark:border-[#2C2C2E] rounded-[20px] p-4 flex items-center gap-5">
@@ -585,6 +580,9 @@ export default function SubscriptionsView({
 
       {/* ── Cards — higher z-index, scroll over the header ────── */}
       <div className="relative z-[1] space-y-5 mt-2">
+        {/* Sort control */}
+        <SortDropdown current={sortMode} onSelect={setSortMode} />
+
         {/* Active filter chips */}
         {hasActiveFilters && (
           <div className="flex items-center gap-2 flex-wrap">
