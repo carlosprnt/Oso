@@ -54,7 +54,7 @@ export default function DashboardLoading() {
           {/* Title row + calendar button */}
           <div className="flex items-center justify-between mb-4">
             <div className={`${S} h-5 w-40`} />
-            <div className={`${S} w-8 h-8 rounded-xl`} />
+            <div className={`${S} w-10 h-10 rounded-xl`} />
           </div>
           <div className="space-y-3.5">
             {[...Array(3)].map((_, i) => (
