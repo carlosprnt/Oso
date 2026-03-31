@@ -31,7 +31,7 @@ function InsightCell({
 }) {
   return (
     <div className={`p-4 ${border}`}>
-      <div className={`w-7 h-7 rounded-lg flex items-center justify-center mb-2.5 flex-shrink-0 ${iconCls}`}>
+      <div className={`w-10 h-10 rounded-2xl flex items-center justify-center mb-2.5 flex-shrink-0 ${iconCls}`}>
         {icon}
       </div>
       <p className="text-[11px] text-[#737373] dark:text-[#8E8E93] font-medium mb-0.5">{label}</p>
@@ -89,7 +89,7 @@ export default function Insights({ subscriptions, stats }: InsightsProps) {
 
         {/* ① Highest cost */}
         <InsightCell
-          icon={<TrendingUp size={13} />}
+          icon={<TrendingUp size={20} />}
           iconCls="bg-[#F5F5F5] text-[#424242]"
           label={t('dashboard.highestCost')}
           value={highest?.name ?? '—'}
@@ -103,7 +103,7 @@ export default function Insights({ subscriptions, stats }: InsightsProps) {
 
         {/* ② Top category */}
         <InsightCell
-          icon={CatIcon ? <CatIcon size={13} /> : null}
+          icon={CatIcon ? <CatIcon size={20} /> : null}
           iconCls={catMeta ? `${catMeta.color} ${catMeta.textColor}` : 'bg-[#F5F5F5] text-[#424242]'}
           label={t('dashboard.topCategory')}
           value={topCat ? t(`categories.${topCat.category}` as Parameters<typeof t>[0]) : '—'}
@@ -117,7 +117,7 @@ export default function Insights({ subscriptions, stats }: InsightsProps) {
 
         {/* ③ Shared plans */}
         <InsightCell
-          icon={<Users size={13} />}
+          icon={<Users size={20} />}
           iconCls="bg-blue-100 text-blue-700"
           label={t('dashboard.sharedPlans')}
           value={
@@ -135,7 +135,7 @@ export default function Insights({ subscriptions, stats }: InsightsProps) {
 
         {/* ④ Renews soon */}
         <InsightCell
-          icon={<AlertCircle size={13} />}
+          icon={<AlertCircle size={20} />}
           iconCls="bg-amber-100 text-amber-700"
           label={t('dashboard.renewsSoon')}
           value={nextRenewal?.subscription.name ?? t('dashboard.noPlans')}
