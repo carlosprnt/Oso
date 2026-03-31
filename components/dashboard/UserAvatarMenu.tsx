@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
-import { LogOut, Share2, Moon, Sun } from 'lucide-react'
+import { LogOut, Share2, Moon, Sun, ShieldCheck } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import Image from 'next/image'
 import { getInitials, getAvatarPastel } from '@/lib/utils/logos'
@@ -19,7 +19,7 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
   const [open, setOpen] = useState(false)
   const [imgError, setImgError] = useState(false)
   const [menuPos, setMenuPos] = useState({ top: 0, right: 0 })
-  const [user, setUser] = useState<{ name: string; avatarUrl: string | null } | null>(null)
+  const [user, setUser] = useState<{ name: string; avatarUrl: string | null; email: string | null } | null>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -30,6 +30,7 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
         setUser({
           name: data.user.user_metadata?.full_name ?? data.user.email ?? 'Account',
           avatarUrl: data.user.user_metadata?.avatar_url ?? null,
+          email: data.user.email ?? null,
         })
       }
     })
@@ -107,6 +108,19 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
           <Share2 size={15} className="text-[#616161] dark:text-[#8E8E93]" />
           Share data
         </button>
+        {user?.email === 'carlosprnt@gmail.com' && (
+          <>
+            <div className="h-px bg-[#F0F0F0] dark:bg-[#2C2C2E] mx-2 my-1" />
+            <button
+              onClick={() => { setOpen(false); router.push('/admin/style-audit') }}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#3D3BF3] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors text-left"
+            >
+              <ShieldCheck size={15} />
+              Admin
+            </button>
+          </>
+        )}
+        <div className="h-px bg-[#F0F0F0] dark:bg-[#2C2C2E] mx-2 my-1" />
         <button
           onClick={handleLogout}
           className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-left"
