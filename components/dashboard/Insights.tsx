@@ -30,7 +30,7 @@ function InsightCell({
       <div className={`w-7 h-7 rounded-lg flex items-center justify-center mb-2.5 flex-shrink-0 ${iconCls}`}>
         {icon}
       </div>
-      <p className="text-[11px] text-[#999999] dark:text-[#636366] font-medium uppercase tracking-wide mb-0.5">{label}</p>
+      <p className="text-[11px] text-[#999999] dark:text-[#636366] font-medium mb-0.5">{label}</p>
       <p className="text-[14px] font-bold text-[#111111] dark:text-[#F2F2F7] leading-snug truncate">{value}</p>
       {sub && <p className="text-[12px] text-[#999999] dark:text-[#636366] mt-0.5 leading-snug line-clamp-2">{sub}</p>}
     </div>
