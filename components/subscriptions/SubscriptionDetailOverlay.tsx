@@ -116,24 +116,35 @@ export default function SubscriptionDetailOverlay({ sub, onClose, isClosing }: P
     }
   }, [])
 
-  // Prevent touch scroll from locking when hitting boundaries of inner scroll container
+  // Intercept all touchmove at document level so the locked body never
+  // receives scroll events, while still letting the inner container scroll.
   useEffect(() => {
     const el = scrollRef.current
     if (!el) return
     let startY = 0
-    const onTouchStart = (e: TouchEvent) => { startY = e.touches[0].clientY }
+    const onTouchStart = (e: TouchEvent) => {
+      startY = e.touches[0]?.clientY ?? 0
+    }
     const onTouchMove = (e: TouchEvent) => {
-      const deltaY = e.touches[0].clientY - startY
+      const touch = e.touches[0]
+      if (!touch) return
+      const deltaY = touch.clientY - startY
+      // If the touch is outside the scroll container → always block
+      if (!el.contains(e.target as Node)) {
+        e.preventDefault()
+        return
+      }
+      // Inside scroll container → only block when at a boundary (prevents rubber-band lock)
       const { scrollTop, scrollHeight, clientHeight } = el
       const atTop = scrollTop <= 0 && deltaY > 0
       const atBottom = scrollTop + clientHeight >= scrollHeight - 1 && deltaY < 0
       if (atTop || atBottom) e.preventDefault()
     }
-    el.addEventListener('touchstart', onTouchStart, { passive: true })
-    el.addEventListener('touchmove', onTouchMove, { passive: false })
+    document.addEventListener('touchstart', onTouchStart, { passive: true })
+    document.addEventListener('touchmove', onTouchMove, { passive: false })
     return () => {
-      el.removeEventListener('touchstart', onTouchStart)
-      el.removeEventListener('touchmove', onTouchMove)
+      document.removeEventListener('touchstart', onTouchStart)
+      document.removeEventListener('touchmove', onTouchMove)
     }
   }, [])
 
