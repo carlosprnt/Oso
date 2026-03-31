@@ -175,9 +175,16 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
           }}
         />
 
-        {/* Handle */}
-        <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, display: 'flex', justifyContent: 'center', padding: '12px 0 4px' }}>
+        {/* Handle + fixed close button row */}
+        <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 16px 4px' }}>
           <div className="w-10 h-1 bg-[#D4D4D4] dark:bg-[#3A3A3C] rounded-full" />
+          <button
+            onClick={onClose}
+            style={{ position: 'absolute', right: 16 }}
+            className="w-8 h-8 rounded-2xl bg-[#F5F5F5] dark:bg-[#2C2C2E] flex items-center justify-center text-[#666] dark:text-[#AEAEB2] active:opacity-60 transition-opacity"
+          >
+            <X size={16} strokeWidth={2.5} />
+          </button>
         </div>
 
         {/*
@@ -189,21 +196,12 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
         <div
           ref={scrollRef}
           style={{
-            maxHeight: 'calc(92dvh - 20px)',   // 20px = handle bar
+            maxHeight: 'calc(92dvh - 44px)',   // 44px = handle + close button row
             overflowY: 'auto',
             overscrollBehavior: 'contain',
             WebkitOverflowScrolling: 'touch',
           }}
         >
-          {/* Close button */}
-          <div className="flex justify-end px-5 pt-1 pb-2">
-            <button
-              onClick={onClose}
-              className="w-8 h-8 rounded-2xl bg-[#F5F5F5] dark:bg-[#2C2C2E] flex items-center justify-center text-[#666] dark:text-[#AEAEB2] active:opacity-60 transition-opacity"
-            >
-              <X size={16} strokeWidth={2.5} />
-            </button>
-          </div>
 
           {/* Hero */}
           <div className="flex flex-col items-center text-center px-6 pb-5">
