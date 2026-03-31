@@ -563,9 +563,9 @@ export default function SubscriptionsView({
             </div>
             <button
               onClick={toggleViewMode}
-              className="text-right active:opacity-60 transition-opacity duration-100"
+              className="text-left active:opacity-60 transition-opacity duration-100"
             >
-              <p className="text-[13px] text-[#999999] dark:text-[#636366] font-medium flex items-center justify-end gap-1.5">
+              <p className="text-[13px] text-[#999999] dark:text-[#636366] font-medium flex items-center gap-1.5">
                 {viewMode === 'monthly' ? t('subscriptions.perMonth') : t('subscriptions.perYear')}
                 <ChevronsUpDown size={11} className="text-[#BBBBBB] dark:text-[#636366]" />
               </p>
