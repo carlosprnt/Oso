@@ -115,8 +115,8 @@ function WalletCard({ sub, isNew, index, velocityMv, isSelected, onOpen, viewMod
 
   // Scale down as card exits viewport from the top
   const cardRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ target: cardRef, offset: ['start start', 'end start'] })
-  const exitScale = useTransform(scrollYProgress, [0, 1], [1, 0.9])
+  const { scrollYProgress } = useScroll({ target: cardRef, offset: ['start 0.35', 'end start'] })
+  const exitScale = useTransform(scrollYProgress, [0, 1], [1, 0.85])
 
   return (
     // Parallax wrapper — must NOT have layoutId, otherwise the transform
