@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { useEffectiveScrollY } from '@/lib/hooks/useEffectiveScrollY'
 import { formatCurrency } from '@/lib/utils/currency'
 import UserAvatarMenu from '@/components/dashboard/UserAvatarMenu'
@@ -24,10 +24,12 @@ export default function DashboardSummaryHero({
   const ref     = useRef<HTMLDivElement>(null)
   const scrollY = useEffectiveScrollY()
 
+  // Savings toggle: monthly ↔ skeleton (1.5s) ↔ annual
+  const [savingsPeriod, setSavingsPeriod]   = useState<'monthly' | 'annual'>('monthly')
+  const [showSkeleton, setShowSkeleton]     = useState(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
   useEffect(() => {
-    // Direct DOM mutation — no Framer Motion compositing layer, no stacking
-    // context created by will-change. The hero stays at z-index:auto so the
-    // card stack (z-[10]) always paints on top.
     return scrollY.on('change', (v: number) => {
       if (!ref.current) return
       const opacity = Math.max(0, Math.min(1, 1 - v / 220))
@@ -36,12 +38,28 @@ export default function DashboardSummaryHero({
     })
   }, [scrollY])
 
-  const monthly = formatCurrency(stats.total_monthly_cost, currency)
-  const annual  = formatCurrency(stats.total_annual_cost, currency)
-  const savings = formatCurrency(stats.shared_monthly_cost, currency)
-  const total   = stats.active_count + stats.trial_count
-  const hasSave = stats.shared_monthly_cost > 0.01 && sharedCount > 0
-  const name    = firstName || 'de nuevo'
+  // Cleanup timer on unmount
+  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current) }, [])
+
+  function handleSavingsTap() {
+    if (showSkeleton) return
+    if (timerRef.current) clearTimeout(timerRef.current)
+    setShowSkeleton(true)
+    timerRef.current = setTimeout(() => {
+      setSavingsPeriod(p => p === 'monthly' ? 'annual' : 'monthly')
+      setShowSkeleton(false)
+    }, 1500)
+  }
+
+  const monthly       = formatCurrency(stats.total_monthly_cost, currency)
+  const annual        = formatCurrency(stats.total_annual_cost, currency)
+  const savingsMo     = formatCurrency(stats.shared_monthly_cost, currency)
+  const savingsYr     = formatCurrency(stats.shared_monthly_cost * 12, currency)
+  const total         = stats.active_count + stats.trial_count
+  const hasSave       = stats.shared_monthly_cost > 0.01 && sharedCount > 0
+  const name          = firstName || 'de nuevo'
+
+  const savingsLabel  = savingsPeriod === 'monthly' ? `${savingsMo} al mes` : `${savingsYr} al año`
 
   return (
     <div
@@ -73,13 +91,24 @@ export default function DashboardSummaryHero({
         {hasSave && (
           <>
             {' '}Compartir{' '}
-            <span className="text-[#3D3BF3] dark:text-[#8B89FF]">
-              {sharedCount}
-            </span>
+            <span className="text-[#3D3BF3] dark:text-[#8B89FF]">{sharedCount}</span>
             {' '}te ahorra{' '}
-            <span className="text-[#3D3BF3] dark:text-[#8B89FF]">
-              {savings} al mes
-            </span>.
+            <button
+              onClick={handleSavingsTap}
+              className="inline align-baseline cursor-pointer select-none"
+              aria-label={`Cambiar entre ahorro mensual y anual`}
+            >
+              {showSkeleton ? (
+                <span
+                  className="inline-block align-middle rounded-md bg-[#3D3BF3]/20 dark:bg-[#8B89FF]/20 animate-pulse"
+                  style={{ width: '7ch', height: '1em', verticalAlign: 'baseline' }}
+                />
+              ) : (
+                <span className="text-[#3D3BF3] dark:text-[#8B89FF] underline decoration-dotted underline-offset-2">
+                  {savingsLabel}
+                </span>
+              )}
+            </button>.
           </>
         )}
       </p>
