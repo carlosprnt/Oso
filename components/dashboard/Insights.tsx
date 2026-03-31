@@ -35,7 +35,7 @@ function InsightCell({
         {icon}
       </div>
       <p className="text-[11px] text-[#737373] dark:text-[#8E8E93] font-medium mb-0.5">{label}</p>
-      <p className="text-[14px] font-bold text-[#121212] dark:text-[#F2F2F7] leading-snug truncate">{value}</p>
+      <p className="text-[17px] font-bold text-[#121212] dark:text-[#F2F2F7] leading-snug truncate">{value}</p>
       {sub && <p className="text-[12px] text-[#737373] dark:text-[#8E8E93] mt-0.5 leading-snug line-clamp-2">{sub}</p>}
     </div>
   )
