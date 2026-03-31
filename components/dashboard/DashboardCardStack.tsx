@@ -10,7 +10,9 @@ import { useElasticPullDown } from '@/lib/hooks/useElasticPullDown'
  */
 export default function DashboardCardStack({ children }: { children: React.ReactNode }) {
   const elasticY = useElasticPullDown()
-  const rowGap = useTransform(elasticY, [0, 65], [8, 24])
+  // useTransform with a mapper fn outputs a string so Framer Motion passes
+  // it directly to CSS without trying to add px (rowGap needs "Npx").
+  const rowGap = useTransform(elasticY, v => `${8 + (v / 65) * 16}px`)
 
   return (
     <motion.div
