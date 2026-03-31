@@ -29,7 +29,7 @@ export default function DashboardSummaryHero({
 
       {/* Row: greeting + avatar (with dropdown) */}
       <div className="flex items-center justify-between mb-3">
-        <p className="text-[17px] font-semibold text-black dark:text-[#F2F2F7]">
+        <p className="text-[17px] font-bold text-black dark:text-[#F2F2F7]">
           Hola, {name}.
         </p>
         <UserAvatarMenu shareText={shareText} />
@@ -44,7 +44,7 @@ export default function DashboardSummaryHero({
       </p>
 
       {/* Supporting statement */}
-      <p className="text-[18px] font-medium text-black dark:text-[#F2F2F7] leading-relaxed">
+      <p className="text-[18px] font-bold text-black dark:text-[#F2F2F7] leading-relaxed">
         Tienes{' '}
         <span className="font-semibold text-[#3D3BF3] dark:text-[#8B89FF]">
           {total} {total === 1 ? 'suscripción activa' : 'suscripciones activas'}
