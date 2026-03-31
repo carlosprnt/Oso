@@ -34,3 +34,4 @@ Thumbs.db
 
 # Supabase CLI temp files
 supabase/.temp/
+tsconfig.tsbuildinfo
