@@ -66,8 +66,8 @@ const RADIUS_VALUES = [
   { cls: 'rounded-xl', px: '18px', uses: 12, role: 'Inputs, buttons, cards' },
   { cls: 'rounded-2xl', px: '28px', uses: 9, role: 'Cards, modals' },
   { cls: 'rounded-[16px]', px: '16px', uses: 1, role: 'One-off override' },
-  { cls: 'rounded-[28px]', px: '28px', uses: 2, role: 'Duplicate of rounded-2xl' },
-  { cls: 'rounded-t-[28px]', px: '28px top', uses: 1, role: 'Bottom sheets' },
+  { cls: 'rounded-2xl', px: '28px', uses: 2, role: 'Duplicate of rounded-2xl' },
+  { cls: 'rounded-t-2xl', px: '28px top', uses: 1, role: 'Bottom sheets' },
   { cls: 'rounded-full', px: '9999px', uses: 5, role: 'Avatars, pills' },
 ]
 
@@ -79,7 +79,7 @@ const FINDINGS = [
   { severity: 'medium', title: '6 near-identical light border values', detail: '#E8E8E8, #E5E5E5, #E0E0E0, #EDEDED, #EFEFEF, #F0F0F0 — all used as "subtle border/divider". 3 values max needed.' },
   { severity: 'medium', title: '3 near-identical light surface backgrounds', detail: '#FAFAFA, #F7F8FA, #F5F5F5 used as page/section backgrounds. Consolidate to 2.' },
   { severity: 'medium', title: 'Custom pixel font sizes instead of scale', detail: 'text-[10px] through text-[17px] in 1px steps. Should map to a named scale (xs, sm, md, lg, xl, 2xl).' },
-  { severity: 'medium', title: 'rounded-[28px] duplicates rounded-2xl', detail: '3 manual uses of rounded-[28px] or rounded-t-[28px] alongside rounded-2xl which already maps to 28px.' },
+  { severity: 'medium', title: 'rounded-2xl duplicates rounded-2xl', detail: '3 manual uses of rounded-2xl or rounded-t-2xl alongside rounded-2xl which already maps to 28px.' },
   { severity: 'low', title: '#2C2C2E used for both bg AND border in dark mode', detail: '132 uses as background, also used as border. Makes intent unclear — different tokens needed.' },
   { severity: 'low', title: 'Shadows nearly absent', detail: 'Only shadow-sm and one custom box-shadow in use. Consider a consistent 2-level elevation system.' },
 ]
@@ -286,7 +286,7 @@ export default function StyleAuditClient() {
               <span className="text-[12px] text-[#999] dark:text-[#8E8E93] w-14 flex-shrink-0">{r.px}</span>
               <span className="text-[13px] text-[#737373] dark:text-[#8E8E93] flex-1">{r.role}</span>
               <span className="text-[11px] text-[#bbb] dark:text-[#8E8E93]">{r.uses}×</span>
-              {(r.cls === 'rounded-[28px]' || r.cls === 'rounded-[16px]') && (
+              {(r.cls === 'rounded-2xl' || r.cls === 'rounded-[16px]') && (
                 <span className="text-[11px] text-orange-600 bg-orange-50 dark:bg-orange-900/20 dark:text-orange-400 px-2 py-0.5 rounded-full flex-shrink-0">override</span>
               )}
             </div>
@@ -336,7 +336,7 @@ export default function StyleAuditClient() {
             {
               phase: 'Fase 1 — Quick wins',
               color: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800/40 text-green-800 dark:text-green-300',
-              items: ['Unificar #121212 + #111111 → un solo valor', 'Reemplazar #5B21B6 por #3D3BF3 en globals.css', 'Colapsar los 4 grises de texto → 3 valores semánticos', 'Eliminar rounded-[28px] → usar rounded-2xl'],
+              items: ['Unificar #121212 + #111111 → un solo valor', 'Reemplazar #5B21B6 por #3D3BF3 en globals.css', 'Colapsar los 4 grises de texto → 3 valores semánticos', 'Eliminar rounded-2xl → usar rounded-2xl'],
             },
             {
               phase: 'Fase 2 — Normalización media',

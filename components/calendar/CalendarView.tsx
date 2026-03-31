@@ -152,7 +152,7 @@ function DayCell({ day, isToday, subscriptions, onClick }: DayCellProps) {
             size={32}
           />
           {subscriptions.length > 1 && (
-            <span className="text-[9px] font-semibold text-[#888888] dark:text-[#8E8E93] leading-none bg-[#F0F0F0] dark:bg-[#2C2C2E] px-[5px] py-[3px] rounded-full">
+            <span className="text-[9px] font-semibold text-[#737373] dark:text-[#8E8E93] leading-none bg-[#F0F0F0] dark:bg-[#2C2C2E] px-[5px] py-[3px] rounded-full">
               +{subscriptions.length - 1}
             </span>
           )}
@@ -228,7 +228,7 @@ export default function CalendarView({ subscriptions }: Props) {
       {/* ── Page header: month title + right-aligned circular nav ─────────── */}
       <div className="mb-1 flex-shrink-0">
         <div className="flex items-center justify-between">
-          <h1 className="text-[28px] font-bold text-[#111111] dark:text-[#F2F2F7] tracking-tight capitalize leading-none">
+          <h1 className="text-[28px] font-bold text-[#121212] dark:text-[#F2F2F7] tracking-tight capitalize leading-none">
             {monthName}{yearLabel}
           </h1>
           {/* Circular nav buttons — right-aligned, filter-button style */}
@@ -255,14 +255,14 @@ export default function CalendarView({ subscriptions }: Props) {
 
       {/* ── Month summary — unified subtitle style ────────────────────────── */}
       <div className="flex items-center gap-3 mb-4 flex-shrink-0">
-        <span className="text-[13px] text-[#888888] dark:text-[#8E8E93]">
+        <span className="text-[13px] text-[#737373] dark:text-[#8E8E93]">
           <span className="tabular-nums">
             {formatCurrency(monthTotal.amount, monthTotal.currency)}
           </span>
           {' '}{t('calendar.total').toLowerCase()}
         </span>
         <span className="w-px h-3 bg-[#D4D4D4] dark:bg-[#3A3A3C]" />
-        <span className="text-[13px] text-[#888888] dark:text-[#8E8E93]">
+        <span className="text-[13px] text-[#737373] dark:text-[#8E8E93]">
           {totalSubsThisMonth === 0
             ? t('calendar.noRenewals')
             : `${totalSubsThisMonth} ${totalSubsThisMonth === 1

@@ -77,7 +77,7 @@ export default function FilterModal({ currentStatus, currentCategory }: FilterMo
           relative flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium
           border transition-colors duration-150 pressable
           ${activeFilterCount > 0
-            ? 'bg-[#121212] dark:bg-[#F2F2F7] text-white dark:text-[#111111] border-[#121212] dark:border-[#F2F2F7]'
+            ? 'bg-[#121212] dark:bg-[#F2F2F7] text-white dark:text-[#121212] border-[#121212] dark:border-[#F2F2F7]'
             : 'bg-white dark:bg-[#2C2C2E] text-[#424242] dark:text-[#AEAEB2] border-[#D4D4D4] dark:border-[#3A3A3C] hover:border-[#A3A3A3] dark:hover:border-[#636366]'
           }
         `}
@@ -142,7 +142,7 @@ export default function FilterModal({ currentStatus, currentCategory }: FilterMo
                         flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium
                         border transition-colors duration-150
                         ${status === opt.value
-                          ? 'bg-[#121212] dark:bg-[#F2F2F7] text-white dark:text-[#111111] border-[#121212] dark:border-[#F2F2F7]'
+                          ? 'bg-[#121212] dark:bg-[#F2F2F7] text-white dark:text-[#121212] border-[#121212] dark:border-[#F2F2F7]'
                           : 'bg-white dark:bg-[#2C2C2E] text-[#424242] dark:text-[#AEAEB2] border-[#D4D4D4] dark:border-[#3A3A3C] hover:border-[#A3A3A3] dark:hover:border-[#636366]'
                         }
                       `}

@@ -38,11 +38,11 @@ export default function PlatformPicker({ onSelect, onGmailSearch }: PlatformPick
           className="flex flex-col items-center justify-center gap-2.5 px-3 py-5 rounded-2xl border border-[#E8E8E8] dark:border-[#3A3A3C] bg-white dark:bg-[#2C2C2E] active:bg-[#FAFAFA] dark:active:bg-[#3A3A3C] transition-colors text-center"
         >
           <div className="w-11 h-11 rounded-2xl bg-[#F5F5F5] dark:bg-[#1C1C1E] border border-[#E8E8E8] dark:border-[#3A3A3C] flex items-center justify-center flex-shrink-0">
-            <PenLine size={18} className="text-[#666666] dark:text-[#AEAEB2]" />
+            <PenLine size={18} className="text-[#616161] dark:text-[#AEAEB2]" />
           </div>
           <div>
-            <p className="text-[13px] font-semibold text-[#111111] dark:text-[#F2F2F7] leading-snug">{t('picker.enterManually')}</p>
-            <p className="text-[11px] text-[#999999] dark:text-[#8E8E93] mt-0.5 leading-snug">{t('picker.enterManuallyDesc')}</p>
+            <p className="text-[13px] font-semibold text-[#121212] dark:text-[#F2F2F7] leading-snug">{t('picker.enterManually')}</p>
+            <p className="text-[11px] text-[#737373] dark:text-[#8E8E93] mt-0.5 leading-snug">{t('picker.enterManuallyDesc')}</p>
           </div>
         </button>
       </div>
@@ -68,7 +68,7 @@ export default function PlatformPicker({ onSelect, onGmailSearch }: PlatformPick
                 logoUrl={resolvePlatformLogoUrl(platform)}
                 size="sm"
               />
-              <span className="text-sm font-medium text-[#111111] dark:text-[#F2F2F7]">{platform.name}</span>
+              <span className="text-sm font-medium text-[#121212] dark:text-[#F2F2F7]">{platform.name}</span>
             </button>
           ))}
         </div>

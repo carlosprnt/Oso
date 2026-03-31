@@ -343,7 +343,7 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
       onClick={() => setEditOpen(false)}
     >
       <div
-        className="bg-white dark:bg-[#1C1C1E] rounded-t-[28px] overflow-hidden animate-slide-up"
+        className="bg-white dark:bg-[#1C1C1E] rounded-t-2xl overflow-hidden animate-slide-up"
         style={{
           maxHeight: '92dvh',
           overflowY: 'auto',

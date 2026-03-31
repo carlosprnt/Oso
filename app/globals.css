@@ -23,8 +23,8 @@
   --color-text-disabled:  #9E9E9E;
 
   /* ── Accent ──────────────────────────────── */
-  --color-accent:       #5B21B6;   /* violet-800 — rich, not electric */
-  --color-accent-light: #EDE9FE;
+  --color-accent:       #3D3BF3;   /* indigo — matches actual product usage */
+  --color-accent-light: #E8E8FF;
   --color-accent-fg:    #FFFFFF;
 
   /* ── Semantic ────────────────────────────── */

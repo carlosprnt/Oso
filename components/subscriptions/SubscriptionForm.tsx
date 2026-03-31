@@ -43,7 +43,7 @@ function Row({
         last ? '' : 'border-b border-[#EFEFEF] dark:border-[#2C2C2E]'
       }`}
     >
-      <span className="text-[16px] text-[#111111] dark:text-[#F2F2F7]">{label}</span>
+      <span className="text-[16px] text-[#121212] dark:text-[#F2F2F7]">{label}</span>
       <div className="flex items-center gap-1 flex-shrink-0 ml-4">{children}</div>
     </div>
   )
@@ -67,10 +67,10 @@ function SelectRow({
         last ? '' : 'border-b border-[#EFEFEF] dark:border-[#2C2C2E]'
       }`}
     >
-      <span className="text-[16px] text-[#111111] dark:text-[#F2F2F7] pointer-events-none">{label}</span>
+      <span className="text-[16px] text-[#121212] dark:text-[#F2F2F7] pointer-events-none">{label}</span>
       <div className="flex items-center gap-1 flex-shrink-0 ml-4 pointer-events-none">
-        <span className="text-[15px] text-[#666666] dark:text-[#AEAEB2]">{value}</span>
-        <ChevronsUpDown size={13} className="text-[#999999] dark:text-[#8E8E93]" />
+        <span className="text-[15px] text-[#616161] dark:text-[#AEAEB2]">{value}</span>
+        <ChevronsUpDown size={13} className="text-[#737373] dark:text-[#8E8E93]" />
       </div>
       {/* Transparent native select covers the entire row */}
       <div className="absolute inset-0">{children}</div>
@@ -104,9 +104,9 @@ function DateRow({
         last ? '' : 'border-b border-[#EFEFEF] dark:border-[#2C2C2E]'
       }`}
     >
-      <span className="text-[16px] text-[#111111] dark:text-[#F2F2F7] pointer-events-none">{label}</span>
+      <span className="text-[16px] text-[#121212] dark:text-[#F2F2F7] pointer-events-none">{label}</span>
       <div className="flex-shrink-0 ml-4 pointer-events-none">
-        <span className="bg-[#EFEFEF] dark:bg-[#3A3A3C] rounded-full px-3 py-1.5 text-[13px] font-medium text-[#111111] dark:text-[#F2F2F7]">
+        <span className="bg-[#EFEFEF] dark:bg-[#3A3A3C] rounded-full px-3 py-1.5 text-[13px] font-medium text-[#121212] dark:text-[#F2F2F7]">
           {formatted}
         </span>
       </div>
@@ -324,13 +324,13 @@ export default function SubscriptionForm({
 
       {/* ── Header: title + close ────────────────────────────────────────── */}
       <div className="flex-shrink-0 flex items-center justify-between px-5 pt-3 pb-3">
-        <h2 className="text-[17px] font-semibold text-[#111111] dark:text-[#F2F2F7]">
+        <h2 className="text-[17px] font-semibold text-[#121212] dark:text-[#F2F2F7]">
           {mode === 'create' ? t('sheets.createNew') : t('sheets.editSubscription')}
         </h2>
         <button
           type="button"
           onClick={requestClose}
-          className="w-8 h-8 rounded-full bg-[#F5F5F5] dark:bg-[#2C2C2E] flex items-center justify-center text-[#666666] dark:text-[#AEAEB2] transition-colors active:bg-[#EBEBEB] dark:active:bg-[#3A3A3C]"
+          className="w-8 h-8 rounded-full bg-[#F5F5F5] dark:bg-[#2C2C2E] flex items-center justify-center text-[#616161] dark:text-[#AEAEB2] transition-colors active:bg-[#EBEBEB] dark:active:bg-[#3A3A3C]"
         >
           <X size={16} strokeWidth={2.5} />
         </button>
@@ -355,7 +355,7 @@ export default function SubscriptionForm({
             onChange={e => setName(e.target.value)}
             placeholder="Nombre suscripción"
             autoFocus={false}
-            className="w-full bg-transparent text-[17px] font-semibold text-[#111111] dark:text-[#F2F2F7] placeholder:text-[#BBBBBB] dark:placeholder:text-[#636366] outline-none leading-snug"
+            className="w-full bg-transparent text-[17px] font-semibold text-[#121212] dark:text-[#F2F2F7] placeholder:text-[#BBBBBB] dark:placeholder:text-[#636366] outline-none leading-snug"
             style={{ fontSize: 17 }}
           />
           <div className="flex items-center gap-2 mt-2">
@@ -363,7 +363,7 @@ export default function SubscriptionForm({
             <div className="relative flex-shrink-0">
               <span className="bg-[#E8E8E8] dark:bg-[#2C2C2E] text-[#555555] dark:text-[#AEAEB2] text-[15px] font-semibold px-2.5 py-1 rounded-lg flex items-center gap-0.5">
                 {currencySymbol}
-                <ChevronsUpDown size={11} className="text-[#999999] dark:text-[#8E8E93]" />
+                <ChevronsUpDown size={11} className="text-[#737373] dark:text-[#8E8E93]" />
               </span>
               <select
                 value={currency}
@@ -383,7 +383,7 @@ export default function SubscriptionForm({
               value={priceAmount}
               onChange={e => setPriceAmount(e.target.value)}
               placeholder="0.00"
-              className="bg-transparent text-[17px] font-semibold text-[#111111] dark:text-[#F2F2F7] placeholder:text-[#BBBBBB] dark:placeholder:text-[#636366] outline-none flex-1 tabular-nums"
+              className="bg-transparent text-[17px] font-semibold text-[#121212] dark:text-[#F2F2F7] placeholder:text-[#BBBBBB] dark:placeholder:text-[#636366] outline-none flex-1 tabular-nums"
               style={{ fontSize: 17 }}
             />
           </div>
@@ -419,7 +419,7 @@ export default function SubscriptionForm({
                 min="1"
                 value={billingIntervalCount}
                 onChange={e => setBillingIntervalCount(e.target.value)}
-                className="bg-[#EFEFEF] dark:bg-[#2C2C2E] rounded-xl px-3 py-1.5 text-[16px] text-[#111111] dark:text-[#F2F2F7] outline-none w-20 text-right tabular-nums" style={{ fontSize: 16 }}
+                className="bg-[#EFEFEF] dark:bg-[#2C2C2E] rounded-xl px-3 py-1.5 text-[16px] text-[#121212] dark:text-[#F2F2F7] outline-none w-20 text-right tabular-nums" style={{ fontSize: 16 }}
               />
             </Row>
           )}
@@ -492,7 +492,7 @@ export default function SubscriptionForm({
                   min="2"
                   value={sharedWithCount}
                   onChange={e => setSharedWithCount(e.target.value)}
-                  className="bg-[#EFEFEF] dark:bg-[#2C2C2E] rounded-xl px-3 py-1.5 text-[16px] text-[#111111] dark:text-[#F2F2F7] outline-none w-20 text-right tabular-nums" style={{ fontSize: 16 }}
+                  className="bg-[#EFEFEF] dark:bg-[#2C2C2E] rounded-xl px-3 py-1.5 text-[16px] text-[#121212] dark:text-[#F2F2F7] outline-none w-20 text-right tabular-nums" style={{ fontSize: 16 }}
                 />
               </Row>
               <SelectRow
@@ -518,7 +518,7 @@ export default function SubscriptionForm({
                     value={userShareAmount}
                     onChange={e => setUserShareAmount(e.target.value)}
                     placeholder="4.99"
-                    className="bg-[#EFEFEF] dark:bg-[#2C2C2E] rounded-xl px-3 py-1.5 text-[16px] text-[#111111] dark:text-[#F2F2F7] placeholder:text-[#BBBBBB] dark:placeholder:text-[#636366] outline-none w-24 text-right tabular-nums" style={{ fontSize: 16 }}
+                    className="bg-[#EFEFEF] dark:bg-[#2C2C2E] rounded-xl px-3 py-1.5 text-[16px] text-[#121212] dark:text-[#F2F2F7] placeholder:text-[#BBBBBB] dark:placeholder:text-[#636366] outline-none w-24 text-right tabular-nums" style={{ fontSize: 16 }}
                   />
                 </Row>
               )}
@@ -540,7 +540,7 @@ export default function SubscriptionForm({
               <button
                 type="button"
                 onClick={() => setLogoUrl('')}
-                className="ml-1 flex-shrink-0 text-[#BBBBBB] dark:text-[#8E8E93] active:text-[#888888] transition-colors"
+                className="ml-1 flex-shrink-0 text-[#BBBBBB] dark:text-[#8E8E93] active:text-[#737373] transition-colors"
               >
                 <X size={15} strokeWidth={2.5} />
               </button>
@@ -648,7 +648,7 @@ export default function SubscriptionForm({
             style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom))' }}
             onClick={e => e.stopPropagation()}
           >
-            <h3 className="text-[17px] font-semibold text-[#111111] dark:text-[#F2F2F7] mb-1">
+            <h3 className="text-[17px] font-semibold text-[#121212] dark:text-[#F2F2F7] mb-1">
               {t('form.discardTitle')}
             </h3>
             <p className="text-[14px] text-[#737373] dark:text-[#AEAEB2] mb-5">
@@ -665,7 +665,7 @@ export default function SubscriptionForm({
               <button
                 type="button"
                 onClick={() => setShowCancelConfirm(false)}
-                className="w-full h-12 rounded-full bg-[#F5F5F5] dark:bg-[#2C2C2E] text-[#111111] dark:text-[#F2F2F7] text-[15px] font-medium active:opacity-80 transition-opacity"
+                className="w-full h-12 rounded-full bg-[#F5F5F5] dark:bg-[#2C2C2E] text-[#121212] dark:text-[#F2F2F7] text-[15px] font-medium active:opacity-80 transition-opacity"
               >
                 {t('form.keepEditing')}
               </button>
