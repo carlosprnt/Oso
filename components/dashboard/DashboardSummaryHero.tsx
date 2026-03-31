@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, useTransform } from 'framer-motion'
+import { useRef, useEffect } from 'react'
 import { useEffectiveScrollY } from '@/lib/hooks/useEffectiveScrollY'
 import { formatCurrency } from '@/lib/utils/currency'
 import UserAvatarMenu from '@/components/dashboard/UserAvatarMenu'
@@ -21,9 +21,20 @@ export default function DashboardSummaryHero({
   shareText,
   currency = 'EUR',
 }: Props) {
-  const scrollY       = useEffectiveScrollY()
-  const opacity       = useTransform(scrollY, [0, 220], [1, 0])
-  const pointerEvents = useTransform(opacity, v => v < 0.05 ? 'none' : 'auto')
+  const ref     = useRef<HTMLDivElement>(null)
+  const scrollY = useEffectiveScrollY()
+
+  useEffect(() => {
+    // Direct DOM mutation — no Framer Motion compositing layer, no stacking
+    // context created by will-change. The hero stays at z-index:auto so the
+    // card stack (z-[10]) always paints on top.
+    return scrollY.on('change', (v: number) => {
+      if (!ref.current) return
+      const opacity = Math.max(0, Math.min(1, 1 - v / 220))
+      ref.current.style.opacity = String(opacity)
+      ref.current.style.pointerEvents = opacity < 0.05 ? 'none' : 'auto'
+    })
+  }, [scrollY])
 
   const monthly = formatCurrency(stats.total_monthly_cost, currency)
   const annual  = formatCurrency(stats.total_annual_cost, currency)
@@ -33,9 +44,9 @@ export default function DashboardSummaryHero({
   const name    = firstName || 'de nuevo'
 
   return (
-    <motion.div
-      className="sticky top-0 z-0 pb-5 bg-[#F7F8FA] dark:bg-[#111111]"
-      style={{ opacity, pointerEvents }}
+    <div
+      ref={ref}
+      className="sticky top-0 pb-5 bg-[#F7F8FA] dark:bg-[#111111]"
     >
       {/* Row: greeting + avatar */}
       <div className="flex items-center justify-between mb-3">
@@ -72,6 +83,6 @@ export default function DashboardSummaryHero({
           </>
         )}
       </p>
-    </motion.div>
+    </div>
   )
 }

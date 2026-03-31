@@ -38,8 +38,7 @@ export default function UpcomingRenewals({ renewals }: Props) {
 
   function daysLabel(days: number): string {
     if (days === 0) return t('dashboard.dueToday')
-    if (days === 1) return locale === 'es' ? '1 día' : '1 day'
-    return t('dashboard.days').replace('{count}', String(days))
+    return t('dashboard.inDays').replace('{days}', String(days))
   }
 
   return (

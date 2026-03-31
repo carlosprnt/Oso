@@ -1,39 +1,23 @@
 'use client'
 
-import { useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { useState, useEffect } from 'react'
 import { getCategoryMeta } from '@/lib/constants/categories'
 import { formatCurrency } from '@/lib/utils/currency'
 import { useT } from '@/lib/i18n/LocaleProvider'
 import type { Category } from '@/types'
 
-// Pastel fill colors for category progress bars
-const CATEGORY_BAR_COLOR: Record<string, string> = {
-  streaming:    '#FCA5A5',
-  music:        '#86EFAC',
-  productivity: '#93C5FD',
-  cloud:        '#7DD3FC',
-  ai:           '#C4B5FD',
-  health:       '#6EE7B7',
-  gaming:       '#FDBA74',
-  education:    '#FDE047',
-  mobility:     '#F9A8D4',
+const COLORS: Record<string, string> = {
+  streaming:    '#F87171',
+  music:        '#4ADE80',
+  productivity: '#60A5FA',
+  cloud:        '#38BDF8',
+  ai:           '#A78BFA',
+  health:       '#34D399',
+  gaming:       '#FB923C',
+  education:    '#FBBF24',
+  mobility:     '#F472B6',
   home:         '#FCD34D',
-  other:        '#D1D5DB',
-}
-
-const CATEGORY_ICON_BG: Record<string, string> = {
-  streaming:    '#FEE2E2',
-  music:        '#DCFCE7',
-  productivity: '#DBEAFE',
-  cloud:        '#E0F2FE',
-  ai:           '#EDE9FE',
-  health:       '#D1FAE5',
-  gaming:       '#FFEDD5',
-  education:    '#FEF9C3',
-  mobility:     '#FCE7F3',
-  home:         '#FEF3C7',
-  other:        '#F3F4F6',
+  other:        '#9CA3AF',
 }
 
 interface CategoryRow {
@@ -42,54 +26,156 @@ interface CategoryRow {
   pct: number
 }
 
-interface Props {
-  categories: CategoryRow[]
+function polarToCartesian(cx: number, cy: number, r: number, deg: number) {
+  const rad = (deg - 90) * (Math.PI / 180)
+  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) }
 }
 
-function CategoryBar({ category, monthly_cost, pct }: CategoryRow) {
+function arcPath(
+  cx: number, cy: number,
+  outerR: number, innerR: number,
+  start: number, end: number,
+): string {
+  const os = polarToCartesian(cx, cy, outerR, start)
+  const oe = polarToCartesian(cx, cy, outerR, end)
+  const is = polarToCartesian(cx, cy, innerR, start)
+  const ie = polarToCartesian(cx, cy, innerR, end)
+  const large = end - start > 180 ? 1 : 0
+  return [
+    `M ${os.x} ${os.y}`,
+    `A ${outerR} ${outerR} 0 ${large} 1 ${oe.x} ${oe.y}`,
+    `L ${ie.x} ${ie.y}`,
+    `A ${innerR} ${innerR} 0 ${large} 0 ${is.x} ${is.y}`,
+    'Z',
+  ].join(' ')
+}
+
+export default function TopCategoriesSection({ categories }: { categories: CategoryRow[] }) {
   const t = useT()
-  const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-20px' })
-  const meta = getCategoryMeta(category as Category)
-  const Icon = meta.icon
-  const barColor = CATEGORY_BAR_COLOR[category] ?? '#D1D5DB'
-  const iconBg   = CATEGORY_ICON_BG[category]  ?? '#F3F4F6'
+  const [active, setActive] = useState<number | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => { setMounted(true) }, [])
+
+  if (categories.length === 0) return null
+
+  const total = categories.reduce((s, c) => s + c.monthly_cost, 0)
+
+  // Build segments: distribute 360° minus small gaps
+  const GAP = categories.length > 1 ? 3 : 0
+  const totalSweep = 360 - categories.length * GAP
+  let cursor = 0
+  const segments = categories.map((cat) => {
+    const sweep = Math.max(1, (cat.pct / 100) * totalSweep)
+    const start = cursor
+    const end = cursor + sweep
+    cursor = end + GAP
+    return { ...cat, start, end, color: COLORS[cat.category] ?? '#9CA3AF' }
+  })
+
+  const sel = active !== null ? segments[active] : null
+  const centerAmount = sel
+    ? formatCurrency(sel.monthly_cost, 'EUR')
+    : formatCurrency(total, 'EUR')
+  const centerLabel  = sel
+    ? t(`categories.${sel.category}` as Parameters<typeof t>[0])
+    : t('dashboard.perMonth')
 
   return (
-    <div ref={ref}>
-      <div className="flex items-center justify-between mb-1.5">
-        <span className="text-[15px] text-[#121212] dark:text-[#F2F2F7] font-medium flex items-center gap-2">
-          <span
-            className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0"
-            style={{ backgroundColor: iconBg }}
+    <div>
+      {/* Donut */}
+      <div className="flex justify-center mb-5">
+        <svg
+          viewBox="0 0 200 200"
+          className="w-44 h-44 text-[#121212] dark:text-[#F2F2F7]"
+          style={{
+            overflow: 'visible',
+            transform: mounted ? 'scale(1)' : 'scale(0.82)',
+            opacity: mounted ? 1 : 0,
+            transition: 'transform 0.45s cubic-bezier(0.2, 0, 0, 1), opacity 0.35s ease',
+          }}
+        >
+          {segments.map((seg, i) => {
+            const isActive = active === i
+            const outerR = isActive ? 90 : 82
+            const innerR = 50
+            return (
+              <path
+                key={seg.category}
+                d={arcPath(100, 100, outerR, innerR, seg.start, seg.end)}
+                fill={seg.color}
+                opacity={active !== null && !isActive ? 0.3 : 1}
+                style={{
+                  transition: 'opacity 0.18s ease, d 0.18s ease',
+                  cursor: 'pointer',
+                  outline: 'none',
+                }}
+                onMouseEnter={() => setActive(i)}
+                onMouseLeave={() => setActive(null)}
+                onClick={() => setActive(active === i ? null : i)}
+                role="button"
+                tabIndex={0}
+                aria-label={`${t(`categories.${seg.category}` as Parameters<typeof t>[0])}: ${formatCurrency(seg.monthly_cost, 'EUR')}`}
+                onKeyDown={e => e.key === 'Enter' && setActive(active === i ? null : i)}
+              />
+            )
+          })}
+
+          {/* Center amount */}
+          <text
+            x="100"
+            y="96"
+            textAnchor="middle"
+            fill="currentColor"
+            style={{ fontSize: '15px', fontWeight: 700 }}
           >
-            <Icon size={12} style={{ color: barColor }} />
-          </span>
-          {t(`categories.${category}` as Parameters<typeof t>[0])}
-        </span>
-        <span className="text-[15px] font-semibold text-[#121212] dark:text-[#F2F2F7] tabular-nums">
-          {formatCurrency(monthly_cost, 'EUR')}
-        </span>
+            {centerAmount}
+          </text>
+          {/* Center label */}
+          <text
+            x="100"
+            y="114"
+            textAnchor="middle"
+            fill="#8E8E93"
+            style={{ fontSize: '10px', fontWeight: 500 }}
+          >
+            {centerLabel}
+          </text>
+        </svg>
       </div>
-      <div className="h-1 bg-[#F5F5F5] dark:bg-[#2C2C2E] rounded-full overflow-hidden">
-        <motion.div
-          className="h-full rounded-full"
-          style={{ backgroundColor: barColor }}
-          initial={{ width: 0 }}
-          animate={{ width: inView ? `${Math.min(pct, 100)}%` : 0 }}
-          transition={{ duration: 0.6, ease: [0.2, 0, 0, 1], delay: 0.05 }}
-        />
-      </div>
-    </div>
-  )
-}
 
-export default function TopCategoriesSection({ categories }: Props) {
-  return (
-    <div className="space-y-3.5">
-      {categories.map((row) => (
-        <CategoryBar key={row.category} {...row} />
-      ))}
+      {/* Legend */}
+      <div className="space-y-0.5">
+        {segments.map((seg, i) => {
+          const meta = getCategoryMeta(seg.category as Category)
+          const Icon = meta.icon
+          const isActive = active === i
+          return (
+            <button
+              key={seg.category}
+              className="w-full flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 transition-colors text-left"
+              style={{ backgroundColor: isActive ? `${seg.color}1A` : 'transparent' }}
+              onMouseEnter={() => setActive(i)}
+              onMouseLeave={() => setActive(null)}
+              onClick={() => setActive(active === i ? null : i)}
+            >
+              <span
+                className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                style={{ backgroundColor: seg.color }}
+              />
+              <span className="flex-1 text-[13px] text-[#121212] dark:text-[#F2F2F7] truncate">
+                {t(`categories.${seg.category}` as Parameters<typeof t>[0])}
+              </span>
+              <span className="text-[13px] font-semibold tabular-nums text-[#121212] dark:text-[#F2F2F7]">
+                {formatCurrency(seg.monthly_cost, 'EUR')}
+              </span>
+              <span className="text-[11px] text-[#8E8E93] w-8 text-right flex-shrink-0">
+                {Math.round(seg.pct)}%
+              </span>
+            </button>
+          )
+        })}
+      </div>
     </div>
   )
 }
