@@ -32,7 +32,7 @@ export default async function DashboardPage() {
 
   const subs = enrichSubscriptions((rawSubs ?? []) as Subscription[])
   const stats = getDashboardStats(subs)
-  const topCategories = getTopSpendCategories(subs, 4)
+  const topCategories = getTopSpendCategories(subs, 99)
   const upcoming = getUpcomingRenewals(subs, 365)
   const top3 = getTopExpensiveSubscriptions(subs, 3)
   const sharedCount = subs.filter(

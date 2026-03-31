@@ -61,12 +61,12 @@ export default function TopCategoriesSection({ categories }: { categories: Categ
 
   const total = categories.reduce((s, c) => s + c.monthly_cost, 0)
 
-  // Build segments: distribute 360° minus small gaps
-  const GAP = categories.length > 1 ? 3 : 0
+  // Distribute 360° with small gaps between segments
+  const GAP = categories.length > 1 ? 2 : 0
   const totalSweep = 360 - categories.length * GAP
   let cursor = 0
   const segments = categories.map((cat) => {
-    const sweep = Math.max(1, (cat.pct / 100) * totalSweep)
+    const sweep = Math.max(2, (cat.pct / 100) * totalSweep)
     const start = cursor
     const end = cursor + sweep
     cursor = end + GAP
@@ -77,17 +77,17 @@ export default function TopCategoriesSection({ categories }: { categories: Categ
   const centerAmount = sel
     ? formatCurrency(sel.monthly_cost, 'EUR')
     : formatCurrency(total, 'EUR')
-  const centerLabel  = sel
+  const centerLabel = sel
     ? t(`categories.${sel.category}` as Parameters<typeof t>[0])
     : t('dashboard.perMonth')
 
   return (
     <div>
-      {/* Donut */}
+      {/* Donut — full width, large */}
       <div className="flex justify-center mb-5">
         <svg
-          viewBox="0 0 200 200"
-          className="w-44 h-44 text-[#121212] dark:text-[#F2F2F7]"
+          viewBox="0 0 220 220"
+          className="w-full max-w-[260px] text-[#121212] dark:text-[#F2F2F7]"
           style={{
             overflow: 'visible',
             transform: mounted ? 'scale(1)' : 'scale(0.82)',
@@ -97,16 +97,16 @@ export default function TopCategoriesSection({ categories }: { categories: Categ
         >
           {segments.map((seg, i) => {
             const isActive = active === i
-            const outerR = isActive ? 90 : 82
-            const innerR = 50
+            const outerR = isActive ? 102 : 94
+            const innerR = 58
             return (
               <path
                 key={seg.category}
-                d={arcPath(100, 100, outerR, innerR, seg.start, seg.end)}
+                d={arcPath(110, 110, outerR, innerR, seg.start, seg.end)}
                 fill={seg.color}
-                opacity={active !== null && !isActive ? 0.3 : 1}
+                opacity={active !== null && !isActive ? 0.28 : 1}
                 style={{
-                  transition: 'opacity 0.18s ease, d 0.18s ease',
+                  transition: 'opacity 0.15s ease',
                   cursor: 'pointer',
                   outline: 'none',
                 }}
@@ -123,21 +123,21 @@ export default function TopCategoriesSection({ categories }: { categories: Categ
 
           {/* Center amount */}
           <text
-            x="100"
-            y="96"
+            x="110"
+            y="105"
             textAnchor="middle"
             fill="currentColor"
-            style={{ fontSize: '15px', fontWeight: 700 }}
+            style={{ fontSize: '17px', fontWeight: 700 }}
           >
             {centerAmount}
           </text>
           {/* Center label */}
           <text
-            x="100"
-            y="114"
+            x="110"
+            y="124"
             textAnchor="middle"
             fill="#8E8E93"
-            style={{ fontSize: '10px', fontWeight: 500 }}
+            style={{ fontSize: '11px', fontWeight: 500 }}
           >
             {centerLabel}
           </text>
