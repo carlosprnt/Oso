@@ -551,7 +551,7 @@ export default function SubscriptionsView({
 
         {/* Summary card */}
         {allCount > 0 && (
-          <div className="mt-3 bg-white dark:bg-[#1C1C1E] border border-[#EFEFEF] dark:border-[#2C2C2E] rounded-[20px] p-4 flex items-center gap-5">
+          <div className="mt-3 bg-white dark:bg-[#1C1C1E] rounded-[20px] p-4 flex items-center gap-5">
             <div>
               <p className="text-[13px] text-[#737373] dark:text-[#8E8E93] font-medium">{t('subscriptions.total')}</p>
               <p className="text-[22px] font-bold text-[#121212] dark:text-[#F2F2F7] mt-0.5 leading-tight tabular-nums">
