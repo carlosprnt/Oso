@@ -18,6 +18,7 @@ const COLORS: Record<string, string> = {
   mobility:     '#F472B6',
   home:         '#FCD34D',
   other:        '#9CA3AF',
+  _resto:       '#C4C4C4',
 }
 
 interface CategoryRow {
@@ -59,31 +60,49 @@ export default function TopCategoriesSection({ categories }: { categories: Categ
 
   if (categories.length === 0) return null
 
-  const total = categories.reduce((s, c) => s + c.monthly_cost, 0)
+  // Top 4 + merge the rest into "Resto"
+  const sorted = [...categories].sort((a, b) => b.monthly_cost - a.monthly_cost)
+  const top4   = sorted.slice(0, 4)
+  const rest   = sorted.slice(4)
 
-  // Distribute 360° with small gaps between segments
-  const GAP = categories.length > 1 ? 2 : 0
-  const totalSweep = 360 - categories.length * GAP
+  const displayCategories: CategoryRow[] = rest.length > 0
+    ? [
+        ...top4,
+        {
+          category:     '_resto',
+          monthly_cost: rest.reduce((s, c) => s + c.monthly_cost, 0),
+          pct:          rest.reduce((s, c) => s + c.pct, 0),
+        },
+      ]
+    : top4
+
+  const total = displayCategories.reduce((s, c) => s + c.monthly_cost, 0)
+
+  const GAP = displayCategories.length > 1 ? 2 : 0
+  const totalSweep = 360 - displayCategories.length * GAP
   let cursor = 0
-  const segments = categories.map((cat) => {
+  const segments = displayCategories.map((cat) => {
     const sweep = Math.max(2, (cat.pct / 100) * totalSweep)
     const start = cursor
-    const end = cursor + sweep
+    const end   = cursor + sweep
     cursor = end + GAP
     return { ...cat, start, end, color: COLORS[cat.category] ?? '#9CA3AF' }
   })
 
-  const sel = active !== null ? segments[active] : null
-  const centerAmount = sel
-    ? formatCurrency(sel.monthly_cost, 'EUR')
-    : formatCurrency(total, 'EUR')
-  const centerLabel = sel
-    ? t(`categories.${sel.category}` as Parameters<typeof t>[0])
+  const sel           = active !== null ? segments[active] : null
+  const centerAmount  = sel ? formatCurrency(sel.monthly_cost, 'EUR') : formatCurrency(total, 'EUR')
+  const centerLabel   = sel
+    ? (sel.category === '_resto' ? 'Resto' : t(`categories.${sel.category}` as Parameters<typeof t>[0]))
     : t('dashboard.perMonth')
+
+  function catLabel(cat: string) {
+    if (cat === '_resto') return 'Resto'
+    return t(`categories.${cat}` as Parameters<typeof t>[0])
+  }
 
   return (
     <div>
-      {/* Donut — full width, large */}
+      {/* Donut */}
       <div className="flex justify-center mb-5">
         <svg
           viewBox="0 0 220 220"
@@ -91,64 +110,44 @@ export default function TopCategoriesSection({ categories }: { categories: Categ
           style={{
             overflow: 'visible',
             transform: mounted ? 'scale(1)' : 'scale(0.82)',
-            opacity: mounted ? 1 : 0,
-            transition: 'transform 0.45s cubic-bezier(0.2, 0, 0, 1), opacity 0.35s ease',
+            opacity:   mounted ? 1 : 0,
+            transition: 'transform 0.45s cubic-bezier(0.2,0,0,1), opacity 0.35s ease',
           }}
         >
           {segments.map((seg, i) => {
             const isActive = active === i
-            const outerR = isActive ? 102 : 94
-            const innerR = 58
             return (
               <path
                 key={seg.category}
-                d={arcPath(110, 110, outerR, innerR, seg.start, seg.end)}
+                d={arcPath(110, 110, isActive ? 102 : 94, 58, seg.start, seg.end)}
                 fill={seg.color}
                 opacity={active !== null && !isActive ? 0.28 : 1}
-                style={{
-                  transition: 'opacity 0.15s ease',
-                  cursor: 'pointer',
-                  outline: 'none',
-                }}
+                style={{ transition: 'opacity 0.15s ease', cursor: 'pointer', outline: 'none' }}
                 onMouseEnter={() => setActive(i)}
                 onMouseLeave={() => setActive(null)}
                 onClick={() => setActive(active === i ? null : i)}
                 role="button"
                 tabIndex={0}
-                aria-label={`${t(`categories.${seg.category}` as Parameters<typeof t>[0])}: ${formatCurrency(seg.monthly_cost, 'EUR')}`}
+                aria-label={`${catLabel(seg.category)}: ${formatCurrency(seg.monthly_cost, 'EUR')}`}
                 onKeyDown={e => e.key === 'Enter' && setActive(active === i ? null : i)}
               />
             )
           })}
 
-          {/* Center amount */}
-          <text
-            x="110"
-            y="105"
-            textAnchor="middle"
-            fill="currentColor"
-            style={{ fontSize: '17px', fontWeight: 700 }}
-          >
+          <text x="110" y="105" textAnchor="middle" fill="currentColor"
+            style={{ fontSize: '17px', fontWeight: 700 }}>
             {centerAmount}
           </text>
-          {/* Center label */}
-          <text
-            x="110"
-            y="124"
-            textAnchor="middle"
-            fill="#8E8E93"
-            style={{ fontSize: '11px', fontWeight: 500 }}
-          >
+          <text x="110" y="124" textAnchor="middle" fill="#8E8E93"
+            style={{ fontSize: '11px', fontWeight: 500 }}>
             {centerLabel}
           </text>
         </svg>
       </div>
 
-      {/* Legend */}
-      <div className="space-y-0.5">
+      {/* Legend — 20px padding sides + bottom */}
+      <div className="space-y-0.5 px-5 pb-5">
         {segments.map((seg, i) => {
-          const meta = getCategoryMeta(seg.category as Category)
-          const Icon = meta.icon
           const isActive = active === i
           return (
             <button
@@ -159,12 +158,10 @@ export default function TopCategoriesSection({ categories }: { categories: Categ
               onMouseLeave={() => setActive(null)}
               onClick={() => setActive(active === i ? null : i)}
             >
-              <span
-                className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                style={{ backgroundColor: seg.color }}
-              />
+              <span className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                style={{ backgroundColor: seg.color }} />
               <span className="flex-1 text-[13px] text-[#121212] dark:text-[#F2F2F7] truncate">
-                {t(`categories.${seg.category}` as Parameters<typeof t>[0])}
+                {catLabel(seg.category)}
               </span>
               <span className="text-[13px] font-semibold tabular-nums text-[#121212] dark:text-[#F2F2F7]">
                 {formatCurrency(seg.monthly_cost, 'EUR')}
