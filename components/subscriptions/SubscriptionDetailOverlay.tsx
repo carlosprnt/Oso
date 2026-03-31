@@ -227,10 +227,10 @@ export default function SubscriptionDetailOverlay({ sub, onClose, isClosing }: P
                 <p className="text-sm text-[#737373] dark:text-[#AEAEB2] mt-1">{t('detail.perMonth')}</p>
               </div>
               <div className="text-right">
-                <p className="text-xs text-[#737373] dark:text-[#AEAEB2] mb-0.5">{t('detail.annually')}</p>
                 <p className="text-lg font-semibold text-[#424242] dark:text-[#F2F2F7] tabular-nums">
                   {formatCurrency(sub.my_annual_cost, sub.currency)}
                 </p>
+                <p className="text-sm text-[#737373] dark:text-[#AEAEB2] mt-1">{t('detail.annually')}</p>
               </div>
             </div>
           </div>
