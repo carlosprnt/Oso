@@ -31,43 +31,43 @@ export default function TopExpensiveSection({ subscriptions }: Props) {
 
   return (
     <>
-      <div className="space-y-3">
+      <div
+        className="flex gap-3 overflow-x-auto pb-1 snap-x snap-mandatory"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
         {subscriptions.map((sub, i) => (
           <button
             key={sub.id}
             onClick={() => openSub(sub)}
-            className="w-full flex items-center gap-3 text-left active:opacity-70 transition-opacity"
+            className="flex-shrink-0 w-[185px] snap-start rounded-[16px] bg-[#F7F8FA] dark:bg-[#232325] border border-[#F0F0F0] dark:border-[#2C2C2E] p-4 text-left active:opacity-70 transition-opacity"
           >
-            <span className="text-[11px] font-bold text-[#B0B0B0] dark:text-[#636366] w-4 flex-shrink-0 tabular-nums">
+            <span className="text-[11px] font-bold text-[#B0B0B0] dark:text-[#636366] uppercase tracking-wider">
               #{i + 1}
             </span>
-            <SubscriptionAvatar
-              name={sub.name}
-              logoUrl={resolveSubscriptionLogoUrl(sub.name, sub.logo_url)}
-              size="md"
-              corner="rounded-[8px]"
-            />
-            <div className="flex-1 min-w-0">
-              <p className="text-[14px] font-bold text-[#121212] dark:text-[#F2F2F7] truncate leading-snug">
-                {sub.name}
-              </p>
-              {sub.is_shared && (
-                <p className="text-[12px] text-[#737373] dark:text-[#636366] mt-0.5">
+            <div className="mt-2 mb-3">
+              <SubscriptionAvatar
+                name={sub.name}
+                logoUrl={resolveSubscriptionLogoUrl(sub.name, sub.logo_url)}
+                size="md"
+                corner="rounded-[8px]"
+              />
+            </div>
+            <p className="text-[14px] font-bold text-[#121212] dark:text-[#F2F2F7] truncate leading-snug">{sub.name}</p>
+            {sub.is_shared ? (
+              <div className="mt-1.5 space-y-0.5">
+                <p className="text-[12px] text-[#737373] dark:text-[#636366]">
+                  Total: {formatCurrency(sub.monthly_equivalent_cost, sub.currency)}/mo
+                </p>
+                <p className="text-[13px] font-semibold text-[#121212] dark:text-[#F2F2F7]">
                   {t('dashboard.yourShare')}: {formatCurrency(sub.my_monthly_cost, sub.currency)}/mo
                 </p>
-              )}
-            </div>
-            <div className="flex-shrink-0 text-right">
-              <p className="text-[15px] font-bold text-[#121212] dark:text-[#F2F2F7] tabular-nums">
+              </div>
+            ) : (
+              <p className="text-[15px] font-bold text-[#121212] dark:text-[#F2F2F7] tabular-nums mt-1.5">
                 {formatCurrency(sub.my_monthly_cost, sub.currency)}
                 <span className="text-[12px] font-normal text-[#737373] dark:text-[#636366] ml-0.5">/mo</span>
               </p>
-              {sub.is_shared && (
-                <p className="text-[11px] text-[#B0B0B0] dark:text-[#636366]">
-                  Total: {formatCurrency(sub.monthly_equivalent_cost, sub.currency)}/mo
-                </p>
-              )}
-            </div>
+            )}
           </button>
         ))}
       </div>
