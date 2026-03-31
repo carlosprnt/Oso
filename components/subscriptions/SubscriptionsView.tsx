@@ -586,11 +586,13 @@ export default function SubscriptionsView({
         )}
       </motion.div>
 
-      {/* ── Cards — higher z-index, scroll over the header ────── */}
-      <div className="relative z-[1] space-y-5 mt-2">
-        {/* Sort control */}
+      {/* Sort control — just above cards, no gap */}
+      <div className="relative z-[1] mt-2 mb-0">
         <SortDropdown current={sortMode} onSelect={setSortMode} />
+      </div>
 
+      {/* ── Cards — higher z-index, scroll over the header ────── */}
+      <div className="relative z-[1] space-y-5">
         {/* Active filter chips */}
         {hasActiveFilters && (
           <div className="flex items-center gap-2 flex-wrap">
