@@ -1,15 +1,14 @@
 import { createClient } from '@/lib/supabase/server'
 import { enrichSubscriptions, getDashboardStats, getTopSpendCategories, getUpcomingRenewals, getTopExpensiveSubscriptions } from '@/lib/calculations/subscriptions'
 import { formatCurrency } from '@/lib/utils/currency'
-import { getCategoryMeta } from '@/lib/constants/categories'
 import type { Subscription } from '@/types'
 import Link from 'next/link'
 import { TrendingUp, Calendar, Users, Zap, Plus } from 'lucide-react'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import SubscriptionAvatar from '@/components/subscriptions/SubscriptionAvatar'
-import { resolveSubscriptionLogoUrl } from '@/lib/constants/platforms'
 import UpcomingRenewals from '@/components/dashboard/UpcomingRenewals'
+import TopExpensiveSection from '@/components/dashboard/TopExpensiveSection'
+import TopCategoriesSection from '@/components/dashboard/TopCategoriesSection'
 import { loadDemoData } from '@/app/(dashboard)/subscriptions/demo-action'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import Insights from '@/components/dashboard/Insights'
@@ -18,39 +17,13 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Dashboard' }
 
-// Pastel fill colors for category progress bars
-const CATEGORY_BAR_COLOR: Record<string, string> = {
-  streaming:    '#FCA5A5',
-  music:        '#86EFAC',
-  productivity: '#93C5FD',
-  cloud:        '#7DD3FC',
-  ai:           '#C4B5FD',
-  health:       '#6EE7B7',
-  gaming:       '#FDBA74',
-  education:    '#FDE047',
-  mobility:     '#F9A8D4',
-  home:         '#FCD34D',
-  other:        '#D1D5DB',
-}
-
-// Pastel icon bg colors matching each category
-const CATEGORY_ICON_BG: Record<string, string> = {
-  streaming:    '#FEE2E2',
-  music:        '#DCFCE7',
-  productivity: '#DBEAFE',
-  cloud:        '#E0F2FE',
-  ai:           '#EDE9FE',
-  health:       '#D1FAE5',
-  gaming:       '#FFEDD5',
-  education:    '#FEF9C3',
-  mobility:     '#FCE7F3',
-  home:         '#FEF3C7',
-  other:        '#F3F4F6',
-}
-
 export default async function DashboardPage() {
   const supabase = await createClient()
   const t = await getServerT()
+
+  const { data: { user } } = await supabase.auth.getUser()
+  const fullName: string = user?.user_metadata?.full_name ?? user?.email?.split('@')[0] ?? ''
+  const firstName = fullName.split(' ')[0]
 
   const { data: rawSubs } = await supabase
     .from('subscriptions')
@@ -67,11 +40,19 @@ export default async function DashboardPage() {
 
   const shareText = `My monthly subscriptions: ${formatCurrency(stats.total_monthly_cost, 'EUR')} across ${subs.length} subscriptions — tracked with Perezoso 🦥`
 
+  const greeting = firstName ? `Hola, ${firstName}` : t('dashboard.title')
+
+  const categoryRows = topCategories.map(({ category, monthly_cost }) => ({
+    category,
+    monthly_cost,
+    pct: stats.total_monthly_cost > 0 ? (monthly_cost / stats.total_monthly_cost) * 100 : 0,
+  }))
+
   return (
     <div>
-      {/* Header — sticky but below content (z-[0]), fades as cards scroll over */}
+      {/* Header — sticky, fades as cards scroll over */}
       <DashboardHeader
-        title={t('dashboard.title')}
+        title={greeting}
         subtitle={t('dashboard.subtitle')}
         shareText={shareText}
       />
@@ -83,10 +64,10 @@ export default async function DashboardPage() {
         <EmptyState t={t} />
       ) : (
         <>
-          {/* Monthly + Yearly — wide horizontal card */}
+          {/* Monthly + Yearly */}
           <div className="bg-white dark:bg-[#1C1C1E] rounded-2xl border border-[#E8E8E8] dark:border-[#2C2C2E] p-5">
             <div className="grid grid-cols-2">
-              <div className="pr-5 border-r border-[#F0F0F0] dark:border-[#2C2C2E]">
+              <div className="pr-5">
                 <div className="flex items-center gap-1.5 mb-3">
                   <TrendingUp size={13} className="text-[#737373] dark:text-[#636366]" />
                   <span className="text-xs font-medium text-[#737373] dark:text-[#636366]">{t('dashboard.monthly')}</span>
@@ -94,17 +75,19 @@ export default async function DashboardPage() {
                 <p className="text-[28px] font-bold text-[#121212] dark:text-[#F2F2F7] tabular-nums tracking-tight leading-none">
                   {formatCurrency(stats.total_monthly_cost, 'EUR')}
                 </p>
-                <p className="text-xs text-[#737373] dark:text-[#636366] mt-1.5">{t('dashboard.spendPerMonth')}</p>
               </div>
-              <div className="pl-5">
-                <div className="flex items-center gap-1.5 mb-3">
-                  <Calendar size={13} className="text-[#737373] dark:text-[#636366]" />
-                  <span className="text-xs font-medium text-[#737373] dark:text-[#636366]">{t('dashboard.yearly')}</span>
+              {/* Vertical divider with top/bottom margin */}
+              <div className="flex">
+                <div className="w-px bg-[#F0F0F0] dark:bg-[#2C2C2E] mx-0 my-1 self-stretch" />
+                <div className="pl-5 flex-1">
+                  <div className="flex items-center gap-1.5 mb-3">
+                    <Calendar size={13} className="text-[#737373] dark:text-[#636366]" />
+                    <span className="text-xs font-medium text-[#737373] dark:text-[#636366]">{t('dashboard.yearly')}</span>
+                  </div>
+                  <p className="text-[28px] font-bold text-[#121212] dark:text-[#F2F2F7] tabular-nums tracking-tight leading-none">
+                    {formatCurrency(stats.total_annual_cost, 'EUR')}
+                  </p>
                 </div>
-                <p className="text-[28px] font-bold text-[#121212] dark:text-[#F2F2F7] tabular-nums tracking-tight leading-none">
-                  {formatCurrency(stats.total_annual_cost, 'EUR')}
-                </p>
-                <p className="text-xs text-[#737373] dark:text-[#636366] mt-1.5">{t('dashboard.projectedAnnual')}</p>
               </div>
             </div>
           </div>
@@ -142,43 +125,8 @@ export default async function DashboardPage() {
               {/* Top categories */}
               <Card>
                 <CardHeader title={t('dashboard.topCategories')} />
-                <div className="space-y-3.5">
-                  {topCategories.map(({ category, monthly_cost }) => {
-                    const meta = getCategoryMeta(category)
-                    const Icon = meta.icon
-                    const pct = stats.total_monthly_cost > 0
-                      ? (monthly_cost / stats.total_monthly_cost) * 100
-                      : 0
-                    const barColor = CATEGORY_BAR_COLOR[category] ?? '#D1D5DB'
-                    const iconBg  = CATEGORY_ICON_BG[category]  ?? '#F3F4F6'
-                    return (
-                      <div key={category}>
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-[15px] text-[#121212] dark:text-[#F2F2F7] font-medium flex items-center gap-2">
-                            <span
-                              className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0"
-                              style={{ backgroundColor: iconBg }}
-                            >
-                              <Icon size={12} style={{ color: barColor }} />
-                            </span>
-                            {t(`categories.${category}` as Parameters<typeof t>[0])}
-                          </span>
-                          <span className="text-[15px] font-semibold text-[#121212] dark:text-[#F2F2F7] tabular-nums">
-                            {formatCurrency(monthly_cost, 'EUR')}
-                          </span>
-                        </div>
-                        <div className="h-1 bg-[#F5F5F5] dark:bg-[#2C2C2E] rounded-full overflow-hidden">
-                          <div
-                            className="h-full rounded-full transition-all duration-500"
-                            style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: barColor }}
-                          />
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
+                <TopCategoriesSection categories={categoryRows} />
               </Card>
-
             </div>
           </div>
 
@@ -186,45 +134,7 @@ export default async function DashboardPage() {
           {top3.length > 0 && (
             <Card>
               <CardHeader title={t('dashboard.topExpensive')} />
-              <div
-                className="flex gap-3 overflow-x-auto pb-1 snap-x snap-mandatory"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-              >
-                {top3.map((sub, i) => (
-                  <div
-                    key={sub.id}
-                    className="flex-shrink-0 w-[185px] snap-start rounded-[16px] bg-[#F7F8FA] dark:bg-[#232325] border border-[#F0F0F0] dark:border-[#2C2C2E] p-4"
-                  >
-                    <span className="text-[11px] font-bold text-[#B0B0B0] dark:text-[#636366] uppercase tracking-wider">
-                      #{i + 1}
-                    </span>
-                    <div className="mt-2 mb-3">
-                      <SubscriptionAvatar
-                        name={sub.name}
-                        logoUrl={resolveSubscriptionLogoUrl(sub.name, sub.logo_url)}
-                        size="md"
-                        corner="rounded-[8px]"
-                      />
-                    </div>
-                    <p className="text-[14px] font-bold text-[#121212] dark:text-[#F2F2F7] truncate leading-snug">{sub.name}</p>
-                    {sub.is_shared ? (
-                      <div className="mt-1.5 space-y-0.5">
-                        <p className="text-[12px] text-[#737373] dark:text-[#636366]">
-                          Total: {formatCurrency(sub.monthly_equivalent_cost, sub.currency)}/mo
-                        </p>
-                        <p className="text-[13px] font-semibold text-[#121212] dark:text-[#F2F2F7]">
-                          {t('dashboard.yourShare')}: {formatCurrency(sub.my_monthly_cost, sub.currency)}/mo
-                        </p>
-                      </div>
-                    ) : (
-                      <p className="text-[15px] font-bold text-[#121212] dark:text-[#F2F2F7] tabular-nums mt-1.5">
-                        {formatCurrency(sub.my_monthly_cost, sub.currency)}
-                        <span className="text-[12px] font-normal text-[#737373] dark:text-[#636366] ml-0.5">/mo</span>
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
+              <TopExpensiveSection subscriptions={top3} />
             </Card>
           )}
         </>
