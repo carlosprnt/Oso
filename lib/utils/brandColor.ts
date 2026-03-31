@@ -114,17 +114,18 @@ export function getSafeUiTintFromColor(r: number, g: number, b: number): string 
 
 /**
  * Builds the CSS gradient string for the branded atmospheric tint.
- * Radial glow centered at the top edge fades to transparent, layered over
- * a short linear strip for extra warmth right at the very top.
+ * `bgEnd` should be the sheet background color at alpha-0 so the gradient
+ * interpolates through that hue rather than through black.
+ * Light mode: rgba(255,255,255,0) — Dark mode: rgba(28,28,30,0)
  */
-export function buildBrandedDetailGradient(tintColor: string): string {
+export function buildBrandedDetailGradient(tintColor: string, bgEnd = 'rgba(255,255,255,0)'): string {
   return [
-    `radial-gradient(ellipse 150% 75% at 50% 0%, ${tintColor} 0%, transparent 70%)`,
-    `linear-gradient(to bottom, ${tintColor} 0%, transparent 40%)`,
+    `radial-gradient(ellipse 150% 75% at 50% 0%, ${tintColor} 0%, ${bgEnd} 70%)`,
+    `linear-gradient(to bottom, ${tintColor} 0%, ${bgEnd} 40%)`,
   ].join(', ')
 }
 
 /** Fallback gradient — a barely-there warm neutral, used when extraction fails */
-export function getFallbackDetailTint(): string {
-  return 'radial-gradient(ellipse 150% 75% at 50% 0%, rgb(220, 218, 228) 0%, transparent 70%)'
+export function getFallbackDetailTint(bgEnd = 'rgba(255,255,255,0)'): string {
+  return `radial-gradient(ellipse 150% 75% at 50% 0%, rgb(220, 218, 228) 0%, ${bgEnd} 70%)`
 }
