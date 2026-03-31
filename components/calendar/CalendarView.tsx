@@ -260,14 +260,14 @@ export default function CalendarView({ subscriptions }: Props) {
 
       {/* ── Month summary — unified subtitle style ────────────────────────── */}
       <div className="flex items-center gap-3 mb-4 flex-shrink-0">
-        <span className="text-[11px] font-semibold text-[#888888] dark:text-[#636366] uppercase tracking-wider">
+        <span className="text-[13px] text-[#888888] dark:text-[#636366]">
           <span className="tabular-nums">
             {formatCurrency(monthTotal.amount, monthTotal.currency)}
           </span>
-          {' '}{t('calendar.total')}
+          {' '}{t('calendar.total').toLowerCase()}
         </span>
         <span className="w-px h-3 bg-[#D4D4D4] dark:bg-[#3A3A3C]" />
-        <span className="text-[11px] font-semibold text-[#888888] dark:text-[#636366] uppercase tracking-wider">
+        <span className="text-[13px] text-[#888888] dark:text-[#636366]">
           {totalSubsThisMonth === 0
             ? t('calendar.noRenewals')
             : `${totalSubsThisMonth} ${totalSubsThisMonth === 1
@@ -301,9 +301,15 @@ export default function CalendarView({ subscriptions }: Props) {
         }}
       >
         {cells.map((day, i) => {
-          // Empty cells before day 1 or after last day — invisible spacer
+          // Empty cells before day 1 or after last day — same grey tile, no content
           if (!day) {
-            return <div key={i} />
+            return (
+              <div
+                key={i}
+                className="rounded-[12px] bg-[#F5F5F5] dark:bg-[#2C2C2E]"
+                style={{ minHeight: 80, border: '1.5px solid transparent' }}
+              />
+            )
           }
           const isToday =
             year === today.getFullYear() &&
