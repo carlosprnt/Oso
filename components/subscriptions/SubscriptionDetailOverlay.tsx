@@ -102,50 +102,27 @@ export default function SubscriptionDetailOverlay({ sub, onClose, isClosing }: P
   const savedScrollY = useRef(0)
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  // Lock body scroll while overlay is open
+  // Lock body scroll while overlay is open.
+  // overflow:hidden keeps window.scrollY intact (no position jump),
+  // which also lets useEffectiveScrollY keep headers correctly faded.
   useEffect(() => {
     savedScrollY.current = window.scrollY
-    document.body.style.position = 'fixed'
-    document.body.style.top = `-${savedScrollY.current}px`
-    document.body.style.width = '100%'
+    document.body.style.overflow = 'hidden'
     return () => {
-      document.body.style.position = ''
-      document.body.style.top = ''
-      document.body.style.width = ''
-      window.scrollTo(0, savedScrollY.current)
+      document.body.style.overflow = ''
     }
   }, [])
 
-  // Intercept all touchmove at document level so the locked body never
-  // receives scroll events, while still letting the inner container scroll.
+  // iOS ignores overflow:hidden on body — prevent touchmove outside the
+  // inner scroll container so the page underneath can't drift.
   useEffect(() => {
     const el = scrollRef.current
     if (!el) return
-    let startY = 0
-    const onTouchStart = (e: TouchEvent) => {
-      startY = e.touches[0]?.clientY ?? 0
-    }
     const onTouchMove = (e: TouchEvent) => {
-      const touch = e.touches[0]
-      if (!touch) return
-      const deltaY = touch.clientY - startY
-      // If the touch is outside the scroll container → always block
-      if (!el.contains(e.target as Node)) {
-        e.preventDefault()
-        return
-      }
-      // Inside scroll container → only block when at a boundary (prevents rubber-band lock)
-      const { scrollTop, scrollHeight, clientHeight } = el
-      const atTop = scrollTop <= 0 && deltaY > 0
-      const atBottom = scrollTop + clientHeight >= scrollHeight - 1 && deltaY < 0
-      if (atTop || atBottom) e.preventDefault()
+      if (!el.contains(e.target as Node)) e.preventDefault()
     }
-    document.addEventListener('touchstart', onTouchStart, { passive: true })
     document.addEventListener('touchmove', onTouchMove, { passive: false })
-    return () => {
-      document.removeEventListener('touchstart', onTouchStart)
-      document.removeEventListener('touchmove', onTouchMove)
-    }
+    return () => document.removeEventListener('touchmove', onTouchMove)
   }, [])
 
   const billingProg = billingProgress(sub.next_billing_date, sub.billing_period, sub.billing_interval_count)
@@ -245,7 +222,6 @@ export default function SubscriptionDetailOverlay({ sub, onClose, isClosing }: P
         <motion.div
           ref={scrollRef}
           className="flex-1 overflow-y-auto overscroll-contain px-4 space-y-3 pb-28"
-          style={{ WebkitOverflowScrolling: 'touch' }}
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
