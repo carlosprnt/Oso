@@ -235,7 +235,7 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
               </div>
             </div>
 
-            {/* Billing */}
+            {/* Billing rows */}
             <PlainCard>
               {sub.next_billing_date && (
                 <DetailRow
@@ -245,7 +245,7 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
                 />
               )}
               <DetailRow icon={<CreditCard size={15} />} label={t('detail.amount')} value={formatCurrency(sub.price_amount, sub.currency)} />
-              <DetailRow icon={<RefreshCw size={15} />} label={t('detail.billingCycle')} value={billingLabel} />
+              <DetailRow icon={<RefreshCw size={15} />} label={t('detail.billingCycle')} value={billingLabel} last={!sub.is_shared} />
               {sub.is_shared && (
                 <DetailRow icon={<Users size={15} />} label={t('detail.sharedWith')} value={`${sub.shared_with_count} ${t('detail.people')}`} />
               )}
@@ -254,19 +254,33 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
                   icon={<PieChart size={15} />}
                   label={t('detail.nextBillingSection')}
                   value={`${formatCurrency(sub.my_monthly_cost, sub.currency)} / ${locale === 'es' ? 'mes' : 'mo'}`}
+                  last
                 />
               )}
-              {sub.next_billing_date && (
-                <div className="px-4 pt-3 pb-4 border-t border-[#EBEBEB] dark:border-[#2C2C2E]">
-                  <div className="w-full rounded-full overflow-hidden" style={{ height: 5, background: 'rgba(0,0,0,0.07)' }}>
-                    <div className="h-full rounded-full" style={{ width: `${Math.round(billingProg * 100)}%`, background: '#22C55E' }} />
-                  </div>
-                  <div className="flex justify-end items-center mt-2">
-                    <span className="text-xs font-semibold text-[#121212] dark:text-[#F2F2F7]">{daysLabel}</span>
-                  </div>
-                </div>
-              )}
             </PlainCard>
+
+            {/* Progress block — only shown when next billing date is known */}
+            {sub.next_billing_date && (
+              <div className="bg-[#F7F8FA] dark:bg-[#232325] rounded-2xl border border-[#F0F0F0] dark:border-[#2C2C2E] px-4 py-4">
+                <p className="text-[11px] font-semibold text-[#A0A0A0] dark:text-[#636366] uppercase tracking-wider mb-3">
+                  {t('detail.timeUntilNext')}
+                </p>
+                {/* Endpoints */}
+                <div className="flex justify-between items-center mb-1.5">
+                  <span className="text-xs text-[#A0A0A0] dark:text-[#636366]">{t('detail.today')}</span>
+                  <span className="text-xs text-[#A0A0A0] dark:text-[#636366]">{nextDateFormatted}</span>
+                </div>
+                {/* Bar */}
+                <div className="w-full rounded-full overflow-hidden" style={{ height: 5, background: 'rgba(0,0,0,0.07)' }}>
+                  <div
+                    className="h-full rounded-full"
+                    style={{ width: `${Math.round(billingProg * 100)}%`, background: '#22C55E' }}
+                  />
+                </div>
+                {/* Countdown */}
+                <p className="text-xs font-semibold text-[#121212] dark:text-[#F2F2F7] mt-2">{daysLabel}</p>
+              </div>
+            )}
 
             {/* Organisation */}
             <PlainCard>
