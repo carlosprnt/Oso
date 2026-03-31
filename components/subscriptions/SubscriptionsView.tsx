@@ -258,7 +258,7 @@ function CardStack({
   const springVelocity = useSpring(rawVelocity, { stiffness: 180, damping: 28 })
 
   // Expand card gap as user scrolls — starts at ~2% scroll, full effect by 120px
-  const gapExtra = useTransform(scrollY, [0, 120], [0, 10])
+  const gapExtra = useTransform(scrollY, [0, 20], [0, 24])
   const dynamicMargin = useTransform(gapExtra, v => `${STACK_MARGIN_PX + v}px`)
 
   // Pull-down elastic: whole stack translates downward when over-pulling at top
