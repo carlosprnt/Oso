@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, useTransform, useMotionTemplate } from 'framer-motion'
+import { motion, useTransform } from 'framer-motion'
 import { useEffectiveScrollY } from '@/lib/hooks/useEffectiveScrollY'
 import { formatCurrency } from '@/lib/utils/currency'
 import UserAvatarMenu from '@/components/dashboard/UserAvatarMenu'
@@ -23,8 +23,6 @@ export default function DashboardSummaryHero({
 }: Props) {
   const scrollY       = useEffectiveScrollY()
   const opacity       = useTransform(scrollY, [0, 220], [1, 0])
-  const blurPx        = useTransform(scrollY, [0, 220], [0, 8])
-  const filter        = useMotionTemplate`blur(${blurPx}px)`
   const pointerEvents = useTransform(opacity, v => v < 0.05 ? 'none' : 'auto')
 
   const monthly = formatCurrency(stats.total_monthly_cost, currency)
@@ -37,7 +35,7 @@ export default function DashboardSummaryHero({
   return (
     <motion.div
       className="sticky top-0 z-0 pb-5 bg-[#F7F8FA] dark:bg-[#111111]"
-      style={{ opacity, filter, pointerEvents }}
+      style={{ opacity, pointerEvents }}
     >
       {/* Row: greeting + avatar */}
       <div className="flex items-center justify-between mb-3">
