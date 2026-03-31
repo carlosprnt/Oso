@@ -8,7 +8,6 @@ import {
   RefreshCw, CreditCard, PieChart,
 } from 'lucide-react'
 import SubscriptionAvatar from './SubscriptionAvatar'
-import BottomSheet from '@/components/ui/BottomSheet'
 import SubscriptionForm from './SubscriptionForm'
 import { resolveSubscriptionLogoUrl } from '@/lib/constants/platforms'
 import { formatCurrency } from '@/lib/utils/currency'
@@ -327,12 +326,37 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
     </motion.div>
   )
 
+  const editPanel = editOpen ? (
+    <div
+      style={{
+        position: 'fixed', inset: 0, zIndex: 400,
+        display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
+        backgroundColor: 'rgba(0,0,0,0.55)',
+      }}
+      onClick={() => setEditOpen(false)}
+    >
+      <div
+        className="bg-white dark:bg-[#1C1C1E] rounded-t-[28px] overflow-hidden animate-slide-up"
+        style={{
+          maxHeight: '92dvh',
+          overflowY: 'auto',
+          WebkitOverflowScrolling: 'touch' as never,
+          paddingBottom: 'env(safe-area-inset-bottom)',
+        }}
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex justify-center pt-3 pb-1">
+          <div className="w-10 h-1 bg-[#D4D4D4] dark:bg-[#3A3A3C] rounded-full" />
+        </div>
+        <SubscriptionForm mode="edit" subscription={sub} onCancel={() => setEditOpen(false)} />
+      </div>
+    </div>
+  ) : null
+
   return typeof document !== 'undefined' ? createPortal(
     <>
       {content}
-      <BottomSheet isOpen={editOpen} onClose={() => setEditOpen(false)} height="full" zIndex={210}>
-        <SubscriptionForm mode="edit" subscription={sub} onCancel={() => setEditOpen(false)} />
-      </BottomSheet>
+      {editPanel}
     </>,
     document.body
   ) : null
