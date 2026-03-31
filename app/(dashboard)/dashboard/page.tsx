@@ -11,6 +11,7 @@ import TopExpensiveSection from '@/components/dashboard/TopExpensiveSection'
 import TopCategoriesSection from '@/components/dashboard/TopCategoriesSection'
 import { loadDemoData } from '@/app/(dashboard)/subscriptions/demo-action'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
+import DashboardCardStack from '@/components/dashboard/DashboardCardStack'
 import Insights from '@/components/dashboard/Insights'
 import { getServerT } from '@/lib/i18n/server'
 import type { Metadata } from 'next'
@@ -58,7 +59,7 @@ export default async function DashboardPage() {
       />
 
       {/* Content — higher z-index, scrolls over the header */}
-      <div className="relative z-[1] space-y-[8px] mt-2">
+      <DashboardCardStack>
 
       {isEmpty ? (
         <EmptyState t={t} />
@@ -139,7 +140,7 @@ export default async function DashboardPage() {
           )}
         </>
       )}
-      </div>
+      </DashboardCardStack>
     </div>
   )
 }
