@@ -71,13 +71,13 @@ export default function CalendarDaySheet({
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/60 animate-backdrop-in z-[58]"
+        className="fixed inset-0 bg-black/60 animate-backdrop-in z-[200]"
         onClick={onClose}
       />
 
       {/* Sheet */}
       <div
-        className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1C1C1E] rounded-t-[28px] flex flex-col max-h-[80dvh] animate-slide-up z-[60]"
+        className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1C1C1E] rounded-t-[28px] flex flex-col max-h-[80dvh] animate-slide-up z-[210]"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
         onClick={e => e.stopPropagation()}
       >
@@ -89,7 +89,7 @@ export default function CalendarDaySheet({
         {/* Header */}
         <div className="flex-shrink-0 flex items-start justify-between px-5 pt-2 pb-4">
           <div>
-            <h2 className="text-[28px] font-bold text-[#111111] dark:text-[#F2F2F7] tracking-tight capitalize leading-none">
+            <h2 className="text-[22px] font-bold text-[#111111] dark:text-[#F2F2F7] tracking-tight capitalize leading-none">
               {dateLabel}
             </h2>
             <div className="flex items-center gap-2 mt-2">
