@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo, useRef, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useT, useLocale } from '@/lib/i18n/LocaleProvider'
 import { resolveSubscriptionLogoUrl } from '@/lib/constants/platforms'
@@ -176,6 +177,7 @@ export default function CalendarView({ subscriptions }: Props) {
   const [year, setYear] = useState(today.getFullYear())
   const [month, setMonth] = useState(today.getMonth())
   const [selectedDay, setSelectedDay] = useState<number | null>(null)
+  const direction = useRef<1 | -1>(1) // 1 = forward, -1 = backward
 
   const dayMap = useMemo(
     () => buildDayMap(subscriptions, year, month),
@@ -192,10 +194,12 @@ export default function CalendarView({ subscriptions }: Props) {
   }, [dayMap, subscriptions])
 
   function prevMonth() {
+    direction.current = -1
     if (month === 0) { setYear(y => y - 1); setMonth(11) }
     else setMonth(m => m - 1)
   }
   function nextMonth() {
+    direction.current = 1
     if (month === 11) { setYear(y => y + 1); setMonth(0) }
     else setMonth(m => m + 1)
   }
@@ -258,9 +262,20 @@ export default function CalendarView({ subscriptions }: Props) {
       {/* ── Page header: month title + right-aligned circular nav ─────────── */}
       <div className="mb-1 flex-shrink-0">
         <div className="flex items-center justify-between">
-          <h1 className="text-[28px] font-bold text-[#121212] dark:text-[#F2F2F7] tracking-tight capitalize leading-none">
-            {monthName}{yearLabel}
-          </h1>
+          <div className="overflow-hidden">
+            <AnimatePresence mode="popLayout" initial={false}>
+              <motion.h1
+                key={`${year}-${month}`}
+                className="text-[28px] font-bold text-[#121212] dark:text-[#F2F2F7] tracking-tight capitalize leading-none"
+                initial={{ x: direction.current * 40, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: direction.current * -40, opacity: 0 }}
+                transition={{ duration: 0.22, ease: [0.25, 0.46, 0.45, 0.94] }}
+              >
+                {monthName}{yearLabel}
+              </motion.h1>
+            </AnimatePresence>
+          </div>
           {/* Circular nav buttons — right-aligned, filter-button style */}
           <div className="flex items-center gap-2">
             <button
