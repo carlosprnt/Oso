@@ -196,7 +196,7 @@ function WalletCard({ sub, isNew, index, velocityMv, isSelected, onOpen, viewMod
                     ? formatCurrency(sub.my_monthly_cost, sub.currency)
                     : formatCurrency(sub.my_annual_cost, sub.currency)}
                   <span className="text-[13px] font-normal text-[#737373] dark:text-[#8E8E93] ml-0.5">
-                    {viewMode === 'monthly' ? '/mo' : '/yr'}
+                    {viewMode === 'monthly' ? 'al mes' : 'al año'}
                   </span>
                 </p>
                 {sub.status !== 'active' && (
