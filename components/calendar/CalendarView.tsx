@@ -267,10 +267,10 @@ export default function CalendarView({ subscriptions }: Props) {
               <motion.h1
                 key={`${year}-${month}`}
                 className="text-[28px] font-bold text-[#121212] dark:text-[#F2F2F7] tracking-tight capitalize leading-none"
-                initial={{ x: direction.current * 40, opacity: 0 }}
+                initial={{ x: direction.current * 32, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                exit={{ x: direction.current * -40, opacity: 0 }}
-                transition={{ duration: 0.22, ease: [0.25, 0.46, 0.45, 0.94] }}
+                exit={{ x: direction.current * -32, opacity: 0 }}
+                transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1] }}
               >
                 {monthName}{yearLabel}
               </motion.h1>
@@ -299,21 +299,39 @@ export default function CalendarView({ subscriptions }: Props) {
       </div>
 
       {/* ── Month summary — unified subtitle style ────────────────────────── */}
-      <div className="flex items-center gap-3 mb-4 flex-shrink-0">
-        <span className="text-[13px] text-[#737373] dark:text-[#8E8E93]">
-          <span className="tabular-nums">
-            {formatCurrency(monthTotal.amount, monthTotal.currency)}
-          </span>
-          {' '}{t('calendar.total').toLowerCase()}
-        </span>
-        <span className="w-px h-3 bg-[#D4D4D4] dark:bg-[#3A3A3C]" />
-        <span className="text-[13px] text-[#737373] dark:text-[#8E8E93]">
-          {totalSubsThisMonth === 0
-            ? t('calendar.noRenewals')
-            : `${totalSubsThisMonth} ${totalSubsThisMonth === 1
-                ? (locale === 'es' ? 'renovación' : 'renewal')
-                : (locale === 'es' ? 'renovaciones' : 'renewals')}`}
-        </span>
+      <div className="flex items-center gap-3 mb-4 flex-shrink-0 overflow-hidden">
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.span
+            key={`total-${year}-${month}`}
+            className="text-[13px] text-[#737373] dark:text-[#8E8E93]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
+          >
+            <span className="tabular-nums">
+              {formatCurrency(monthTotal.amount, monthTotal.currency)}
+            </span>
+            {' '}{t('calendar.total').toLowerCase()}
+          </motion.span>
+        </AnimatePresence>
+        <span className="w-px h-3 bg-[#D4D4D4] dark:bg-[#3A3A3C] flex-shrink-0" />
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.span
+            key={`renewals-${year}-${month}`}
+            className="text-[13px] text-[#737373] dark:text-[#8E8E93]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
+          >
+            {totalSubsThisMonth === 0
+              ? t('calendar.noRenewals')
+              : `${totalSubsThisMonth} ${totalSubsThisMonth === 1
+                  ? (locale === 'es' ? 'renovación' : 'renewal')
+                  : (locale === 'es' ? 'renovaciones' : 'renewals')}`}
+          </motion.span>
+        </AnimatePresence>
       </div>
 
       {/* ── Weekday labels — free-floating, no container ──────────────────── */}
