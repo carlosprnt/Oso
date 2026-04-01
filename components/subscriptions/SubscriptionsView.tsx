@@ -118,7 +118,7 @@ function WalletCard({ sub, isNew, index, velocityMv, isSelected, onOpen, viewMod
   const cardRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: cardRef, offset: ['start 0.35', 'end start'] })
   const exitScale = useTransform(scrollYProgress, [0, 1], [1, 0.85])
-  const exitRotation = useTransform(scrollYProgress, [0, 1], [0, 20])
+  const exitRotation = useTransform(scrollYProgress, [0.5, 1], [0, 20])
 
   return (
     // Parallax wrapper — must NOT have layoutId, otherwise the transform
