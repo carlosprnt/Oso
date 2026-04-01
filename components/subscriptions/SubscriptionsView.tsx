@@ -522,7 +522,7 @@ export default function SubscriptionsView({
       {/* ── Sticky header zone — sits BEHIND cards (low z-index)
               fades + blurs as cards scroll over it ─────────────── */}
       <motion.div
-        className="sticky top-0 z-[20] pb-4"
+        className="sticky top-0 z-[20] px-1 pb-4"
         style={{ opacity: headerOpacity, filter: headerFilter, pointerEvents: headerPointerEvents }}
       >
         {/* Title row */}
@@ -577,12 +577,12 @@ export default function SubscriptionsView({
       </motion.div>
 
       {/* Sort control — just above cards */}
-      <div className="relative z-[30] mt-2 mb-[9px]">
+      <div className="relative z-[30] px-1 mt-2 mb-[9px]">
         <SortDropdown current={sortMode} onSelect={setSortMode} />
       </div>
 
       {/* ── Cards — higher z-index, scroll over the header ────── */}
-      <div className="relative z-[1] space-y-5">
+      <div className="-mx-1 relative z-[1] space-y-5">
         {/* Active filter chips */}
         {hasActiveFilters && (
           <div className="flex items-center gap-2 flex-wrap">
