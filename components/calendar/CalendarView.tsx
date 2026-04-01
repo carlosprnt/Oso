@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useRef, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useMotionValue, animate as fmAnimate } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useT, useLocale } from '@/lib/i18n/LocaleProvider'
 import { resolveSubscriptionLogoUrl } from '@/lib/constants/platforms'
@@ -163,6 +163,23 @@ function DayCell({ day, isToday, subscriptions, onClick }: DayCellProps) {
   )
 }
 
+// ─── Animated number hook ────────────────────────────────────────────────────
+
+function useCountUp(target: number, duration = 1.0): number {
+  const mv = useMotionValue(target)
+  const [display, setDisplay] = useState(target)
+  useEffect(() => {
+    const controls = fmAnimate(mv, target, {
+      duration,
+      ease: [0.4, 0, 0.2, 1],
+      onUpdate: v => setDisplay(v),
+    })
+    return controls.stop
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [target])
+  return display
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 interface Props {
@@ -226,6 +243,9 @@ export default function CalendarView({ subscriptions }: Props) {
 
   const totalSubsThisMonth = Object.values(dayMap).flat().length
 
+  const animatedAmount = useCountUp(monthTotal.amount, 1.2)
+  const animatedCount = useCountUp(totalSubsThisMonth, 1.0)
+
   // Horizontal swipe to change month
   const swipeRef = useRef<HTMLDivElement>(null)
   const swipeStart = useRef<{ x: number; y: number } | null>(null)
@@ -262,7 +282,7 @@ export default function CalendarView({ subscriptions }: Props) {
       {/* ── Page header: month title + right-aligned circular nav ─────────── */}
       <div className="mb-1 flex-shrink-0">
         <div className="flex items-center justify-between">
-          <div className="overflow-hidden">
+          <div>
             <AnimatePresence mode="popLayout" initial={false}>
               <motion.h1
                 key={`${year}-${month}`}
@@ -299,39 +319,19 @@ export default function CalendarView({ subscriptions }: Props) {
       </div>
 
       {/* ── Month summary — unified subtitle style ────────────────────────── */}
-      <div className="flex items-center gap-3 mb-4 flex-shrink-0 overflow-hidden">
-        <AnimatePresence mode="popLayout" initial={false}>
-          <motion.span
-            key={`total-${year}-${month}`}
-            className="text-[13px] text-[#737373] dark:text-[#8E8E93]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
-          >
-            <span className="tabular-nums">
-              {formatCurrency(monthTotal.amount, monthTotal.currency)}
-            </span>
-            {' '}{t('calendar.total').toLowerCase()}
-          </motion.span>
-        </AnimatePresence>
+      <div className="flex items-center gap-3 mb-4 flex-shrink-0">
+        <span className="text-[13px] text-[#737373] dark:text-[#8E8E93] tabular-nums">
+          {formatCurrency(animatedAmount, monthTotal.currency)}
+          {' '}{t('calendar.total').toLowerCase()}
+        </span>
         <span className="w-px h-3 bg-[#D4D4D4] dark:bg-[#3A3A3C] flex-shrink-0" />
-        <AnimatePresence mode="popLayout" initial={false}>
-          <motion.span
-            key={`renewals-${year}-${month}`}
-            className="text-[13px] text-[#737373] dark:text-[#8E8E93]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
-          >
-            {totalSubsThisMonth === 0
-              ? t('calendar.noRenewals')
-              : `${totalSubsThisMonth} ${totalSubsThisMonth === 1
-                  ? (locale === 'es' ? 'renovación' : 'renewal')
-                  : (locale === 'es' ? 'renovaciones' : 'renewals')}`}
-          </motion.span>
-        </AnimatePresence>
+        <span className="text-[13px] text-[#737373] dark:text-[#8E8E93] tabular-nums">
+          {totalSubsThisMonth === 0
+            ? t('calendar.noRenewals')
+            : `${Math.round(animatedCount)} ${Math.round(animatedCount) === 1
+                ? (locale === 'es' ? 'renovación' : 'renewal')
+                : (locale === 'es' ? 'renovaciones' : 'renewals')}`}
+        </span>
       </div>
 
       {/* ── Weekday labels — free-floating, no container ──────────────────── */}
