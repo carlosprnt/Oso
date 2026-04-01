@@ -69,7 +69,7 @@ export default function FloatingNav() {
   const inactiveIconColor = isDarkMode ? '#AEAEB2' : '#111111'
 
   // Bottom offset: 20px + safe-area
-  const bottomOffset = 'env(safe-area-inset-bottom)'
+  const bottomOffset = 'calc(env(safe-area-inset-bottom) - 20px)'
 
   return (
     <>
