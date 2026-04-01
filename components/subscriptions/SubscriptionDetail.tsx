@@ -275,8 +275,8 @@ export default function SubscriptionDetail({ subscription: sub }: SubscriptionDe
 
       {/* Fixed edit CTA */}
       <div
-        className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1C1C1E] border-t border-[#F0F0F0] dark:border-[#2C2C2E] px-4 pt-3 z-10"
-        style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
+        className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1C1C1E] border-t border-[#F0F0F0] dark:border-[#2C2C2E] px-4 pt-3 pb-4 z-10"
+        style={{ paddingBottom: 'calc(16px + env(safe-area-inset-bottom))' }}
       >
         <button
           onClick={() => setEditOpen(true)}

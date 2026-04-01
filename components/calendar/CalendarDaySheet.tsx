@@ -77,8 +77,8 @@ export default function CalendarDaySheet({
 
       {/* Sheet */}
       <div
-        className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1C1C1E] rounded-t-2xl flex flex-col max-h-[80dvh] animate-slide-up z-[210]"
-        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+        className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1C1C1E] flex flex-col max-h-[80dvh] animate-slide-up z-[210]"
+        style={{ borderRadius: '32px 32px 0 0', paddingBottom: 'env(safe-area-inset-bottom)' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Handle */}

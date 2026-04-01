@@ -615,8 +615,7 @@ export default function SubscriptionForm({
 
       {/* ── Save + Cancel buttons — sticky at the bottom ────────────── */}
       <div
-        className="flex-shrink-0 sticky bottom-0 px-5 pt-3 bg-white dark:bg-[#1C1C1E] border-t border-[#EFEFEF] dark:border-[#2C2C2E]"
-        style={{ paddingBottom: 'max(20px, env(safe-area-inset-bottom))' }}
+        className="flex-shrink-0 sticky bottom-0 px-5 pt-3 pb-4 bg-white dark:bg-[#1C1C1E] border-t border-[#EFEFEF] dark:border-[#2C2C2E]"
       >
         <div className="flex gap-3">
           <button
@@ -644,8 +643,7 @@ export default function SubscriptionForm({
           onClick={() => setShowCancelConfirm(false)}
         >
           <div
-            className="w-full bg-white dark:bg-[#1C1C1E] rounded-t-3xl px-5 pt-5 pb-6"
-            style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom))' }}
+            className="w-full bg-white dark:bg-[#1C1C1E] rounded-t-[32px] px-5 pt-5 pb-4"
             onClick={e => e.stopPropagation()}
           >
             <h3 className="text-[17px] font-semibold text-[#121212] dark:text-[#F2F2F7] mb-1">

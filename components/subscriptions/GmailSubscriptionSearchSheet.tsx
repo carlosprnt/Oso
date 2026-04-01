@@ -318,7 +318,6 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
             </div>
             <div
               className="flex-shrink-0 px-5 pt-3 pb-4 border-t border-[#F0F0F0] dark:border-[#2C2C2E] space-y-2.5"
-              style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
             >
               <div className="flex items-center justify-between">
                 <button

@@ -319,7 +319,7 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
             )}
 
             {/* CTA */}
-            <div style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}>
+            <div className="pb-4">
               <button
                 onClick={() => setEditOpen(true)}
                 className="w-full h-12 rounded-full bg-[#3D3BF3] text-white text-sm font-semibold active:opacity-80 transition-opacity"
@@ -343,8 +343,9 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
       onClick={() => setEditOpen(false)}
     >
       <div
-        className="bg-white dark:bg-[#1C1C1E] rounded-t-2xl overflow-hidden animate-slide-up"
+        className="bg-white dark:bg-[#1C1C1E] overflow-hidden animate-slide-up"
         style={{
+          borderRadius: '32px 32px 0 0',
           maxHeight: '92dvh',
           overflowY: 'auto',
           WebkitOverflowScrolling: 'touch' as never,

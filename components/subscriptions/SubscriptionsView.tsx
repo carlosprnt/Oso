@@ -322,7 +322,6 @@ function FilterSheet({ isOpen, currentStatus, currentCategory, onClose }: Filter
   const footer = (
     <div
       className="flex gap-3 px-5 py-4 border-t border-[#F0F0F0] dark:border-[#2C2C2E]"
-      style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
     >
       <button onClick={reset}
         className="flex-1 h-12 rounded-full text-sm font-semibold text-[#444444] dark:text-[#AEAEB2] bg-[#F5F5F5] dark:bg-[#2C2C2E] transition-colors active:bg-[#ECECEC] dark:active:bg-[#3A3A3C]">
