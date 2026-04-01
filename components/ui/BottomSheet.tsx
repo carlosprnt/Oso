@@ -179,12 +179,12 @@ export default function BottomSheet({
         ref={sheetRef}
         className={`
           fixed bottom-0 left-0 right-0
-          bg-white dark:bg-[#1C1C1E] rounded-t-2xl
+          bg-white dark:bg-[#1C1C1E]
           flex flex-col
           ${maxH}
           animate-slide-up
         `}
-        style={{ zIndex: zIndex ?? 60, paddingBottom: 'env(safe-area-inset-bottom)' }}
+        style={{ zIndex: zIndex ?? 60, paddingBottom: 'env(safe-area-inset-bottom)', borderRadius: '32px 32px 0 0' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Handle — drag zone */}
