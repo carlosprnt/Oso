@@ -35,7 +35,7 @@ export const PLATFORMS: PlatformPreset[] = [
   {
     id: 'youtube-premium',
     name: 'YouTube Premium',
-    simpleIconSlug: 'youtubepremium',
+    simpleIconSlug: 'youtube',
     domain: 'youtube.com',
     category: 'streaming',
     defaultBillingPeriod: 'monthly',
@@ -45,7 +45,7 @@ export const PLATFORMS: PlatformPreset[] = [
   {
     id: 'disney-plus',
     name: 'Disney+',
-    simpleIconSlug: 'disneyplus',
+    logoUrl: 'https://logo.clearbit.com/disneyplus.com',
     domain: 'disneyplus.com',
     category: 'streaming',
     defaultBillingPeriod: 'monthly',
@@ -64,7 +64,7 @@ export const PLATFORMS: PlatformPreset[] = [
   {
     id: 'amazon-prime-video',
     name: 'Amazon Prime Video',
-    simpleIconSlug: 'primevideo',
+    logoUrl: 'https://logo.clearbit.com/primevideo.com',
     domain: 'primevideo.com',
     category: 'streaming',
     defaultBillingPeriod: 'monthly',
@@ -84,7 +84,7 @@ export const PLATFORMS: PlatformPreset[] = [
   {
     id: 'hulu',
     name: 'Hulu',
-    simpleIconSlug: 'hulu',
+    logoUrl: 'https://logo.clearbit.com/hulu.com',
     domain: 'hulu.com',
     category: 'streaming',
     defaultBillingPeriod: 'monthly',
@@ -93,7 +93,7 @@ export const PLATFORMS: PlatformPreset[] = [
   {
     id: 'national-geographic',
     name: 'National Geographic',
-    simpleIconSlug: 'nationalgeographic',
+    logoUrl: 'https://logo.clearbit.com/nationalgeographic.com',
     domain: 'nationalgeographic.com',
     category: 'streaming',
     defaultBillingPeriod: 'monthly',
@@ -151,7 +151,7 @@ export const PLATFORMS: PlatformPreset[] = [
   {
     id: 'slack',
     name: 'Slack',
-    simpleIconSlug: 'slack',
+    logoUrl: 'https://logo.clearbit.com/slack.com',
     domain: 'slack.com',
     category: 'productivity',
     defaultBillingPeriod: 'monthly',
@@ -160,7 +160,7 @@ export const PLATFORMS: PlatformPreset[] = [
   {
     id: 'adobe-creative-cloud',
     name: 'Adobe Creative Cloud',
-    simpleIconSlug: 'adobecreativecloud',
+    logoUrl: 'https://logo.clearbit.com/adobe.com',
     domain: 'adobe.com',
     category: 'productivity',
     defaultBillingPeriod: 'monthly',
@@ -189,7 +189,7 @@ export const PLATFORMS: PlatformPreset[] = [
   {
     id: 'google-one',
     name: 'Google One',
-    simpleIconSlug: 'googleone',
+    simpleIconSlug: 'google',
     domain: 'one.google.com',
     category: 'cloud',
     defaultBillingPeriod: 'monthly',
@@ -198,7 +198,7 @@ export const PLATFORMS: PlatformPreset[] = [
   {
     id: 'microsoft-onedrive',
     name: 'Microsoft OneDrive',
-    simpleIconSlug: 'microsoftonedrive',
+    logoUrl: 'https://logo.clearbit.com/microsoft.com',
     domain: 'microsoft.com',
     category: 'cloud',
     defaultBillingPeriod: 'monthly',
@@ -208,7 +208,7 @@ export const PLATFORMS: PlatformPreset[] = [
   {
     id: 'aws',
     name: 'Amazon Web Services',
-    simpleIconSlug: 'amazonwebservices',
+    logoUrl: 'https://logo.clearbit.com/aws.amazon.com',
     domain: 'aws.amazon.com',
     category: 'cloud',
     defaultBillingPeriod: 'monthly',
@@ -247,7 +247,7 @@ export const PLATFORMS: PlatformPreset[] = [
   {
     id: 'chatgpt-plus',
     name: 'ChatGPT Plus',
-    simpleIconSlug: 'openai',
+    logoUrl: 'https://logo.clearbit.com/openai.com',
     domain: 'openai.com',
     category: 'ai',
     defaultPrice: 20,
@@ -269,7 +269,7 @@ export const PLATFORMS: PlatformPreset[] = [
   {
     id: 'xbox-game-pass',
     name: 'Xbox Game Pass',
-    simpleIconSlug: 'xbox',
+    logoUrl: 'https://logo.clearbit.com/xbox.com',
     domain: 'xbox.com',
     category: 'gaming',
     defaultBillingPeriod: 'monthly',
@@ -279,7 +279,7 @@ export const PLATFORMS: PlatformPreset[] = [
   {
     id: 'nintendo-switch-online',
     name: 'Nintendo Switch Online',
-    simpleIconSlug: 'nintendo',
+    logoUrl: 'https://logo.clearbit.com/nintendo.com',
     domain: 'nintendo.com',
     category: 'gaming',
     defaultBillingPeriod: 'yearly',
@@ -328,7 +328,7 @@ export const PLATFORMS: PlatformPreset[] = [
   {
     id: 'amazon-prime',
     name: 'Amazon Prime',
-    simpleIconSlug: 'amazonprime',
+    logoUrl: 'https://logo.clearbit.com/amazon.com',
     domain: 'amazon.com',
     category: 'other',
     defaultBillingPeriod: 'yearly',
