@@ -68,14 +68,14 @@ export default function FloatingNav() {
   const activeIconColor = isDarkMode ? '#111111' : '#ffffff'
   const inactiveIconColor = isDarkMode ? '#AEAEB2' : '#111111'
 
-  // Bottom offset: 16px + safe-area
-  const bottomOffset = 'calc(16px + env(safe-area-inset-bottom))'
+  // Bottom offset: 20px + safe-area
+  const bottomOffset = 'calc(20px + env(safe-area-inset-bottom))'
 
   return (
     <>
       {/* ── Floating nav — mobile only ──────────────────────────────────────── */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 pointer-events-none"
-        style={{ height: `calc(${BTN_H + PAD * 2}px + 16px + env(safe-area-inset-bottom))` }}
+        style={{ height: `calc(${BTN_H + PAD * 2}px + 20px + env(safe-area-inset-bottom))` }}
       >
         {/* Pill — left-aligned at 20px, 16px from bottom */}
         <div className="absolute left-5 pointer-events-auto"
@@ -157,7 +157,7 @@ export default function FloatingNav() {
         footer={
           <div
             className="flex gap-3 px-5 py-4 border-t border-[#F0F0F0] dark:border-[#2C2C2E]"
-            style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
+            style={{ paddingBottom: 'max(20px, env(safe-area-inset-bottom))' }}
           >
             <button
               onClick={() => setStep('gmail')}
