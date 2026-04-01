@@ -45,13 +45,15 @@ export default function SubscriptionAvatar({
       : null
 
   if (resolvedUrl && !imgError) {
-    // Manual logos (non-simpleicons URLs) bleed edge-to-edge.
-    // Auto-resolved logos (from cdn.simpleicons.org) keep inset padding.
-    const isAuto = resolvedUrl.includes('cdn.simpleicons.org')
+    // SVG-based sources (Simple Icons + SVGL) need a bg + inset padding.
+    // Rasterized sources (Clearbit, custom URLs) fill edge-to-edge.
+    const needsPadding =
+      resolvedUrl.includes('cdn.simpleicons.org') ||
+      resolvedUrl.includes('svgl.app')
 
     return (
       <div
-        className={`${cls} ${corner} overflow-hidden flex-shrink-0 border border-[#E0E0E0] dark:border-[#3A3A3C] dark:bg-white ${isAuto ? 'bg-[#F5F5F5] flex items-center justify-center' : ''}`}
+        className={`${cls} ${corner} overflow-hidden flex-shrink-0 border border-[#E0E0E0] dark:border-[#3A3A3C] ${needsPadding ? 'bg-white dark:bg-white flex items-center justify-center' : ''}`}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -59,7 +61,7 @@ export default function SubscriptionAvatar({
           alt={name}
           width={SIZE[size].px}
           height={SIZE[size].px}
-          className={isAuto ? 'w-[88%] h-[88%] object-contain' : 'w-full h-full object-cover'}
+          className={needsPadding ? 'w-[78%] h-[78%] object-contain' : 'w-full h-full object-cover'}
           onError={() => setImgError(true)}
           loading="lazy"
         />
