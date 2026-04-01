@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useT, useLocale } from '@/lib/i18n/LocaleProvider'
 import { resolveSubscriptionLogoUrl } from '@/lib/constants/platforms'
@@ -222,8 +222,38 @@ export default function CalendarView({ subscriptions }: Props) {
 
   const totalSubsThisMonth = Object.values(dayMap).flat().length
 
+  // Horizontal swipe to change month
+  const swipeRef = useRef<HTMLDivElement>(null)
+  const swipeStart = useRef<{ x: number; y: number } | null>(null)
+
+  useEffect(() => {
+    const el = swipeRef.current
+    if (!el) return
+
+    function onTouchStart(e: TouchEvent) {
+      swipeStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+    }
+    function onTouchEnd(e: TouchEvent) {
+      if (!swipeStart.current) return
+      const dx = e.changedTouches[0].clientX - swipeStart.current.x
+      const dy = e.changedTouches[0].clientY - swipeStart.current.y
+      swipeStart.current = null
+      if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return
+      if (dx < 0) nextMonth()
+      else prevMonth()
+    }
+
+    el.addEventListener('touchstart', onTouchStart, { passive: true })
+    el.addEventListener('touchend', onTouchEnd, { passive: true })
+    return () => {
+      el.removeEventListener('touchstart', onTouchStart)
+      el.removeEventListener('touchend', onTouchEnd)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [month, year])
+
   return (
-    <div className="flex flex-col" style={{ minHeight: 'calc(100dvh - 160px)' }}>
+    <div ref={swipeRef} className="flex flex-col" style={{ minHeight: 'calc(100dvh - 160px)' }}>
 
       {/* ── Page header: month title + right-aligned circular nav ─────────── */}
       <div className="mb-1 flex-shrink-0">
