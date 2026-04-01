@@ -98,33 +98,35 @@ export default function SlothReminderCard() {
         style={{ background: 'rgba(255,255,255,0.07)', filter: 'blur(24px)' }}
       />
 
-      <div className="flex items-end">
-        {/* Text content */}
-        <div className="flex-1 px-5 py-5 pr-2">
-          <span
-            className="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-full mb-3"
-            style={{ background: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.9)' }}
-          >
-            Nuevo
-          </span>
-          <h3 className="text-[19px] font-bold text-white leading-snug mb-1.5">
-            No te pilles<br />durmiendo
-          </h3>
-          <p className="text-[13px] leading-relaxed mb-4" style={{ color: 'rgba(255,255,255,0.72)' }}>
-            Activa avisos de renovación anual y te avisamos antes de que te cobren.
-          </p>
-          <button
-            className="h-10 px-5 rounded-full text-[13px] font-semibold transition-opacity active:opacity-70"
-            style={{ background: 'white', color: '#2D2B8F' }}
-          >
-            Avisarme 7 días antes
-          </button>
-        </div>
-
-        {/* Sloth illustration */}
-        <div className="w-[120px] flex-shrink-0 pr-1 pb-0">
+      {/* Top: illustration + tag row */}
+      <div className="flex items-start pt-4 px-5 pr-14">
+        <div className="w-[90px] flex-shrink-0 -mt-1 -ml-2">
           <SlothIllustration />
         </div>
+        <div className="flex-1 pt-2 pl-2">
+          <span
+            className="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-full mb-2"
+            style={{ background: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.9)' }}
+          >
+            Para ti
+          </span>
+          <h3 className="text-[17px] font-bold text-white leading-snug">
+            Tienes 2 renovaciones anuales sin aviso
+          </h3>
+        </div>
+      </div>
+
+      {/* Bottom: description + CTA side by side */}
+      <div className="flex items-center gap-3 px-5 pb-5 pt-3">
+        <p className="flex-1 text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.72)' }}>
+          Activa un recordatorio y te avisaremos antes del cobro para que no se te pase.
+        </p>
+        <button
+          className="flex-shrink-0 h-10 px-4 rounded-full text-[13px] font-semibold transition-opacity active:opacity-70"
+          style={{ background: 'white', color: '#2D2B8F' }}
+        >
+          Avisarme 7 días antes
+        </button>
       </div>
     </div>
   )
