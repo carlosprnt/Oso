@@ -14,7 +14,7 @@ export type CarouselItem =
 
 const MAX_STACK   = 8
 const PEEK_COUNT  = 4
-const PEEK_OFFSET = 3    // px per depth level
+const PEEK_OFFSET = 4    // px per depth level
 const PEEK_SCALE  = 0.025 // scale reduction per level
 const PEEK_DIM    = 0.12 // opacity reduction per level
 
@@ -138,7 +138,7 @@ export default function SavingsCarousel({ items, onReminderActivate, onAllDismis
             {/* Front card — draggable, exits on swipe */}
             <motion.div
               key={frontEntry?.i}
-              style={{ position: 'relative', zIndex: PEEK_COUNT + 1 }}
+              style={{ position: 'relative', zIndex: PEEK_COUNT + 1, touchAction: 'pan-y' }}
               animate={isExiting
                 ? { x: exitDir * 420, opacity: 0, scale: 0.88, rotate: exitDir * 7 }
                 : { x: 0, opacity: 1, scale: 1, rotate: 0 }

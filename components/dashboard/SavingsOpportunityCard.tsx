@@ -120,8 +120,6 @@ function useSavingsContent(opp: SavingsOpportunity) {
 
 // ─── Card shell ───────────────────────────────────────────────────────────────
 
-const CTA_COLOR = '#3D3BF3'
-
 function InsightCardShell({
   icon, title, desc, ctaLabel, onCta, onDismiss, onVerTodo, inModal = false,
 }: {
@@ -168,8 +166,7 @@ function InsightCardShell({
       {/* Main CTA */}
       <button
         onClick={onCta}
-        className="w-full h-9 rounded-full text-[13px] font-semibold text-white active:opacity-80 transition-opacity"
-        style={{ background: CTA_COLOR }}
+        className="w-full h-9 rounded-full text-[13px] font-semibold active:opacity-70 transition-opacity bg-[#E5E5EA] dark:bg-[#3A3A3C] text-[#3C3C43] dark:text-[#EBEBF5]"
       >
         {ctaLabel}
       </button>
