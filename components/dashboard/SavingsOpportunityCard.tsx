@@ -145,7 +145,7 @@ function InsightCardShell({
           style={{ background: 'rgba(142,142,147,0.15)' }}
           aria-label="Descartar"
         >
-          <span className="text-[10px] font-bold text-[#8E8E93] leading-none">✕</span>
+          <span className="text-[16px] font-bold text-[#8E8E93] leading-none">✕</span>
         </button>
       </div>
 
