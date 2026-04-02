@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 import { X, Bell } from 'lucide-react'
 
 // ─── Toast ────────────────────────────────────────────────────────────────────
@@ -95,33 +96,45 @@ export default function SlothReminderCard() {
 
   return (
     <>
-      {!dismissed && (
-        <div
-          className="relative flex items-center gap-4 bg-white dark:bg-[#1C1C1E] rounded-[20px] px-4 py-4 cursor-pointer active:scale-[0.98] transition-transform"
-          style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.07)' }}
-          onClick={activate}
-        >
-          <RingingBell />
-
-          <div className="flex-1 min-w-0 pr-6">
-            <p className="text-[14px] font-bold text-[#121212] dark:text-[#F2F2F7] leading-snug">
-              Tienes 2 renovaciones anuales sin aviso.
-            </p>
-            <p className="text-[13px] text-[#737373] dark:text-[#8E8E93] mt-0.5 leading-snug">
-              Podemos recordártelas antes del cobro para que no se te pasen.
-            </p>
-          </div>
-
-          <button
-            onClick={e => { e.stopPropagation(); setDismissed(true) }}
-            className="absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center"
-            style={{ background: 'rgba(0,0,0,0.06)' }}
-            aria-label="Cerrar"
+      <AnimatePresence initial={false}>
+        {!dismissed && (
+          <motion.div
+            key="reminder"
+            exit={{ height: 0 }}
+            transition={{ duration: 0.42, ease: [0.4, 0, 0.2, 1] }}
+            style={{ overflow: 'hidden' }}
           >
-            <X size={11} strokeWidth={2.5} className="text-[#737373]" />
-          </button>
-        </div>
-      )}
+            <motion.div
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.26, ease: [0.4, 0, 0.2, 1] }}
+              whileTap={{ scale: 0.98 }}
+              className="relative flex items-center gap-4 bg-white dark:bg-[#1C1C1E] rounded-[20px] px-4 py-4 cursor-pointer"
+              style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.07)' }}
+              onClick={activate}
+            >
+              <RingingBell />
+
+              <div className="flex-1 min-w-0 pr-6">
+                <p className="text-[14px] font-bold text-[#121212] dark:text-[#F2F2F7] leading-snug">
+                  Tienes 2 renovaciones anuales sin aviso.
+                </p>
+                <p className="text-[13px] text-[#737373] dark:text-[#8E8E93] mt-0.5 leading-snug">
+                  Podemos recordártelas antes del cobro para que no se te pasen.
+                </p>
+              </div>
+
+              <button
+                onClick={e => { e.stopPropagation(); setDismissed(true) }}
+                className="absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center"
+                style={{ background: 'rgba(0,0,0,0.06)' }}
+                aria-label="Cerrar"
+              >
+                <X size={11} strokeWidth={2.5} className="text-[#737373]" />
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {mounted && showToast && createPortal(
         <ReminderToast onDone={() => setShowToast(false)} />,
