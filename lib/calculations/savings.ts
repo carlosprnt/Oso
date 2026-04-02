@@ -8,9 +8,14 @@ export type SavingsOpportunityType =
 
 export interface SavingsOpportunity {
   type: SavingsOpportunityType
+  // Per-subscription opportunities
   subscriptionName?: string
+  subscriptionLogoUrl?: string | null
+  currentMonthlyCost?: number
+  // Multi-subscription opportunities
   subscriptionNames?: string[]
   category?: Category
+  // Always present
   estimatedMonthlySaving: number
   currency: string
 }
@@ -20,9 +25,9 @@ const SHARED_PLAN_CATEGORIES: Category[] = ['streaming', 'music', 'gaming', 'clo
 
 // Known bundle combinations — matched by substring (case-insensitive)
 const BUNDLES = [
-  { id: 'apple_one',    terms: ['apple tv', 'apple music', 'icloud'],         bundleName: 'Apple One' },
-  { id: 'ms365',        terms: ['onedrive', 'office 365', 'microsoft 365'],    bundleName: 'Microsoft 365' },
-  { id: 'google_one',   terms: ['google one', 'youtube premium', 'google workspace'], bundleName: 'Google One' },
+  { id: 'apple_one',  terms: ['apple tv', 'apple music', 'icloud'],                   bundleName: 'Apple One' },
+  { id: 'ms365',      terms: ['onedrive', 'office 365', 'microsoft 365'],              bundleName: 'Microsoft 365' },
+  { id: 'google_one', terms: ['google one', 'youtube premium', 'google workspace'],    bundleName: 'Google One' },
 ]
 
 function dominantCurrency(subs: SubscriptionWithCosts[]): string {
@@ -31,6 +36,10 @@ function dominantCurrency(subs: SubscriptionWithCosts[]): string {
   return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'EUR'
 }
 
+/**
+ * Returns ALL savings opportunities, one per subscription/category/bundle.
+ * Sorted by estimated monthly saving (highest first).
+ */
 export function detectSavingsOpportunities(
   subs: SubscriptionWithCosts[]
 ): SavingsOpportunity[] {
@@ -40,76 +49,71 @@ export function detectSavingsOpportunities(
   const currency = dominantCurrency(active)
   const opportunities: SavingsOpportunity[] = []
 
-  // ── 1. Switch to yearly ────────────────────────────────────────────────────
-  // Most expensive monthly-billed subscription. Estimate ~2 months free/year.
+  // ── 1. Switch to yearly — one card per monthly-billed subscription ─────────
   const monthlySubs = active.filter(s => s.billing_period === 'monthly')
-  if (monthlySubs.length > 0) {
-    const top = monthlySubs.reduce((a, b) => a.my_monthly_cost > b.my_monthly_cost ? a : b)
-    const saving = (top.my_monthly_cost * 2) / 12   // ≈16.7%
+  for (const sub of monthlySubs) {
+    const saving = (sub.my_monthly_cost * 2) / 12   // ~2 months free/year ≈ 16.7%
     if (saving > 0.49) {
       opportunities.push({
         type: 'switch_to_yearly',
-        subscriptionName: top.name,
+        subscriptionName: sub.name,
+        subscriptionLogoUrl: sub.logo_url,
+        currentMonthlyCost: sub.my_monthly_cost,
         estimatedMonthlySaving: saving,
-        currency: top.currency,
+        currency: sub.currency,
       })
     }
   }
 
-  // ── 2. Duplicate category ──────────────────────────────────────────────────
-  // Category with 2+ active subs. Saving = cheapest sub's cost (cancel it).
+  // ── 2. Duplicate category — one card per category with 2+ subs ─────────────
   const catMap = new Map<Category, SubscriptionWithCosts[]>()
   for (const sub of active) {
     const arr = catMap.get(sub.category) ?? []
     arr.push(sub)
     catMap.set(sub.category, arr)
   }
-  let bestDup: { category: Category; subs: SubscriptionWithCosts[]; saving: number } | null = null
   for (const [cat, catSubs] of catMap) {
     if (catSubs.length < 2) continue
     const sorted = [...catSubs].sort((a, b) => a.my_monthly_cost - b.my_monthly_cost)
-    const saving = sorted[0].my_monthly_cost
-    if (!bestDup || saving > bestDup.saving) {
-      bestDup = { category: cat, subs: catSubs, saving }
-    }
-  }
-  if (bestDup) {
-    opportunities.push({
-      type: 'duplicate_category',
-      category: bestDup.category,
-      subscriptionNames: bestDup.subs.map(s => s.name),
-      estimatedMonthlySaving: bestDup.saving,
-      currency,
-    })
-  }
-
-  // ── 3. Shared plan ─────────────────────────────────────────────────────────
-  // Most expensive non-shared sub in a shareable category.
-  const shareableSubs = active.filter(
-    s => !s.is_shared && SHARED_PLAN_CATEGORIES.includes(s.category)
-  )
-  if (shareableSubs.length > 0) {
-    const top = shareableSubs.reduce((a, b) => a.my_monthly_cost > b.my_monthly_cost ? a : b)
-    const saving = top.my_monthly_cost * 0.5  // 50% off if split with 1 other
+    const saving = sorted[0].my_monthly_cost    // cancel cheapest
     if (saving > 0.49) {
       opportunities.push({
-        type: 'shared_plan',
-        subscriptionName: top.name,
-        category: top.category,
+        type: 'duplicate_category',
+        category: cat,
+        subscriptionNames: sorted.map(s => s.name),
         estimatedMonthlySaving: saving,
-        currency: top.currency,
+        currency,
       })
     }
   }
 
-  // ── 4. Bundle ──────────────────────────────────────────────────────────────
+  // ── 3. Shared plan — one card per non-shared shareable subscription ─────────
+  const shareableSubs = active.filter(
+    s => !s.is_shared && SHARED_PLAN_CATEGORIES.includes(s.category)
+  )
+  for (const sub of shareableSubs) {
+    const saving = sub.my_monthly_cost * 0.5   // 50% off if split with 1 person
+    if (saving > 0.49) {
+      opportunities.push({
+        type: 'shared_plan',
+        subscriptionName: sub.name,
+        subscriptionLogoUrl: sub.logo_url,
+        currentMonthlyCost: sub.my_monthly_cost,
+        category: sub.category,
+        estimatedMonthlySaving: saving,
+        currency: sub.currency,
+      })
+    }
+  }
+
+  // ── 4. Bundle — one card per detected bundle combination ────────────────────
   for (const bundle of BUNDLES) {
     const matched = active.filter(sub =>
       bundle.terms.some(term => sub.name.toLowerCase().includes(term))
     )
     if (matched.length >= 2) {
       const totalCost = matched.reduce((sum, s) => sum + s.my_monthly_cost, 0)
-      const saving = totalCost * 0.2  // ~20% bundle discount
+      const saving = totalCost * 0.2    // ~20% bundle discount
       if (saving > 0.49) {
         opportunities.push({
           type: 'bundle',
