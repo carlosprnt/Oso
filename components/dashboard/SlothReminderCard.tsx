@@ -46,16 +46,19 @@ function ReminderToast({ onDone }: { onDone: () => void }) {
 
 function RingingBell() {
   const [ringing, setRinging] = useState(false)
+  const stopRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
-    // Ring immediately on mount, then every 3s
     const trigger = () => {
       setRinging(true)
-      setTimeout(() => setRinging(false), 900)
+      stopRef.current = setTimeout(() => setRinging(false), 900)
     }
     trigger()
     const interval = setInterval(trigger, 3000)
-    return () => clearInterval(interval)
+    return () => {
+      clearInterval(interval)
+      if (stopRef.current) clearTimeout(stopRef.current)
+    }
   }, [])
 
   return (

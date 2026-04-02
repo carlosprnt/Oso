@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   X, Calendar, Tag, Zap, Users,
-  RefreshCw, CreditCard, PieChart, Bell, BellOff,
+  RefreshCw, CreditCard, PieChart, BellOff,
 } from 'lucide-react'
 import SubscriptionAvatar from './SubscriptionAvatar'
 import SubscriptionForm from './SubscriptionForm'

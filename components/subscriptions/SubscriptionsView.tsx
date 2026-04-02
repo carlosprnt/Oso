@@ -298,9 +298,6 @@ function InactiveCard({
   sub: SubscriptionWithCosts
   onOpen: (sub: SubscriptionWithCosts) => void
 }) {
-  const STATUS_COLOR: Record<string, string> = {
-    paused: '#F59E0B', cancelled: '#EF4444', trial: '#3B82F6',
-  }
   return (
     <motion.div
       layoutId={`card-${sub.id}`}

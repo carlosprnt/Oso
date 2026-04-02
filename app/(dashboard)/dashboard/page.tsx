@@ -76,7 +76,6 @@ export default async function DashboardPage() {
           <EmptyState t={t} />
         ) : (
           <>
-            {/* Sloth reminder card */}
             <SlothReminderCard />
 
             {/* Insights grid */}
