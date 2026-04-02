@@ -121,7 +121,7 @@ function useSavingsContent(opp: SavingsOpportunity) {
 // ─── Card shell ───────────────────────────────────────────────────────────────
 
 function InsightCardShell({
-  icon, title, desc, ctaLabel, onCta, onDismiss, onVerTodo, inModal = false,
+  icon, title, desc, ctaLabel, onCta, onDismiss, inModal = false,
 }: {
   icon: React.ReactNode
   title: string
@@ -129,10 +129,8 @@ function InsightCardShell({
   ctaLabel: string
   onCta: () => void
   onDismiss: () => void
-  onVerTodo?: () => void
   inModal?: boolean
 }) {
-  const t = useT()
 
   return (
     <div
@@ -170,17 +168,6 @@ function InsightCardShell({
       >
         {ctaLabel}
       </button>
-
-      {/* Ver todo — always in DOM to keep uniform height; invisible when not the last card */}
-      <button
-        onClick={onVerTodo ?? undefined}
-        disabled={!onVerTodo}
-        className={`w-full mt-2 py-1.5 text-[12px] font-medium text-[#3D3BF3] dark:text-[#8B89FF] ${
-          onVerTodo ? '' : 'invisible pointer-events-none'
-        }`}
-      >
-        {t('savings.viewAll')} →
-      </button>
     </div>
   )
 }
@@ -188,23 +175,23 @@ function InsightCardShell({
 // ─── Public types & components ────────────────────────────────────────────────
 
 export type InsightCardProps =
-  | { kind: 'reminder';  annualCount: number; onActivate: () => void; onDismiss: () => void; onVerTodo?: () => void; inModal?: boolean }
-  | { kind: 'savings';   opportunity: SavingsOpportunity; onTap: () => void; onDismiss: () => void; onVerTodo?: () => void; inModal?: boolean }
+  | { kind: 'reminder';  annualCount: number; onActivate: () => void; onDismiss: () => void; inModal?: boolean }
+  | { kind: 'savings';   opportunity: SavingsOpportunity; onTap: () => void; onDismiss: () => void; inModal?: boolean }
 
 export default function InsightCard(props: InsightCardProps) {
   if (props.kind === 'reminder') {
-    const { annualCount, onActivate, onDismiss, onVerTodo, inModal } = props
+    const { annualCount, onActivate, onDismiss, inModal } = props
     const { title, desc, cta } = useReminderContent(annualCount)
     return (
       <InsightCardShell
         icon={<RingingBell />}
         title={title} desc={desc} ctaLabel={cta}
-        onCta={onActivate} onDismiss={onDismiss} onVerTodo={onVerTodo} inModal={inModal}
+        onCta={onActivate} onDismiss={onDismiss} inModal={inModal}
       />
     )
   }
 
-  const { opportunity, onTap, onDismiss, onVerTodo, inModal } = props
+  const { opportunity, onTap, onDismiss, inModal } = props
   const { title, desc, cta, logoUrl, showLogo } = useSavingsContent(opportunity)
   return (
     <InsightCardShell
@@ -214,7 +201,7 @@ export default function InsightCard(props: InsightCardProps) {
           : <SavingsIcon type={opportunity.type} />
       }
       title={title} desc={desc} ctaLabel={cta}
-      onCta={onTap} onDismiss={onDismiss} onVerTodo={onVerTodo} inModal={inModal}
+      onCta={onTap} onDismiss={onDismiss} inModal={inModal}
     />
   )
 }

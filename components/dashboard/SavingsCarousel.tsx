@@ -176,8 +176,6 @@ export default function SavingsCarousel({ items, onReminderActivate, onAllDismis
   // ── Render helpers ─────────────────────────────────────────────────────────
   function renderFront(entry: NonNullable<typeof frontEntry>) {
     const { item, i } = entry
-    const verTodo = isAtLastCard ? () => setShowAll(true) : undefined
-
     if (item.kind === 'reminder') {
       return (
         <InsightCard
@@ -185,7 +183,6 @@ export default function SavingsCarousel({ items, onReminderActivate, onAllDismis
           annualCount={item.annualCount}
           onActivate={handleActivate}
           onDismiss={() => dismiss(i)}
-          onVerTodo={verTodo}
         />
       )
     }
@@ -195,7 +192,6 @@ export default function SavingsCarousel({ items, onReminderActivate, onAllDismis
         opportunity={item.opportunity}
         onTap={() => setDetail(item.opportunity)}
         onDismiss={() => dismiss(i)}
-        onVerTodo={verTodo}
       />
     )
   }
