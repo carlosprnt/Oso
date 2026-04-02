@@ -96,8 +96,8 @@ export default function SavingsCarousel({ items, onReminderActivate, onAllDismis
   useEffect(() => {
     const id = setInterval(async () => {
       if (isExitingRef.current || visibleCountRef.current <= 1) return
-      await frontAnim.start({ x: 22, rotate: 3, transition: { duration: 0.5,  ease: 'easeOut' } })
-      await frontAnim.start({ x:  0, rotate: 0, transition: { duration: 2.0,  ease: [0.55, 0, 1, 0.45] } })
+      await frontAnim.start({ x: 22, rotate: 3, transition: { duration: 1.4, ease: [0.12, 0, 0.4, 1] } })
+      await frontAnim.start({ x:  0, rotate: 0, transition: { duration: 0.25, ease: 'easeIn' } })
     }, 6000)
     return () => clearInterval(id)
   }, [frontAnim, frontEntry?.i])
