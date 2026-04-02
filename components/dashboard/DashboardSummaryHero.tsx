@@ -234,9 +234,11 @@ export default function DashboardSummaryHero({
         </button>.
         {hasSave && (
           <>
-            {' '}Compartir{' '}
-            <span className="text-[#3D3BF3] dark:text-[#8B89FF]">{sharedCount}</span>
-            {' '}te ahorra{' '}
+            {' '}Compartes{' '}
+            <span className="text-[#3D3BF3] dark:text-[#8B89FF]">
+              {sharedCount} {sharedCount === 1 ? 'suscripción' : 'suscripciones'}
+            </span>
+            {' '}y ahorras{' '}
             <button
               onClick={handleSavingsTap}
               className="inline align-baseline cursor-pointer select-none"
