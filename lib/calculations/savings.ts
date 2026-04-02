@@ -14,10 +14,24 @@ export interface SavingsOpportunity {
   currentMonthlyCost?: number
   // Multi-subscription opportunities
   subscriptionNames?: string[]
+  subscriptionCount?: number
   category?: Category
+  // switch_to_yearly: percentage saving
+  savingPct?: number
   // Always present
   estimatedMonthlySaving: number
   currency: string
+}
+
+/**
+ * Returns how many annual subscriptions have no reminder set.
+ * We treat all annual subs as "without reminder" since the app doesn't
+ * yet persist reminder state to the database.
+ */
+export function countAnnualRenewalsWithoutReminder(subs: SubscriptionWithCosts[]): number {
+  return subs.filter(
+    s => (s.status === 'active' || s.status === 'trial') && s.billing_period === 'yearly'
+  ).length
 }
 
 // Categories where family/shared plans are common
@@ -53,6 +67,7 @@ export function detectSavingsOpportunities(
   const monthlySubs = active.filter(s => s.billing_period === 'monthly')
   for (const sub of monthlySubs) {
     const saving = (sub.my_monthly_cost * 2) / 12   // ~2 months free/year ≈ 16.7%
+    const savingPct = Math.round((saving / sub.my_monthly_cost) * 100)
     if (saving > 0.49) {
       opportunities.push({
         type: 'switch_to_yearly',
@@ -60,6 +75,7 @@ export function detectSavingsOpportunities(
         subscriptionLogoUrl: sub.logo_url,
         currentMonthlyCost: sub.my_monthly_cost,
         estimatedMonthlySaving: saving,
+        savingPct,
         currency: sub.currency,
       })
     }
@@ -81,6 +97,7 @@ export function detectSavingsOpportunities(
         type: 'duplicate_category',
         category: cat,
         subscriptionNames: sorted.map(s => s.name),
+        subscriptionCount: catSubs.length,
         estimatedMonthlySaving: saving,
         currency,
       })

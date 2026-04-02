@@ -38,6 +38,7 @@ export default function InsightAllSheet({
             if (item.kind === 'reminder') {
               return (
                 <InsightCard key={i} kind="reminder" inModal
+                  annualCount={item.annualCount}
                   onActivate={handleActivate}
                   onDismiss={() => onDismiss(i)} />
               )

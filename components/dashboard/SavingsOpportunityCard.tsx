@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { X, Bell } from 'lucide-react'
-import { TrendingDown, Copy, Users, Package } from 'lucide-react'
+import { Bell, TrendingDown, Copy, Users, Package } from 'lucide-react'
 import SubscriptionAvatar from '@/components/subscriptions/SubscriptionAvatar'
 import { resolveSubscriptionLogoUrl } from '@/lib/constants/platforms'
 import { formatCurrency } from '@/lib/utils/currency'
@@ -55,129 +54,182 @@ function SavingsIcon({ type }: { type: SavingsOpportunity['type'] }) {
   )
 }
 
-// ─── Content helpers ──────────────────────────────────────────────────────────
+// ─── Copy helpers ─────────────────────────────────────────────────────────────
+
+function useReminderContent(annualCount: number) {
+  const t = useT()
+  const count = annualCount
+  const title = count === 1
+    ? t('reminder.cardTitleOne')
+    : t('reminder.cardTitle')
+        .replace('{count}', String(count))
+        .replace('{plural}', count === 1 ? '' : 'es')
+  return {
+    title,
+    desc: t('reminder.cardDesc'),
+    cta:  t('reminder.cardCta'),
+  }
+}
 
 function useSavingsContent(opp: SavingsOpportunity) {
   const t      = useT()
   const locale = useLocale()
-  const saving = formatCurrency(opp.estimatedMonthlySaving, opp.currency, locale)
+  const amount = formatCurrency(opp.estimatedMonthlySaving, opp.currency, locale)
 
   switch (opp.type) {
     case 'switch_to_yearly': {
       const name = opp.subscriptionName ?? ''
-      return { title: t('savings.switchToYearlyTitle').replace('{name}', name), desc: t('savings.cardSave').replace('{amount}', saving), logoUrl: resolveSubscriptionLogoUrl(name, opp.subscriptionLogoUrl ?? null) }
+      const pct  = opp.savingPct ?? 17
+      return {
+        title: t('savings.switchToYearlyTitle').replace('{name}', name),
+        desc:  t('savings.switchToYearlyDesc').replace('{pct}', String(pct)).replace('{amount}', amount),
+        cta:   t('savings.switchToYearlyCta'),
+        logoUrl: resolveSubscriptionLogoUrl(name, opp.subscriptionLogoUrl ?? null),
+        showLogo: true,
+      }
     }
     case 'duplicate_category': {
-      const catKey = `categories.${opp.category}` as Parameters<typeof t>[0]
-      return { title: t('savings.duplicateCategoryTitle').replace('{category}', t(catKey)), desc: t('savings.cardSave').replace('{amount}', saving), logoUrl: null }
+      const catKey   = `categories.${opp.category}` as Parameters<typeof t>[0]
+      const catLabel = opp.category ? t(catKey) : ''
+      const count    = opp.subscriptionCount ?? 2
+      return {
+        title: t('savings.duplicateCategoryTitle').replace('{category}', catLabel),
+        desc:  t('savings.duplicateCategoryDesc')
+                 .replace('{count}', String(count))
+                 .replace(/{category}/g, catLabel.toLowerCase())
+                 .replace('{amount}', amount),
+        cta:   t('savings.duplicateCategoryCta'),
+        logoUrl: null,
+        showLogo: false,
+      }
     }
     case 'shared_plan': {
       const name = opp.subscriptionName ?? ''
-      return { title: t('savings.sharedPlanTitle').replace('{name}', name), desc: t('savings.cardSave').replace('{amount}', saving), logoUrl: resolveSubscriptionLogoUrl(name, opp.subscriptionLogoUrl ?? null) }
+      return {
+        title: t('savings.sharedPlanTitle').replace('{name}', name),
+        desc:  t('savings.sharedPlanDesc').replace('{amount}', amount).replace('{name}', name),
+        cta:   t('savings.sharedPlanCta'),
+        logoUrl: resolveSubscriptionLogoUrl(name, opp.subscriptionLogoUrl ?? null),
+        showLogo: true,
+      }
     }
     case 'bundle':
-      return { title: t('savings.bundleTitle'), desc: t('savings.cardSave').replace('{amount}', saving), logoUrl: null }
+      return {
+        title: t('savings.bundleTitle'),
+        desc:  t('savings.bundleDesc').replace('{amount}', amount),
+        cta:   t('savings.bundleCta'),
+        logoUrl: null,
+        showLogo: false,
+      }
   }
 }
 
-// ─── Shared card shell ────────────────────────────────────────────────────────
+// ─── Card ─────────────────────────────────────────────────────────────────────
 
-function CardShell({
-  icon,
-  title,
-  desc,
-  onMainTap,
-  onDismiss,
-  closeLabel,
-  inModal = false,
-}: {
-  icon: React.ReactNode
-  title: string
-  desc: string
-  onMainTap: () => void
-  onDismiss: () => void
-  closeLabel: string
-  inModal?: boolean
-}) {
+export type InsightCardProps =
+  | { kind: 'reminder';  annualCount: number; onActivate: () => void; onDismiss: () => void; inModal?: boolean }
+  | { kind: 'savings';   opportunity: SavingsOpportunity; onTap: () => void; onDismiss: () => void; inModal?: boolean }
+
+function ReminderCard({ annualCount, onActivate, onDismiss, inModal }: Extract<InsightCardProps, { kind: 'reminder' }>) {
+  const { title, desc, cta } = useReminderContent(annualCount)
   return (
-    <div
-      className={`relative w-full flex items-center gap-3.5 rounded-[20px] px-4 py-4 cursor-pointer active:scale-[0.98] transition-transform select-none ${
-        inModal
-          ? 'bg-[#F2F2F7] dark:bg-[#2C2C2E]'
-          : 'bg-white dark:bg-[#1C1C1E]'
-      }`}
-      style={inModal ? undefined : { boxShadow: '0 1px 4px rgba(0,0,0,0.07)' }}
-      onClick={onMainTap}
-      role="button"
-      tabIndex={0}
-      onKeyDown={e => e.key === 'Enter' && onMainTap()}
-    >
-      {icon}
-
-      <div className={`flex-1 min-w-0 ${inModal ? '' : 'pr-6'}`}>
-        <p className="text-[14px] font-bold text-[#121212] dark:text-[#F2F2F7] leading-snug truncate">{title}</p>
-        <p className="text-[13px] text-[#737373] dark:text-[#8E8E93] mt-0.5 leading-snug line-clamp-2">{desc}</p>
-      </div>
-
-      {/* Small X — only outside the modal */}
-      {!inModal && (
-        <button
-          onClick={e => { e.stopPropagation(); onDismiss() }}
-          className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full flex items-center justify-center"
-          style={{ background: 'rgba(0,0,0,0.06)' }}
-          aria-label={closeLabel}
-        >
-          <X size={11} strokeWidth={2.5} className="text-[#737373] dark:text-[#8E8E93]" />
-        </button>
-      )}
-    </div>
+    <InsightCardShell
+      icon={<RingingBell />}
+      title={title}
+      desc={desc}
+      ctaLabel={cta}
+      ctaColor="#3D3BF3"
+      onCta={onActivate}
+      onDismiss={onDismiss}
+      inModal={inModal}
+    />
   )
 }
 
-// ─── Exports ──────────────────────────────────────────────────────────────────
-
-export type InsightCardProps =
-  | { kind: 'reminder';  onActivate: () => void; onDismiss: () => void; inModal?: boolean }
-  | { kind: 'savings';   opportunity: SavingsOpportunity; onTap: () => void; onDismiss: () => void; inModal?: boolean }
-
-export default function InsightCard(props: InsightCardProps) {
-  const t = useT()
-
-  if (props.kind === 'reminder') {
-    return (
-      <CardShell
-        icon={<RingingBell />}
-        title={t('reminder.cardTitle')}
-        desc={t('reminder.cardDesc')}
-        onMainTap={props.onActivate}
-        onDismiss={props.onDismiss}
-        closeLabel={t('common.close')}
-        inModal={props.inModal}
-      />
-    )
-  }
-
-  return <SavingsInsightCard {...props} />
-}
-
-function SavingsInsightCard({ opportunity, onTap, onDismiss, inModal }: Extract<InsightCardProps, { kind: 'savings' }>) {
-  const t                        = useT()
-  const { title, desc, logoUrl } = useSavingsContent(opportunity)
-  const showLogo = !!logoUrl && (opportunity.type === 'switch_to_yearly' || opportunity.type === 'shared_plan')
-
+function SavingsCard({ opportunity, onTap, onDismiss, inModal }: Extract<InsightCardProps, { kind: 'savings' }>) {
+  const { title, desc, cta, logoUrl, showLogo } = useSavingsContent(opportunity)
   return (
-    <CardShell
+    <InsightCardShell
       icon={
-        showLogo
+        showLogo && logoUrl
           ? <SubscriptionAvatar name={opportunity.subscriptionName ?? ''} logoUrl={logoUrl} size="md" corner="rounded-[10px]" />
           : <SavingsIcon type={opportunity.type} />
       }
       title={title}
       desc={desc}
-      onMainTap={onTap}
+      ctaLabel={cta}
+      ctaColor={ctaColorForType(opportunity.type)}
+      onCta={onTap}
       onDismiss={onDismiss}
-      closeLabel={t('common.close')}
       inModal={inModal}
     />
   )
+}
+
+function ctaColorForType(type: SavingsOpportunity['type']): string {
+  switch (type) {
+    case 'switch_to_yearly':   return '#059669'
+    case 'duplicate_category': return '#D97706'
+    case 'shared_plan':        return '#2563EB'
+    case 'bundle':             return '#7C3AED'
+  }
+}
+
+// ─── Shared card shell ────────────────────────────────────────────────────────
+
+function InsightCardShell({
+  icon, title, desc, ctaLabel, ctaColor, onCta, onDismiss, inModal = false,
+}: {
+  icon: React.ReactNode
+  title: string
+  desc: string
+  ctaLabel: string
+  ctaColor: string
+  onCta: () => void
+  onDismiss: () => void
+  inModal?: boolean
+}) {
+  return (
+    <div
+      className={`relative w-full rounded-[20px] px-4 pt-4 pb-3 select-none ${
+        inModal
+          ? 'bg-[#F2F2F7] dark:bg-[#2C2C2E]'
+          : 'bg-white dark:bg-[#1C1C1E]'
+      }`}
+      style={inModal ? undefined : { boxShadow: '0 2px 12px rgba(0,0,0,0.09)' }}
+    >
+      {/* Header row */}
+      <div className="flex items-start gap-3 mb-3">
+        {icon}
+        <div className="flex-1 min-w-0 pt-0.5">
+          <p className="text-[14px] font-bold text-[#121212] dark:text-[#F2F2F7] leading-snug">{title}</p>
+          <p className="text-[13px] text-[#737373] dark:text-[#8E8E93] mt-1 leading-snug line-clamp-2">{desc}</p>
+        </div>
+        {/* Dismiss pill */}
+        <button
+          onClick={e => { e.stopPropagation(); onDismiss() }}
+          className="mt-0.5 flex-shrink-0 h-6 px-2.5 rounded-full text-[11px] font-medium text-[#8E8E93] dark:text-[#636366]"
+          style={{ background: 'rgba(142,142,147,0.13)' }}
+        >
+          ✕
+        </button>
+      </div>
+
+      {/* CTA */}
+      <button
+        onClick={onCta}
+        className="w-full h-9 rounded-full text-[13px] font-semibold text-white active:opacity-80 transition-opacity"
+        style={{ background: ctaColor }}
+      >
+        {ctaLabel}
+      </button>
+    </div>
+  )
+}
+
+// ─── Export ───────────────────────────────────────────────────────────────────
+
+export default function InsightCard(props: InsightCardProps) {
+  if (props.kind === 'reminder') return <ReminderCard {...props} />
+  return <SavingsCard {...props} />
 }

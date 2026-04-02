@@ -118,7 +118,7 @@ function DuplicateCategoryDetail({ opp, locale }: { opp: SavingsOpportunity; loc
         </div>
         <div>
           <p className="text-[17px] font-bold text-[#121212] dark:text-[#F2F2F7]">
-            {t('savings.duplicateCategoryTitle').replace('{category}', catLabel)}
+            {t('savings.duplicateCategoryTitle').replace('{category}', catLabel.toLowerCase())}
           </p>
           <p className="text-[13px] text-[#737373] dark:text-[#8E8E93]">
             {names.length} {catLabel.toLowerCase()}
