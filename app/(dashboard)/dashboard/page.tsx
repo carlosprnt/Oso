@@ -76,11 +76,11 @@ export default async function DashboardPage() {
           <EmptyState t={t} />
         ) : (
           <>
-            {/* Insights grid */}
-            <Insights subscriptions={subs} stats={stats} />
-
             {/* Sloth reminder card */}
             <SlothReminderCard />
+
+            {/* Insights grid */}
+            <Insights subscriptions={subs} stats={stats} />
 
             {/* Renewals + Categories */}
             <div className="grid lg:grid-cols-3 gap-[8px]">
