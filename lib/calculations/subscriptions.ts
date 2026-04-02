@@ -18,21 +18,20 @@ import type {
 export function getMonthlyEquivalentCost(sub: Subscription): number {
   const { price_amount, billing_period, billing_interval_count } = sub
 
+  const n = Math.max(billing_interval_count ?? 1, 1)
+
   switch (billing_period) {
     case 'monthly':
-      return price_amount
+      return price_amount / n
     case 'yearly':
-      return price_amount / 12
+      return (price_amount / n) / 12
     case 'quarterly':
-      return price_amount / 3
+      return (price_amount / n) / 3
     case 'weekly':
-      // 52 weeks / 12 months
-      return (price_amount * 52) / 12
-    case 'custom': {
-      // billing_interval_count represents the number of months in the custom cycle
-      const months = billing_interval_count ?? 1
-      return price_amount / months
-    }
+      return (price_amount / n * 52) / 12
+    case 'custom':
+      // billing_interval_count = number of months in the custom cycle
+      return price_amount / n
     default:
       return price_amount
   }

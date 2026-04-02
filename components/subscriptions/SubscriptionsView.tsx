@@ -53,6 +53,12 @@ const STATUS_COLOR: Record<string, string> = {
   active: '#16A34A', trial: '#D97706', paused: '#E07B1A', cancelled: '#EF4444',
 }
 
+function StatusLabel({ status }: { status: string }) {
+  const t = useT()
+  const key = `status.${status}` as Parameters<typeof t>[0]
+  return <>{t(key)}</>
+}
+
 // ─── Sorting ───────────────────────────────────────────────────────────────
 type SortMode = 'alphabetical' | 'recently_added' | 'recently_updated' | 'price_high' | 'price_low' | 'by_category'
 
@@ -197,7 +203,7 @@ function WalletCard({ sub, isNew, index, velocityMv, isSelected, onOpen, viewMod
                     ? formatCurrency(sub.my_monthly_cost, sub.currency)
                     : formatCurrency(sub.my_annual_cost, sub.currency)}
                   <span className="text-[13px] font-normal text-[#737373] dark:text-[#8E8E93] ml-0.5">
-                    {viewMode === 'monthly' ? 'al mes' : 'al año'}
+                    {viewMode === 'monthly' ? t('subscriptions.perMonth') : t('subscriptions.perYear')}
                   </span>
                 </p>
                 {sub.status !== 'active' && (
@@ -318,7 +324,7 @@ function InactiveCard({
           className="text-[12px] font-medium mt-0.5"
           style={{ color: STATUS_COLOR[sub.status] ?? '#9CA3AF' }}
         >
-          {sub.status === 'paused' ? 'Pausada' : sub.status === 'cancelled' ? 'Cancelada' : sub.status}
+          <StatusLabel status={sub.status} />
         </p>
       </div>
     </motion.div>
@@ -332,11 +338,12 @@ function InactiveCardsRow({
   subscriptions: SubscriptionWithCosts[]
   onOpen: (sub: SubscriptionWithCosts) => void
 }) {
+  const t = useT()
   if (subscriptions.length === 0) return null
   return (
     <div className="mt-8">
       <p className="text-[13px] font-semibold text-[#737373] dark:text-[#8E8E93] mb-3 px-1">
-        Inactivas
+        {t('subscriptions.inactive')}
       </p>
       <div
         className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1"
@@ -649,13 +656,13 @@ export default function SubscriptionsView({
         {hasActiveFilters && (
           <div className="flex items-center gap-2 flex-wrap">
             {currentStatus && currentStatus !== 'all' && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#3D3BF3] text-white text-xs font-medium capitalize">
-                {currentStatus}
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#3D3BF3] text-white text-xs font-medium">
+                {t(`status.${currentStatus}` as Parameters<typeof t>[0])}
               </span>
             )}
             {currentCategory && currentCategory !== 'all' && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#3D3BF3] text-white text-xs font-medium capitalize">
-                {currentCategory}
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#3D3BF3] text-white text-xs font-medium">
+                {t(`categories.${currentCategory}` as Parameters<typeof t>[0])}
               </span>
             )}
           </div>

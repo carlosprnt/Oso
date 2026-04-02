@@ -1,14 +1,25 @@
+/** Maps app locale codes to BCP 47 locale strings for Intl formatting. */
+const LOCALE_MAP: Record<string, string> = { en: 'en-US', es: 'es-ES' }
+
+function resolveLocale(locale: string): string {
+  return LOCALE_MAP[locale] ?? locale
+}
+
 /**
  * Formats a monetary amount using the browser's Intl API.
  * Removes non-breaking spaces so "9,99 €" becomes "9,99€".
+ * Pass the app locale ('en' or 'es') or a full BCP 47 tag.
+ * Defaults to 'es' to preserve existing Spanish formatting.
  */
 export function formatCurrency(
   amount: number,
   currency = 'EUR',
-  locale = 'es-ES'
+  locale = 'es'
 ): string {
+  if (!isFinite(amount)) return `${currency} –`
+  const bcp = resolveLocale(locale)
   try {
-    const raw = new Intl.NumberFormat(locale, {
+    const raw = new Intl.NumberFormat(bcp, {
       style: 'currency',
       currency,
       minimumFractionDigits: 2,
@@ -29,11 +40,13 @@ export function formatCurrency(
 export function formatCurrencyCompact(
   amount: number,
   currency = 'EUR',
-  locale = 'es-ES'
+  locale = 'es'
 ): string {
+  if (!isFinite(amount)) return `${currency} –`
   if (amount < 1000) return formatCurrency(amount, currency, locale)
+  const bcp = resolveLocale(locale)
   try {
-    const raw = new Intl.NumberFormat(locale, {
+    const raw = new Intl.NumberFormat(bcp, {
       style: 'currency',
       currency,
       notation: 'compact',
@@ -48,8 +61,9 @@ export function formatCurrencyCompact(
 /**
  * Formats just the number part without currency symbol.
  */
-export function formatAmount(amount: number, locale = 'es-ES'): string {
-  return new Intl.NumberFormat(locale, {
+export function formatAmount(amount: number, locale = 'es'): string {
+  const bcp = resolveLocale(locale)
+  return new Intl.NumberFormat(bcp, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount)

@@ -4,10 +4,12 @@ import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Bell } from 'lucide-react'
+import { useT } from '@/lib/i18n/LocaleProvider'
 
 // ─── Toast ────────────────────────────────────────────────────────────────────
 
 function ReminderToast({ onDone }: { onDone: () => void }) {
+  const t = useT()
   const [exiting, setExiting] = useState(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -37,7 +39,7 @@ function ReminderToast({ onDone }: { onDone: () => void }) {
         style={{ animation: 'bell-ring 0.9s ease-in-out 0.1s 1', transformOrigin: 'top center', flexShrink: 0 }}
       />
       <p className="text-[14px] font-medium text-black leading-snug flex-1">
-        Notificaciones activadas para tus renovaciones anuales
+        {t('reminder.toastText')}
       </p>
     </div>
   )
@@ -83,6 +85,7 @@ function RingingBell() {
 // ─── Card ─────────────────────────────────────────────────────────────────────
 
 export default function SlothReminderCard() {
+  const t = useT()
   const [dismissed, setDismissed] = useState(false)
   const [showToast, setShowToast] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -116,20 +119,20 @@ export default function SlothReminderCard() {
 
               <div className="flex-1 min-w-0 pr-6">
                 <p className="text-[14px] font-bold text-[#121212] dark:text-[#F2F2F7] leading-snug">
-                  Tienes 2 renovaciones anuales sin aviso.
+                  {t('reminder.cardTitle')}
                 </p>
                 <p className="text-[13px] text-[#737373] dark:text-[#8E8E93] mt-0.5 leading-snug">
-                  Podemos recordártelas antes del cobro para que no se te pasen.
+                  {t('reminder.cardDesc')}
                 </p>
               </div>
 
               <button
                 onClick={e => { e.stopPropagation(); setDismissed(true) }}
-                className="absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center"
+                className="absolute top-2 right-2 w-11 h-11 rounded-full flex items-center justify-center"
                 style={{ background: 'rgba(0,0,0,0.06)' }}
-                aria-label="Cerrar"
+                aria-label={t('common.close')}
               >
-                <X size={11} strokeWidth={2.5} className="text-[#737373]" />
+                <X size={13} strokeWidth={2.5} className="text-[#737373]" />
               </button>
             </motion.div>
           </motion.div>

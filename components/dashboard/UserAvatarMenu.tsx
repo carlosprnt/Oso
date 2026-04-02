@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/client'
 import Image from 'next/image'
 import { getInitials, getAvatarPastel } from '@/lib/utils/logos'
 import { useTheme } from '@/components/ui/ThemeProvider'
+import { useT } from '@/lib/i18n/LocaleProvider'
 
 interface UserAvatarMenuProps {
   shareText?: string
@@ -16,6 +17,7 @@ interface UserAvatarMenuProps {
 export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
   const router = useRouter()
   const { theme, toggle } = useTheme()
+  const t = useT()
   const [open, setOpen] = useState(false)
   const [imgError, setImgError] = useState(false)
   const [menuPos, setMenuPos] = useState({ top: 0, right: 0 })
@@ -94,11 +96,13 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
 
   async function handleShare() {
     setOpen(false)
+    const text = shareText ?? 'Check my subscription overview tracked with Perezoso 🦥'
     if (navigator.share) {
-      await navigator.share({
-        title: 'Perezoso — My Subscriptions',
-        text: shareText ?? 'Check my subscription overview tracked with Perezoso 🦥',
-      }).catch(() => {})
+      await navigator.share({ title: 'Perezoso — My Subscriptions', text }).catch(() => {})
+    } else {
+      try {
+        await navigator.clipboard.writeText(text)
+      } catch { /* clipboard also unavailable — silently skip */ }
     }
   }
 
@@ -137,14 +141,14 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
           className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#424242] dark:text-[#AEAEB2] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors text-left"
         >
           {theme === 'dark' ? <Sun size={15} className="text-[#616161] dark:text-[#8E8E93]" /> : <Moon size={15} className="text-[#616161]" />}
-          {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+          {theme === 'dark' ? t('nav.lightMode') : t('nav.darkMode')}
         </button>
         <button
           onClick={handleShare}
           className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#424242] dark:text-[#AEAEB2] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors text-left"
         >
           <Share2 size={15} className="text-[#616161] dark:text-[#8E8E93]" />
-          Share data
+          {t('nav.shareData')}
         </button>
         {user?.email === 'carlosprnt@gmail.com' && (
           <>
@@ -164,7 +168,7 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
           className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-left"
         >
           <LogOut size={15} />
-          Logout
+          {t('nav.logout')}
         </button>
       </div>
     </div>

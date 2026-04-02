@@ -13,6 +13,7 @@ import { resolveSubscriptionLogoUrl } from '@/lib/constants/platforms'
 import { formatCurrency } from '@/lib/utils/currency'
 import { formatRelativeDate } from '@/lib/utils/dates'
 import { getCategoryMeta } from '@/lib/constants/categories'
+import { useTheme } from '@/components/ui/ThemeProvider'
 import { BILLING_PERIOD_LABELS } from '@/lib/constants/currencies'
 import { useBrandTint } from '@/lib/hooks/useBrandTint'
 
@@ -50,11 +51,11 @@ function formatShortDate(dateStr: string | null, locale: string): string {
   })
 }
 
-const STATUS_CONFIG: Record<string, { color: string; bg: string }> = {
-  active:    { color: '#16A34A', bg: '#F0FDF4' },
-  trial:     { color: '#D97706', bg: '#FFFBEB' },
-  paused:    { color: '#6B7280', bg: '#F9FAFB' },
-  cancelled: { color: '#DC2626', bg: '#FEF2F2' },
+const STATUS_CONFIG: Record<string, { color: string; bg: string; darkColor: string; darkBg: string }> = {
+  active:    { color: '#16A34A', bg: '#F0FDF4', darkColor: '#4ADE80', darkBg: '#052E16' },
+  trial:     { color: '#D97706', bg: '#FFFBEB', darkColor: '#FCD34D', darkBg: '#2D1F00' },
+  paused:    { color: '#6B7280', bg: '#F9FAFB', darkColor: '#9CA3AF', darkBg: '#1F2937' },
+  cancelled: { color: '#DC2626', bg: '#FEF2F2', darkColor: '#F87171', darkBg: '#2D0A0A' },
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -108,9 +109,15 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
   const billingProg = billingProgress(sub.next_billing_date, sub.billing_period, sub.billing_interval_count)
   const daysLeft = daysUntilBilling(sub.next_billing_date)
   const nextDateFormatted = formatShortDate(sub.next_billing_date, locale)
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
   const meta = getCategoryMeta(sub.category)
   const CategoryIcon = meta.icon
-  const status = STATUS_CONFIG[sub.status] ?? STATUS_CONFIG.active
+  const statusCfg = STATUS_CONFIG[sub.status] ?? STATUS_CONFIG.active
+  const status = {
+    color: isDark ? statusCfg.darkColor : statusCfg.color,
+    bg:    isDark ? statusCfg.darkBg    : statusCfg.bg,
+  }
   const billingLabel = (locale === 'es' ? BILLING_PERIOD_LABELS_ES : BILLING_PERIOD_LABELS)[sub.billing_period] ?? sub.billing_period
 
   const daysLabel =
@@ -172,7 +179,7 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
           <button
             onClick={onClose}
             style={{ position: 'absolute', top: 16, right: 16, backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
-            className="w-8 h-8 rounded-2xl bg-white/50 dark:bg-[#2C2C2E]/50 flex items-center justify-center text-black dark:text-white active:opacity-60 transition-opacity"
+            className="w-11 h-11 rounded-2xl bg-white/50 dark:bg-[#2C2C2E]/50 flex items-center justify-center text-black dark:text-white active:opacity-60 transition-opacity"
           >
             <X size={16} strokeWidth={2.5} />
           </button>
@@ -292,8 +299,8 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
             <PlainCard>
               <DetailRow
                 icon={<BellOff size={15} />}
-                label="Aviso de renovación"
-                value={<span className="text-[#A0A0A0] dark:text-[#636366]">Sin aviso</span>}
+                label={t('detail.reminderLabel')}
+                value={<span className="text-[#A0A0A0] dark:text-[#636366]">{t('detail.noReminder')}</span>}
                 last
               />
             </PlainCard>

@@ -46,6 +46,14 @@ export default function Insights({ subscriptions, stats }: InsightsProps) {
   const t = useT()
   const locale = useLocale()
 
+  // Dominant currency: the currency used by the most active subscriptions
+  const dominantCurrency = (() => {
+    const active = subscriptions.filter(s => s.status === 'active' || s.status === 'trial')
+    const counts: Record<string, number> = {}
+    for (const s of active) counts[s.currency] = (counts[s.currency] ?? 0) + 1
+    return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'EUR'
+  })()
+
   const highest = getHighestCostSubscription(subscriptions)
   const topCategories = getTopSpendCategories(subscriptions, 3)
   const urgentRenewals = getUpcomingRenewals(subscriptions, 7)
@@ -109,7 +117,7 @@ export default function Insights({ subscriptions, stats }: InsightsProps) {
           value={topCat ? t(`categories.${topCat.category}` as Parameters<typeof t>[0]) : '—'}
           sub={
             topCat
-              ? `${formatCurrency(topCat.monthly_cost, 'EUR')} ${perMonth} · ${topCat.count} ${locale === 'es' ? 'suscr.' : 'subs'}`
+              ? `${formatCurrency(topCat.monthly_cost, dominantCurrency, locale)} ${perMonth} · ${topCat.count} ${locale === 'es' ? 'suscr.' : 'subs'}`
               : ''
           }
           border="border-b border-[#F7F8FA] dark:border-[#111111]"
@@ -118,7 +126,7 @@ export default function Insights({ subscriptions, stats }: InsightsProps) {
         {/* ③ Shared plans */}
         <InsightCell
           icon={<Users size={20} />}
-          iconCls="bg-blue-100 text-blue-700"
+          iconCls="bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
           label={t('dashboard.sharedPlans')}
           value={
             sharedSubs.length > 0
@@ -127,7 +135,7 @@ export default function Insights({ subscriptions, stats }: InsightsProps) {
           }
           sub={
             sharedSubs.length > 0
-              ? t('dashboard.saving').replace('{amount}', `${formatCurrency(sharedSavings, 'EUR')} ${perMonth}`)
+              ? t('dashboard.saving').replace('{amount}', `${formatCurrency(sharedSavings, dominantCurrency, locale)} ${perMonth}`)
               : ''
           }
           border="border-r border-[#F7F8FA] dark:border-[#111111]"
@@ -136,7 +144,7 @@ export default function Insights({ subscriptions, stats }: InsightsProps) {
         {/* ④ Renews soon */}
         <InsightCell
           icon={<AlertCircle size={20} />}
-          iconCls="bg-amber-100 text-amber-700"
+          iconCls="bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
           label={t('dashboard.renewsSoon')}
           value={nextRenewal?.subscription.name ?? t('dashboard.noPlans')}
           sub={renewsSub}

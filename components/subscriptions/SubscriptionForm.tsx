@@ -8,6 +8,7 @@ import { CURRENCIES, BILLING_PERIOD_LABELS } from '@/lib/constants/currencies'
 import { AlertCircle, Bell, ChevronsUpDown, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useT, useLocale } from '@/lib/i18n/LocaleProvider'
+import { useTheme } from '@/components/ui/ThemeProvider'
 import type { Subscription, BillingPeriod, SubscriptionStatus, UserShareMode, Category } from '@/types'
 import type { PlatformPreset } from '@/lib/constants/platforms'
 import { getPrefilledPlatformValues } from '@/lib/constants/platforms'
@@ -161,6 +162,8 @@ export default function SubscriptionForm({
 }: SubscriptionFormProps) {
   const t = useT()
   const locale = useLocale()
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -279,7 +282,7 @@ export default function SubscriptionForm({
       price_amount: parseFloat(priceAmount) || 0,
       currency,
       billing_period: billingPeriod,
-      billing_interval_count: parseInt(billingIntervalCount) || 1,
+      billing_interval_count: Math.max(1, parseInt(billingIntervalCount) || 1),
       next_billing_date: nextBillingDate || null,
       trial_end_date: isTrial ? trialEndDate || null : null,
       status,
@@ -333,7 +336,7 @@ export default function SubscriptionForm({
         <button
           type="button"
           onClick={requestClose}
-          className="w-8 h-8 rounded-full bg-[#F5F5F5] dark:bg-[#2C2C2E] flex items-center justify-center text-[#616161] dark:text-[#AEAEB2] transition-colors active:bg-[#EBEBEB] dark:active:bg-[#3A3A3C]"
+          className="w-11 h-11 rounded-full bg-[#F5F5F5] dark:bg-[#2C2C2E] flex items-center justify-center text-[#616161] dark:text-[#AEAEB2] transition-colors active:bg-[#EBEBEB] dark:active:bg-[#3A3A3C]"
         >
           <X size={16} strokeWidth={2.5} />
         </button>
@@ -356,7 +359,7 @@ export default function SubscriptionForm({
             type="text"
             value={name}
             onChange={e => setName(e.target.value)}
-            placeholder="Nombre suscripción"
+            placeholder={t('form.subscriptionName')}
             autoFocus={false}
             className="w-full bg-transparent text-[17px] font-semibold text-[#121212] dark:text-[#F2F2F7] placeholder:text-[#BBBBBB] dark:placeholder:text-[#636366] outline-none leading-snug"
             style={{ fontSize: 17 }}
@@ -585,7 +588,7 @@ export default function SubscriptionForm({
         <div className="mx-5 mb-3 bg-white dark:bg-[#1C1C1E] rounded-2xl overflow-hidden border border-[#EFEFEF] dark:border-[#2C2C2E]">
           <div className="flex items-center px-4 min-h-[52px] py-3">
             <Bell size={16} className="text-[#C0C0C0] dark:text-[#8E8E93] flex-shrink-0 mr-3" />
-            <span className="text-[16px] text-[#121212] dark:text-[#F2F2F7] flex-1">Aviso de renovación</span>
+            <span className="text-[16px] text-[#121212] dark:text-[#F2F2F7] flex-1">{t('form.reminderToggle')}</span>
             <button
               type="button"
               role="switch"
@@ -616,7 +619,7 @@ export default function SubscriptionForm({
               >
                 <div className="border-t border-[#EFEFEF] dark:border-[#2C2C2E] px-4 py-3.5">
                   <p className="text-[11px] font-semibold text-[#A0A0A0] dark:text-[#8E8E93] uppercase tracking-wider mb-3">
-                    Avisarme con antelación
+                    {t('form.reminderAdvance')}
                   </p>
                   <div className="flex gap-2">
                     {([1, 3, 10] as const).map(d => (
@@ -626,11 +629,11 @@ export default function SubscriptionForm({
                         onClick={() => setReminderDays(d)}
                         className="flex-1 h-10 rounded-full text-[13px] font-semibold transition-colors"
                         style={{
-                          background: reminderDays === d ? '#3D3BF3' : 'rgba(0,0,0,0.05)',
-                          color: reminderDays === d ? 'white' : '#424242',
+                          background: reminderDays === d ? '#3D3BF3' : isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
+                          color: reminderDays === d ? 'white' : isDark ? '#AEAEB2' : '#424242',
                         }}
                       >
-                        {d} {d === 1 ? 'día' : 'días'}
+                        {d} {d === 1 ? t('form.reminderDay') : t('form.reminderDays')}
                       </button>
                     ))}
                   </div>

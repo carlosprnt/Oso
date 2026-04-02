@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { formatCurrency } from '@/lib/utils/currency'
-import { useT } from '@/lib/i18n/LocaleProvider'
+import { useT, useLocale } from '@/lib/i18n/LocaleProvider'
 import type { Category } from '@/types'
 import { getCategoryMeta } from '@/lib/constants/categories'
 
@@ -27,8 +27,9 @@ interface CategoryRow {
   pct: number
 }
 
-export default function TopCategoriesSection({ categories }: { categories: CategoryRow[] }) {
+export default function TopCategoriesSection({ categories, currency = 'EUR' }: { categories: CategoryRow[]; currency?: string }) {
   const t = useT()
+  const locale = useLocale()
   const [active, setActive] = useState<number | null>(null)
   const [mounted, setMounted] = useState(false)
 
@@ -86,7 +87,7 @@ export default function TopCategoriesSection({ categories }: { categories: Categ
             onClick={() => setActive(active === i ? null : i)}
             role="button"
             tabIndex={0}
-            aria-label={`${label(seg.category)}: ${formatCurrency(seg.monthly_cost, 'EUR')}`}
+            aria-label={`${label(seg.category)}: ${formatCurrency(seg.monthly_cost, currency, locale)}`}
             onKeyDown={e => e.key === 'Enter' && setActive(active === i ? null : i)}
           />
         ))}
@@ -113,7 +114,7 @@ export default function TopCategoriesSection({ categories }: { categories: Categ
                 {label(seg.category)}
               </span>
               <span className="text-[13px] font-semibold tabular-nums text-[#121212] dark:text-[#F2F2F7]">
-                {formatCurrency(seg.monthly_cost, 'EUR')}
+                {formatCurrency(seg.monthly_cost, currency, locale)}
               </span>
               <span className="text-[11px] text-[#8E8E93] w-8 text-right flex-shrink-0">
                 {Math.round(seg.pct)}%

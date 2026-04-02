@@ -13,6 +13,7 @@ import SubscriptionForm from './SubscriptionForm'
 import { formatCurrency } from '@/lib/utils/currency'
 import { formatRelativeDate } from '@/lib/utils/dates'
 import { getCategoryMeta } from '@/lib/constants/categories'
+import { useTheme } from '@/components/ui/ThemeProvider'
 import { BILLING_PERIOD_LABELS } from '@/lib/constants/currencies'
 import { useT, useLocale } from '@/lib/i18n/LocaleProvider'
 import type { SubscriptionWithCosts } from '@/types'
@@ -44,11 +45,11 @@ function formatShortDate(dateStr: string | null, locale: string): string {
   })
 }
 
-const STATUS_CONFIG: Record<string, { color: string; bg: string }> = {
-  active:    { color: '#16A34A', bg: '#F0FDF4' },
-  trial:     { color: '#D97706', bg: '#FFFBEB' },
-  paused:    { color: '#6B7280', bg: '#F9FAFB' },
-  cancelled: { color: '#DC2626', bg: '#FEF2F2' },
+const STATUS_CONFIG: Record<string, { color: string; bg: string; darkColor: string; darkBg: string }> = {
+  active:    { color: '#16A34A', bg: '#F0FDF4', darkColor: '#4ADE80', darkBg: '#052E16' },
+  trial:     { color: '#D97706', bg: '#FFFBEB', darkColor: '#FCD34D', darkBg: '#2D1F00' },
+  paused:    { color: '#6B7280', bg: '#F9FAFB', darkColor: '#9CA3AF', darkBg: '#1F2937' },
+  cancelled: { color: '#DC2626', bg: '#FEF2F2', darkColor: '#F87171', darkBg: '#2D0A0A' },
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -99,9 +100,15 @@ export default function SubscriptionDetail({ subscription: sub }: SubscriptionDe
   const daysLeft = daysUntilBilling(sub.next_billing_date)
   const nextDateFormatted = formatShortDate(sub.next_billing_date, locale)
   const router = useRouter()
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
   const meta = getCategoryMeta(sub.category)
   const CategoryIcon = meta.icon
-  const status = STATUS_CONFIG[sub.status] ?? STATUS_CONFIG.active
+  const statusCfg = STATUS_CONFIG[sub.status] ?? STATUS_CONFIG.active
+  const status = {
+    color: isDark ? statusCfg.darkColor : statusCfg.color,
+    bg:    isDark ? statusCfg.darkBg    : statusCfg.bg,
+  }
   const billingLabel = BILLING_PERIOD_LABELS[sub.billing_period] ?? sub.billing_period
 
   const daysLabel =

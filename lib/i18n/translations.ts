@@ -15,6 +15,10 @@ const en = {
     dashboard: 'Dashboard',
     subscriptions: 'Subscriptions',
     calendar: 'Calendar',
+    lightMode: 'Light mode',
+    darkMode: 'Dark mode',
+    shareData: 'Share data',
+    logout: 'Log out',
   },
   dashboard: {
     title: 'Dashboard',
@@ -52,6 +56,17 @@ const en = {
     renewsSoon: 'Renews soon',
     saving: 'Saving {amount}',
     noPlans: 'None',
+    greeting: 'Hello,',
+    greetingFallback: 'there',
+    spendStatement: 'Your monthly spend is',
+    annualStatement: 'and yearly you spend',
+    perYear: 'per year',
+    activeSubscription: 'active subscription',
+    activeSubscriptions: 'active subscriptions',
+    youShare: 'You share',
+    andSave: 'and save',
+    subscriptionWord: 'subscription',
+    subscriptionsWord: 'subscriptions',
   },
   subscriptions: {
     title: 'My subscriptions',
@@ -75,6 +90,9 @@ const en = {
     sortPriceHigh: 'Most expensive',
     sortPriceLow: 'Least expensive',
     sortByCategory: 'Category',
+    inactive: 'Inactive',
+    perMonth: 'per month',
+    perYear: 'per year',
   },
   detail: {
     category: 'Category',
@@ -93,6 +111,8 @@ const en = {
     people: 'people',
     timeUntilNext: 'Time until next billing',
     today: 'Today',
+    noReminder: 'No reminder',
+    reminderLabel: 'Renewal reminder',
   },
   calendar: {
     title: 'Calendar',
@@ -140,6 +160,11 @@ const en = {
     discardMessage: 'You have unsaved changes. Are you sure you want to leave?',
     discardConfirm: 'Discard',
     keepEditing: 'Keep editing',
+    reminderToggle: 'Renewal reminder',
+    reminderAdvance: 'Notify me in advance',
+    reminderDay: 'day',
+    reminderDays: 'days',
+    subscriptionName: 'Subscription name',
   },
   picker: {
     searchGmail: 'Search in Gmail',
@@ -208,6 +233,11 @@ const en = {
     searchInGmail: 'Search in Gmail',
     filter: 'Filters',
   },
+  reminder: {
+    cardTitle: 'You have annual renewals with no reminder set.',
+    cardDesc: 'We can remind you before the charge so you don\'t miss them.',
+    toastText: 'Notifications activated for your annual renewals',
+  },
 }
 
 // ─── Spanish ──────────────────────────────────────────────────────────────────
@@ -227,6 +257,10 @@ const es: typeof en = {
     dashboard: 'Panel',
     subscriptions: 'Suscripciones',
     calendar: 'Calendario',
+    lightMode: 'Modo claro',
+    darkMode: 'Modo oscuro',
+    shareData: 'Compartir datos',
+    logout: 'Cerrar sesión',
   },
   dashboard: {
     title: 'Panel',
@@ -264,6 +298,17 @@ const es: typeof en = {
     renewsSoon: 'Próxima renovación',
     saving: 'Ahorrando {amount}',
     noPlans: 'Ninguno',
+    greeting: 'Hola,',
+    greetingFallback: 'de nuevo',
+    spendStatement: 'Tu gasto mensual es de',
+    annualStatement: 'y al año gastas',
+    perYear: 'al año',
+    activeSubscription: 'suscripción activa',
+    activeSubscriptions: 'suscripciones activas',
+    youShare: 'Compartes',
+    andSave: 'y ahorras',
+    subscriptionWord: 'suscripción',
+    subscriptionsWord: 'suscripciones',
   },
   subscriptions: {
     title: 'Mis suscripciones',
@@ -287,6 +332,9 @@ const es: typeof en = {
     sortPriceHigh: 'Más caras',
     sortPriceLow: 'Más baratas',
     sortByCategory: 'Categoría',
+    inactive: 'Inactivas',
+    perMonth: 'al mes',
+    perYear: 'al año',
   },
   detail: {
     category: 'Categoría',
@@ -305,6 +353,8 @@ const es: typeof en = {
     people: 'personas',
     timeUntilNext: 'Tiempo hasta el siguiente cobro',
     today: 'Hoy',
+    noReminder: 'Sin aviso',
+    reminderLabel: 'Aviso de renovación',
   },
   calendar: {
     title: 'Calendario',
@@ -352,6 +402,11 @@ const es: typeof en = {
     discardMessage: 'Tienes cambios sin guardar. ¿Seguro que quieres salir?',
     discardConfirm: 'Descartar',
     keepEditing: 'Seguir editando',
+    reminderToggle: 'Aviso de renovación',
+    reminderAdvance: 'Avisarme con antelación',
+    reminderDay: 'día',
+    reminderDays: 'días',
+    subscriptionName: 'Nombre suscripción',
   },
   picker: {
     searchGmail: 'Buscar en Gmail',
@@ -419,6 +474,11 @@ const es: typeof en = {
     editSubscription: 'Editar suscripción',
     searchInGmail: 'Buscar en Gmail',
     filter: 'Filtros',
+  },
+  reminder: {
+    cardTitle: 'Tienes renovaciones anuales sin aviso.',
+    cardDesc: 'Podemos recordártelas antes del cobro para que no se te pasen.',
+    toastText: 'Notificaciones activadas para tus renovaciones anuales',
   },
 }
 

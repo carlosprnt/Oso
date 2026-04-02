@@ -39,12 +39,26 @@ export default function CalendarDaySheet({
 
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden'
+      // position:fixed prevents iOS Safari from scrolling behind the sheet
+      const scrollY = window.scrollY
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${scrollY}px`
+      document.body.style.width = '100%'
       if (scrollRef.current) scrollRef.current.scrollTop = 0
     } else {
-      document.body.style.overflow = ''
+      const top = document.body.style.top
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.width = ''
+      if (top) window.scrollTo(0, -parseInt(top, 10))
     }
-    return () => { document.body.style.overflow = '' }
+    return () => {
+      const top = document.body.style.top
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.width = ''
+      if (top) window.scrollTo(0, -parseInt(top, 10))
+    }
   }, [isOpen])
 
   if (!isOpen || day === null) return null
@@ -103,7 +117,7 @@ export default function CalendarDaySheet({
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-2xl bg-[#F5F5F5] dark:bg-[#2C2C2E] flex items-center justify-center text-[#616161] dark:text-[#AEAEB2] active:bg-[#EBEBEB] dark:active:bg-[#3A3A3C] transition-colors mt-1"
+            className="w-11 h-11 rounded-2xl bg-[#F5F5F5] dark:bg-[#2C2C2E] flex items-center justify-center text-[#616161] dark:text-[#AEAEB2] active:bg-[#EBEBEB] dark:active:bg-[#3A3A3C] transition-colors"
           >
             <X size={16} strokeWidth={2.5} />
           </button>

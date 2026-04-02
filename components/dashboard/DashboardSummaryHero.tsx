@@ -195,8 +195,10 @@ export default function DashboardSummaryHero({
   const savingsYr  = formatCurrency(stats.shared_monthly_cost * 12, currency)
   const total      = stats.active_count + stats.trial_count
   const hasSave    = stats.shared_monthly_cost > 0.01 && sharedCount > 0
-  const name       = firstName || 'de nuevo'
-  const savingsLabel = savingsPeriod === 'monthly' ? `${savingsMo} al mes` : `${savingsYr} al año`
+  const name       = firstName || t('dashboard.greetingFallback')
+  const savingsLabel = savingsPeriod === 'monthly'
+    ? `${savingsMo} ${t('dashboard.perMonth')}`
+    : `${savingsYr} ${t('dashboard.perYear')}`
 
   return (
     <div
@@ -206,18 +208,18 @@ export default function DashboardSummaryHero({
       {/* Greeting + avatar */}
       <div className="flex items-center justify-between mb-3">
         <p className="text-[17px] font-bold text-black dark:text-[#F2F2F7]">
-          Hola, {name}.
+          {t('dashboard.greeting')} {name}.
         </p>
         <UserAvatarMenu shareText={shareText} />
       </div>
 
       {/* Main statement — tapping figures spawns money confetti */}
       <p className="text-[33px] font-bold text-[#121212] dark:text-[#F2F2F7] leading-[1.2] tracking-tight mb-4">
-        Tu gasto mensual es de{' '}
+        {t('dashboard.spendStatement')}{' '}
         <button onClick={handleAmountTap} className="inline align-baseline cursor-pointer select-none active:scale-95 transition-transform">
           <span className="text-[#3D3BF3] dark:text-[#8B89FF]">{monthly}</span>
         </button>
-        {' '}y al año gastas{' '}
+        {' '}{t('dashboard.annualStatement')}{' '}
         <button onClick={handleAmountTap} className="inline align-baseline cursor-pointer select-none active:scale-95 transition-transform">
           <span className="text-[#3D3BF3] dark:text-[#8B89FF]">{annual}</span>
         </button>.
@@ -225,20 +227,18 @@ export default function DashboardSummaryHero({
 
       {/* Supporting statement */}
       <p className="text-[18px] font-bold text-black dark:text-[#F2F2F7] leading-relaxed">
-        Tienes{' '}
-        {/* Tapping active count spawns logo confetti */}
         <button onClick={handleSubsTap} className="inline align-baseline cursor-pointer select-none active:scale-95 transition-transform">
           <span className="text-[#3D3BF3] dark:text-[#8B89FF]">
-            {total} {total === 1 ? 'suscripción activa' : 'suscripciones activas'}
+            {total} {total === 1 ? t('dashboard.activeSubscription') : t('dashboard.activeSubscriptions')}
           </span>
         </button>.
         {hasSave && (
           <>
-            {' '}Compartes{' '}
+            {' '}{t('dashboard.youShare')}{' '}
             <span className="text-[#3D3BF3] dark:text-[#8B89FF]">
-              {sharedCount} {sharedCount === 1 ? 'suscripción' : 'suscripciones'}
+              {sharedCount} {sharedCount === 1 ? t('dashboard.subscriptionWord') : t('dashboard.subscriptionsWord')}
             </span>
-            {' '}y ahorras{' '}
+            {' '}{t('dashboard.andSave')}{' '}
             <button
               onClick={handleSavingsTap}
               className="inline align-baseline cursor-pointer select-none"

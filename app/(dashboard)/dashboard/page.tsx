@@ -44,6 +44,12 @@ export default async function DashboardPage() {
 
   const isEmpty = subs.length === 0
 
+  // Dominant currency for aggregate displays
+  const activeSubs = subs.filter(s => s.status === 'active' || s.status === 'trial')
+  const currencyCounts: Record<string, number> = {}
+  for (const s of activeSubs) currencyCounts[s.currency] = (currencyCounts[s.currency] ?? 0) + 1
+  const dominantCurrency = Object.entries(currencyCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'EUR'
+
   const activeLogoUrls = subs
     .filter(s => s.status === 'active' || s.status === 'trial')
     .map(s => resolveSubscriptionLogoUrl(s.name, s.logo_url))
@@ -95,7 +101,7 @@ export default async function DashboardPage() {
               <div className="space-y-[8px]">
                 <Card>
                   <CardHeader title={t('dashboard.topCategories')} />
-                  <TopCategoriesSection categories={categoryRows} />
+                  <TopCategoriesSection categories={categoryRows} currency={dominantCurrency} />
                 </Card>
               </div>
             </div>

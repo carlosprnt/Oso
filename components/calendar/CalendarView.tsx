@@ -74,8 +74,9 @@ function CellLogo({ name, logoUrl, size }: { name: string; logoUrl: string | nul
   const initial = getInitials(name)[0] ?? '?'
   const isAuto = logoUrl?.includes('cdn.simpleicons.org') ?? false
   const r = Math.round(size * 0.22) // ~22% corner radius
+  const [imgError, setImgError] = useState(false)
 
-  if (logoUrl) {
+  if (logoUrl && !imgError) {
     return (
       <div
         className={`overflow-hidden flex-shrink-0 flex items-center justify-center border border-[#E4E4E4] dark:border-[#3A3A3C] dark:bg-white ${isAuto ? 'bg-[#F5F5F5]' : 'bg-transparent'}`}
@@ -89,6 +90,7 @@ function CellLogo({ name, logoUrl, size }: { name: string; logoUrl: string | nul
           height={size}
           className={isAuto ? 'w-[84%] h-[84%] object-contain' : 'w-full h-full object-cover'}
           loading="lazy"
+          onError={() => setImgError(true)}
         />
       </div>
     )

@@ -16,11 +16,11 @@ export function ErrorState({
 }: ErrorStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
-      <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center mb-4">
+      <div className="w-14 h-14 rounded-2xl bg-red-50 dark:bg-[#3A1A1A] flex items-center justify-center mb-4">
         <span className="text-2xl">⚠️</span>
       </div>
-      <h2 className="text-base font-semibold text-gray-900 mb-1">{title}</h2>
-      <p className="text-sm text-gray-400 max-w-xs mb-5">{message}</p>
+      <h2 className="text-base font-semibold text-[#121212] dark:text-[#F2F2F7] mb-1">{title}</h2>
+      <p className="text-sm text-[#737373] dark:text-[#8E8E93] max-w-xs mb-5">{message}</p>
       {onRetry && (
         <Button
           variant="secondary"
@@ -44,7 +44,7 @@ export default function GlobalError({
   reset: () => void
 }) {
   return (
-    <div className="min-h-screen bg-[#F7F8FA] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#000000] flex items-center justify-center px-4">
       <ErrorState
         title="Page error"
         message={error.message || 'Failed to load this page.'}

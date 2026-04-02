@@ -201,7 +201,7 @@ export default function LoginScreen() {
         provider: 'google',
         options: {
           redirectTo,
-          queryParams: { access_type: 'offline', prompt: 'consent' },
+          queryParams: { access_type: 'offline', prompt: 'select_account' },
         },
       })
       if (error) {
