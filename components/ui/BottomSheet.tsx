@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useRef, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 
 interface BottomSheetProps {
@@ -22,6 +23,9 @@ export default function BottomSheet({
   height = 'tall',
   zIndex,
 }: BottomSheetProps) {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
+
   const scrollRef    = useRef<HTMLDivElement>(null)
   const sheetRef     = useRef<HTMLDivElement>(null)
   const savedScrollY = useRef(0)
@@ -130,7 +134,7 @@ export default function BottomSheet({
     }
   }, [isOpen])
 
-  if (!isOpen) return null
+  if (!isOpen || !mounted) return null
 
   // ── Handle drag-to-dismiss ────────────────────────────────────────────────
   function onHandleTouchStart(e: React.TouchEvent) {
@@ -165,7 +169,7 @@ export default function BottomSheet({
     full: 'max-h-[92dvh]',
   }[height]
 
-  return (
+  return createPortal(
     <>
       {/* Backdrop */}
       <div
@@ -230,6 +234,7 @@ export default function BottomSheet({
           </div>
         )}
       </div>
-    </>
+    </>,
+    document.body
   )
 }
