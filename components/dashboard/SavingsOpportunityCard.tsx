@@ -57,12 +57,10 @@ function SavingsIcon({ type }: { type: SavingsOpportunity['type'] }) {
 
 function useReminderContent(annualCount: number) {
   const t = useT()
-  const title = annualCount === 1
-    ? t('reminder.cardTitleOne')
-    : t('reminder.cardTitle')
-        .replace('{count}', String(annualCount))
-        .replace('{plural}', 'es')
-  return { title, desc: t('reminder.cardDesc'), cta: t('savings.cta') }
+  const body = annualCount === 1
+    ? t('reminder.cardBody')
+    : t('reminder.cardBodyMany').replace('{count}', String(annualCount))
+  return { body, cta: t('savings.cta') }
 }
 
 function useSavingsContent(opp: SavingsOpportunity) {
@@ -75,8 +73,7 @@ function useSavingsContent(opp: SavingsOpportunity) {
       const name = opp.subscriptionName ?? ''
       const pct  = opp.savingPct ?? 17
       return {
-        title:   t('savings.switchToYearlyTitle').replace('{name}', name),
-        desc:    t('savings.switchToYearlyDesc').replace('{pct}', String(pct)).replace('{amount}', amount),
+        body:    t('savings.switchToYearlyBody').replace('{pct}', String(pct)).replace('{name}', name),
         cta:     t('savings.cta'),
         logoUrl: resolveSubscriptionLogoUrl(name, opp.subscriptionLogoUrl ?? null),
         showLogo: true,
@@ -85,13 +82,10 @@ function useSavingsContent(opp: SavingsOpportunity) {
     case 'duplicate_category': {
       const catKey   = `categories.${opp.category}` as Parameters<typeof t>[0]
       const catLabel = opp.category ? t(catKey) : ''
-      const count    = opp.subscriptionCount ?? 2
       return {
-        title:   t('savings.duplicateCategoryTitle').replace('{category}', catLabel.toLowerCase()),
-        desc:    t('savings.duplicateCategoryDesc')
-                   .replace('{count}', String(count))
-                   .replace(/{category}/g, catLabel.toLowerCase())
-                   .replace('{amount}', amount),
+        body:    t('savings.duplicateCategoryBody')
+                   .replace('{amount}', amount)
+                   .replace('{category}', catLabel.toLowerCase()),
         cta:     t('savings.cta'),
         logoUrl: null,
         showLogo: false,
@@ -100,8 +94,7 @@ function useSavingsContent(opp: SavingsOpportunity) {
     case 'shared_plan': {
       const name = opp.subscriptionName ?? ''
       return {
-        title:   t('savings.sharedPlanTitle').replace('{name}', name),
-        desc:    t('savings.sharedPlanDesc').replace('{amount}', amount).replace('{name}', name),
+        body:    t('savings.sharedPlanBody').replace('{amount}', amount).replace('{name}', name),
         cta:     t('savings.cta'),
         logoUrl: resolveSubscriptionLogoUrl(name, opp.subscriptionLogoUrl ?? null),
         showLogo: true,
@@ -109,8 +102,7 @@ function useSavingsContent(opp: SavingsOpportunity) {
     }
     case 'bundle':
       return {
-        title:   t('savings.bundleTitle'),
-        desc:    t('savings.bundleDesc').replace('{amount}', amount),
+        body:    t('savings.bundleBody').replace('{amount}', amount),
         cta:     t('savings.cta'),
         logoUrl: null,
         showLogo: false,
@@ -121,20 +113,18 @@ function useSavingsContent(opp: SavingsOpportunity) {
 // ─── Card shell ───────────────────────────────────────────────────────────────
 
 function InsightCardShell({
-  icon, title, desc, ctaLabel, onCta, onDismiss, inModal = false,
+  icon, body, ctaLabel, onCta, onDismiss, inModal = false,
 }: {
   icon: React.ReactNode
-  title: string
-  desc: string
+  body: string
   ctaLabel: string
   onCta: () => void
   onDismiss: () => void
   inModal?: boolean
 }) {
-
   return (
     <div
-      className={`relative w-full rounded-[20px] px-4 pt-4 pb-3 select-none ${
+      className={`relative w-full rounded-[24px] px-4 pt-4 pb-3 select-none ${
         inModal ? 'bg-[#F2F2F7] dark:bg-[#2C2C2E]' : 'bg-white dark:bg-[#1C1C1E]'
       }`}
       style={inModal ? undefined : { boxShadow: '0 1px 5px rgba(0,0,0,0.06)' }}
@@ -143,12 +133,10 @@ function InsightCardShell({
       <div className="flex items-start gap-3 mb-3">
         {icon}
         <div className="flex-1 min-w-0 pt-0.5">
-          <p className="text-[14px] font-bold text-[#121212] dark:text-[#F2F2F7] leading-snug">{title}</p>
-          {/* min-height locks 2 lines so all cards share the same height */}
           <p
-            className={`text-[13px] text-[#737373] dark:text-[#8E8E93] mt-1 ${inModal ? '' : 'line-clamp-2'}`}
-            style={{ lineHeight: '1.45', ...(inModal ? {} : { minHeight: 'calc(2 * 1.45 * 13px)' }) }}
-          >{desc}</p>
+            className={`text-[14px] text-[#121212] dark:text-[#F2F2F7] ${inModal ? '' : 'line-clamp-3'}`}
+            style={{ lineHeight: '1.45', ...(inModal ? {} : { minHeight: 'calc(3 * 1.45 * 14px)' }) }}
+          >{body}</p>
         </div>
         {/* Dismiss pill */}
         <button
@@ -183,18 +171,18 @@ export type InsightCardProps =
 export default function InsightCard(props: InsightCardProps) {
   if (props.kind === 'reminder') {
     const { annualCount, onActivate, onDismiss, inModal } = props
-    const { title, desc, cta } = useReminderContent(annualCount)
+    const { body, cta } = useReminderContent(annualCount)
     return (
       <InsightCardShell
         icon={<RingingBell />}
-        title={title} desc={desc} ctaLabel={cta}
+        body={body} ctaLabel={cta}
         onCta={onActivate} onDismiss={onDismiss} inModal={inModal}
       />
     )
   }
 
   const { opportunity, onTap, onDismiss, inModal } = props
-  const { title, desc, cta, logoUrl, showLogo } = useSavingsContent(opportunity)
+  const { body, cta, logoUrl, showLogo } = useSavingsContent(opportunity)
   return (
     <InsightCardShell
       icon={
@@ -202,7 +190,7 @@ export default function InsightCard(props: InsightCardProps) {
           ? <SubscriptionAvatar name={opportunity.subscriptionName ?? ''} logoUrl={logoUrl} size="md" corner="rounded-[10px]" />
           : <SavingsIcon type={opportunity.type} />
       }
-      title={title} desc={desc} ctaLabel={cta}
+      body={body} ctaLabel={cta}
       onCta={onTap} onDismiss={onDismiss} inModal={inModal}
     />
   )
