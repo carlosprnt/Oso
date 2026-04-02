@@ -12,11 +12,12 @@ export type CarouselItem =
   | { kind: 'reminder'; annualCount: number }
   | { kind: 'savings'; opportunity: SavingsOpportunity }
 
-const MAX_STACK   = 8
-const PEEK_COUNT  = 4
-const PEEK_OFFSET = 1    // px per depth level
-const PEEK_SCALE  = 0.025
-const PEEK_DIM    = 0.10
+const MAX_STACK        = 8
+const PEEK_COUNT       = 4
+const PEEK_OFFSET_MIN  = 1   // px when off-screen
+const PEEK_OFFSET_MAX  = 10  // px when fully scrolled into view
+const PEEK_SCALE       = 0.025
+const PEEK_DIM         = 0.10
 
 interface Props {
   items: CarouselItem[]
@@ -25,11 +26,13 @@ interface Props {
 }
 
 export default function SavingsCarousel({ items, onReminderActivate, onAllDismissed }: Props) {
-  const [dismissed, setDismissed] = useState<Set<number>>(new Set())
-  const [detail,    setDetail]    = useState<SavingsOpportunity | null>(null)
-  const [showAll,   setShowAll]   = useState(false)
-  const [frontIdx,  setFrontIdx]  = useState(0)
-  const [isExiting, setIsExiting] = useState(false)
+  const [dismissed,   setDismissed]   = useState<Set<number>>(new Set())
+  const [detail,      setDetail]      = useState<SavingsOpportunity | null>(null)
+  const [showAll,     setShowAll]     = useState(false)
+  const [frontIdx,    setFrontIdx]    = useState(0)
+  const [isExiting,   setIsExiting]   = useState(false)
+  const [peekOffset,  setPeekOffset]  = useState(PEEK_OFFSET_MIN)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   // Motion values for drag-based rotation
   const dragX    = useMotionValue(0)
@@ -61,6 +64,22 @@ export default function SavingsCarousel({ items, onReminderActivate, onAllDismis
   const visibleCountRef = useRef(visible.length)
   useEffect(() => { isExitingRef.current    = isExiting },     [isExiting])
   useEffect(() => { visibleCountRef.current = visible.length }, [visible.length])
+
+  // Scroll-driven peek offset: expands from PEEK_OFFSET_MIN to PEEK_OFFSET_MAX
+  useEffect(() => {
+    function onScroll() {
+      const el = containerRef.current
+      if (!el) return
+      const rect     = el.getBoundingClientRect()
+      const vh       = window.innerHeight
+      // progress: 0 when bottom of el enters viewport, 1 when top reaches 40% of vh
+      const progress = Math.min(1, Math.max(0, (vh - rect.top) / (vh * 0.6)))
+      setPeekOffset(PEEK_OFFSET_MIN + progress * (PEEK_OFFSET_MAX - PEEK_OFFSET_MIN))
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   // Swipe hint nudge every 6s — resets timer when front card changes
   useEffect(() => {
@@ -135,19 +154,20 @@ export default function SavingsCarousel({ items, onReminderActivate, onAllDismis
         >
           {/* Stack container */}
           <div
+            ref={containerRef}
             className="relative w-full"
-            style={{ paddingBottom: peekEntries.length * PEEK_OFFSET }}
+            style={{ paddingBottom: peekEntries.length * peekOffset }}
           >
             {/* Peek cards — rise up while front card exits */}
             {peekEntries.map((entry, idx) => {
               const depth  = idx + 1
               const target = isExiting ? depth - 1 : depth
-              const tv     = target * PEEK_OFFSET
+              const tv     = target * peekOffset
               return (
                 <motion.div
                   key={entry.i}
                   className="absolute inset-0 rounded-[24px] bg-white dark:bg-[#1C1C1E]"
-                  initial={{ y: depth * PEEK_OFFSET, scale: 1 - depth * PEEK_SCALE, opacity: 1 - depth * PEEK_DIM }}
+                  initial={{ y: depth * peekOffset, scale: 1 - depth * PEEK_SCALE, opacity: 1 - depth * PEEK_DIM }}
                   animate={{
                     y:       tv,
                     scale:   1 - target * PEEK_SCALE,
