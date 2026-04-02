@@ -68,11 +68,13 @@ export default function DashboardReminderCards({ subscriptions }: { subscription
 
   return (
     <>
-      <SavingsCarousel
-        items={items}
-        onReminderActivate={() => setShowToast(true)}
-        onAllDismissed={() => setDone(true)}
-      />
+      <div className="mb-2">
+        <SavingsCarousel
+          items={items}
+          onReminderActivate={() => setShowToast(true)}
+          onAllDismissed={() => setDone(true)}
+        />
+      </div>
 
       {mounted && showToast && createPortal(
         <ReminderToast onDone={() => setShowToast(false)} />,
