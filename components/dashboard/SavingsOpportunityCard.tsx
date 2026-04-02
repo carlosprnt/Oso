@@ -143,7 +143,7 @@ function InsightCardShell({
       <div className="flex items-start gap-3 mb-3">
         {icon}
         <div className="flex-1 min-w-0 pt-0.5">
-          <p className="text-[14px] font-bold text-[#121212] dark:text-[#F2F2F7] leading-snug truncate">{title}</p>
+          <p className="text-[14px] font-bold text-[#121212] dark:text-[#F2F2F7] leading-snug">{title}</p>
           {/* min-height locks 2 lines so all cards share the same height */}
           <p
             className={`text-[13px] text-[#737373] dark:text-[#8E8E93] mt-1 ${inModal ? '' : 'line-clamp-2'}`}
