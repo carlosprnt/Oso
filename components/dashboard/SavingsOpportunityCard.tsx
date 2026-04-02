@@ -66,7 +66,7 @@ function useReminderContent(annualCount: number) {
 function useSavingsContent(opp: SavingsOpportunity) {
   const t      = useT()
   const locale = useLocale()
-  const amount = formatCurrency(opp.estimatedMonthlySaving, opp.currency, locale)
+  const amount = formatCurrency(opp.estimatedMonthlySaving * 12, opp.currency, locale)
 
   switch (opp.type) {
     case 'switch_to_yearly': {
