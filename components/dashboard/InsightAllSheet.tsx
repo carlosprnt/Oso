@@ -3,16 +3,13 @@
 import BottomSheet from '@/components/ui/BottomSheet'
 import InsightCard from './SavingsOpportunityCard'
 import { useT } from '@/lib/i18n/LocaleProvider'
+import type { CarouselItem } from './SavingsCarousel'
 import type { SavingsOpportunity } from '@/lib/calculations/savings'
-
-export type UnifiedItem =
-  | { kind: 'reminder' }
-  | { kind: 'savings'; opportunity: SavingsOpportunity }
 
 interface Props {
   isOpen: boolean
   onClose: () => void
-  items: UnifiedItem[]
+  items: CarouselItem[]
   dismissed: Set<number>
   onDismiss: (index: number) => void
   onDetail: (opp: SavingsOpportunity) => void
@@ -40,22 +37,16 @@ export default function InsightAllSheet({
             if (dismissed.has(i)) return null
             if (item.kind === 'reminder') {
               return (
-                <InsightCard
-                  key={i}
-                  kind="reminder"
+                <InsightCard key={i} kind="reminder"
                   onActivate={handleActivate}
-                  onDismiss={() => onDismiss(i)}
-                />
+                  onDismiss={() => onDismiss(i)} />
               )
             }
             return (
-              <InsightCard
-                key={i}
-                kind="savings"
+              <InsightCard key={i} kind="savings"
                 opportunity={item.opportunity}
                 onTap={() => { onDetail(item.opportunity); onClose() }}
-                onDismiss={() => onDismiss(i)}
-              />
+                onDismiss={() => onDismiss(i)} />
             )
           })
         )}
