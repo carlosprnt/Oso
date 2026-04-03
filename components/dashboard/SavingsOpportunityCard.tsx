@@ -37,6 +37,28 @@ function RingingBell() {
   )
 }
 
+// ─── OK hand icon ─────────────────────────────────────────────────────────────
+
+function OKHandIcon() {
+  return (
+    <div
+      className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+      style={{ background: 'linear-gradient(135deg,#FEF9C3,#FDE68A)' }}
+    >
+      <span
+        style={{
+          fontSize: 22,
+          display: 'inline-block',
+          animation: 'hand-wave 1.6s ease-in-out infinite',
+          transformOrigin: 'bottom center',
+        }}
+      >
+        👌
+      </span>
+    </div>
+  )
+}
+
 // ─── Savings icon — spinning coin ────────────────────────────────────────────
 
 function SavingsIcon() {
@@ -223,7 +245,11 @@ export default function InsightCard(props: InsightCardProps) {
   const { body, cta, logoUrl, showLogo } = useSavingsContent(opportunity)
   return (
     <InsightCardShell
-      icon={<SubscriptionAvatar name={opportunity.subscriptionName ?? ''} logoUrl={logoUrl} size="md" corner="rounded-[10px]" />}
+      icon={
+        logoUrl
+          ? <SubscriptionAvatar name={opportunity.subscriptionName ?? ''} logoUrl={logoUrl} size="md" corner="rounded-[10px]" />
+          : <OKHandIcon />
+      }
       body={body} ctaLabel={cta}
       onCta={onTap} onDismiss={onDismiss} inModal={inModal}
     />

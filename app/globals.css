@@ -116,6 +116,12 @@ input, select, textarea {
   from { transform: translateY(0);     opacity: 1; }
   to   { transform: translateY(-110%); opacity: 0; }
 }
+@keyframes hand-wave {
+  0%, 100% { transform: translateY(0px) rotate(0deg);   }
+  25%       { transform: translateY(-5px) rotate(5deg);  }
+  75%       { transform: translateY(3px) rotate(-3deg);  }
+}
+
 @keyframes coin-flip {
   0%          { transform: rotateY(0deg);   }
   20%         { transform: rotateY(90deg);  }
