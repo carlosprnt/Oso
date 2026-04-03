@@ -296,7 +296,7 @@ function CardStack({
   )
 }
 
-// ─── Horizontal card for inactive subscriptions ───────────────────────────────
+// ─── Full-width row for inactive subscriptions ───────────────────────────────
 function InactiveCard({
   sub,
   onOpen,
@@ -308,25 +308,23 @@ function InactiveCard({
     <motion.div
       layoutId={`card-${sub.id}`}
       onClick={() => onOpen(sub)}
-      className="flex-shrink-0 bg-white dark:bg-[#1C1C1E] rounded-[20px] px-4 py-4 flex flex-col gap-3 cursor-pointer"
-      style={{ width: 160, boxShadow: '0 -1px 2px rgba(0,0,0,0.04)' }}
+      className="w-full bg-white dark:bg-[#1C1C1E] rounded-[20px] px-4 py-3 flex items-center gap-3 cursor-pointer"
+      style={{ boxShadow: '0 -1px 2px rgba(0,0,0,0.04)' }}
       whileTap={{ scale: 0.97 }}
     >
       <SubscriptionAvatar
         name={sub.name}
         logoUrl={resolveSubscriptionLogoUrl(sub.name, sub.logo_url)}
-        size="md48"
-        corner="rounded-2xl"
+        size="md"
+        corner="rounded-xl"
       />
-      <div className="min-w-0">
-        <p className="text-[14px] font-bold text-[#121212] dark:text-[#F2F2F7] truncate leading-snug">{sub.name}</p>
-        <p
-          className="text-[12px] font-medium mt-0.5"
-          style={{ color: STATUS_COLOR[sub.status] ?? '#9CA3AF' }}
-        >
-          <StatusLabel status={sub.status} />
-        </p>
-      </div>
+      <p className="text-[14px] font-bold text-[#121212] dark:text-[#F2F2F7] truncate flex-1 leading-snug">{sub.name}</p>
+      <p
+        className="text-[12px] font-medium flex-shrink-0"
+        style={{ color: STATUS_COLOR[sub.status] ?? '#9CA3AF' }}
+      >
+        <StatusLabel status={sub.status} />
+      </p>
     </motion.div>
   )
 }
@@ -345,10 +343,7 @@ function InactiveCardsRow({
       <p className="text-[13px] font-semibold text-[#737373] dark:text-[#8E8E93] mb-3 px-1">
         {t('subscriptions.inactive')}
       </p>
-      <div
-        className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1"
-        style={{ scrollbarWidth: 'none' }}
-      >
+      <div className="flex flex-col gap-2">
         {subscriptions.map(sub => (
           <InactiveCard key={sub.id} sub={sub} onOpen={onOpen} />
         ))}
