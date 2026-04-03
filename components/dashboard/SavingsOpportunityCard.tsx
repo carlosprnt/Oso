@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Bell, TrendingDown, Copy, Users, Package } from 'lucide-react'
+import { Bell, Coins } from 'lucide-react'
 import SubscriptionAvatar from '@/components/subscriptions/SubscriptionAvatar'
 import { resolveSubscriptionLogoUrl } from '@/lib/constants/platforms'
 import { formatCurrency } from '@/lib/utils/currency'
@@ -37,18 +37,34 @@ function RingingBell() {
   )
 }
 
-// ─── Savings icon ─────────────────────────────────────────────────────────────
+// ─── Savings icon — spinning coin ────────────────────────────────────────────
 
-function SavingsIcon({ type }: { type: SavingsOpportunity['type'] }) {
-  const cfg = {
-    switch_to_yearly:   { bg: 'linear-gradient(135deg,#D1FAE5,#A7F3D0)', icon: <TrendingDown size={20} strokeWidth={2} style={{ color: '#059669' }} /> },
-    duplicate_category: { bg: 'linear-gradient(135deg,#FEF3C7,#FDE68A)', icon: <Copy         size={20} strokeWidth={2} style={{ color: '#D97706' }} /> },
-    shared_plan:        { bg: 'linear-gradient(135deg,#DBEAFE,#BFDBFE)', icon: <Users        size={20} strokeWidth={2} style={{ color: '#2563EB' }} /> },
-    bundle:             { bg: 'linear-gradient(135deg,#EDE9FE,#DDD6FE)', icon: <Package      size={20} strokeWidth={2} style={{ color: '#7C3AED' }} /> },
-  }[type]
+function SavingsIcon() {
+  const [spinning, setSpinning] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    const trigger = () => {
+      setSpinning(true)
+      timerRef.current = setTimeout(() => setSpinning(false), 2500)
+    }
+    trigger()
+    const id = setInterval(trigger, 5000)
+    return () => { clearInterval(id); if (timerRef.current) clearTimeout(timerRef.current) }
+  }, [])
+
   return (
-    <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: cfg.bg }}>
-      {cfg.icon}
+    <div
+      className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+      style={{ background: 'linear-gradient(135deg,#FEF9C3,#FDE68A)' }}
+    >
+      <Coins
+        size={20} strokeWidth={2} style={{
+          color: '#D97706',
+          animation: spinning ? 'coin-flip 2.5s ease-in-out forwards' : 'none',
+          transformStyle: 'preserve-3d',
+        }}
+      />
     </div>
   )
 }
@@ -211,7 +227,7 @@ export default function InsightCard(props: InsightCardProps) {
       icon={
         showLogo && logoUrl
           ? <SubscriptionAvatar name={opportunity.subscriptionName ?? ''} logoUrl={logoUrl} size="md" corner="rounded-[10px]" />
-          : <SavingsIcon type={opportunity.type} />
+          : <SavingsIcon />
       }
       body={body} ctaLabel={cta}
       onCta={onTap} onDismiss={onDismiss} inModal={inModal}

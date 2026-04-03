@@ -5,7 +5,7 @@ import SubscriptionAvatar from '@/components/subscriptions/SubscriptionAvatar'
 import { resolveSubscriptionLogoUrl } from '@/lib/constants/platforms'
 import { formatCurrency } from '@/lib/utils/currency'
 import { useT, useLocale } from '@/lib/i18n/LocaleProvider'
-import { TrendingDown, Copy, Users, Package, ArrowRight } from 'lucide-react'
+import { TrendingDown, Copy, Users, Package } from 'lucide-react'
 import type { SavingsOpportunity } from '@/lib/calculations/savings'
 
 // ─── Section wrapper ──────────────────────────────────────────────────────────
@@ -19,11 +19,15 @@ function Section({ label, children }: { label: string; children: React.ReactNode
 }
 
 // ─── Row ─────────────────────────────────────────────────────────────────────
-function Row({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+function Row({ label, value, accent, dim }: { label: string; value: string; accent?: boolean; dim?: boolean }) {
   return (
     <div className="flex items-center justify-between py-2.5 border-b border-[#F5F5F5] dark:border-[#2C2C2E] last:border-0">
       <span className="text-[14px] text-[#737373] dark:text-[#8E8E93]">{label}</span>
-      <span className={`text-[14px] font-semibold ${accent ? 'text-[#059669] dark:text-[#4ADE80]' : 'text-[#121212] dark:text-[#F2F2F7]'}`}>
+      <span className={`text-[14px] font-semibold ${
+        accent ? 'text-[#059669] dark:text-[#4ADE80]'
+        : dim  ? 'text-[#8E8E93] dark:text-[#636366]'
+               : 'text-[#121212] dark:text-[#F2F2F7]'
+      }`}>
         {value}
       </span>
     </div>
@@ -84,18 +88,18 @@ function SwitchToYearlyDetail({ opp, locale }: { opp: SavingsOpportunity; locale
       <SavingCallout amount={opp.estimatedMonthlySaving} currency={opp.currency} locale={locale} />
 
       <Section label={t('savings.currentPlan')}>
-        <Row label={t('savings.billedMonthly')}    value={formatCurrency(current, opp.currency, locale)} />
-        <Row label={t('savings.yearlyTotal')}      value={formatCurrency(current * 12, opp.currency, locale)} />
+        <Row label={t('savings.billedMonthly')}    value={formatCurrency(current, opp.currency, locale)} dim />
+        <Row label={t('savings.yearlyTotal')}      value={formatCurrency(current * 12, opp.currency, locale)} dim />
       </Section>
 
-      <Section label={t('savings.ifAnnual')}>
-        <div className="flex items-center gap-2 mb-2">
-          <ArrowRight size={14} strokeWidth={2} className="text-[#059669]" />
-          <p className="text-[13px] text-[#059669] dark:text-[#4ADE80] font-medium">{t('savings.estimatedAnnual')}</p>
-        </div>
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">{t('savings.ifAnnual')}</p>
+        <p className="text-[11px] text-[#8E8E93]">{t('savings.estimatedAnnual')}</p>
+      </div>
+      <div className="mb-5">
         <Row label={t('savings.billedAnnually')}   value={`~${formatCurrency(annual, opp.currency, locale)}/mo`} />
         <Row label={t('savings.yearlyTotal')}      value={`~${formatCurrency(annual * 12, opp.currency, locale)}`} />
-      </Section>
+      </div>
 
       <Note text={t('savings.switchToYearlyNote')} />
     </>
