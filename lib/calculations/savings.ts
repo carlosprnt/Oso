@@ -1,4 +1,5 @@
 import type { SubscriptionWithCosts, Category } from '@/types'
+import { resolvePlatformFromSubscriptionName } from '@/lib/constants/platforms'
 
 export type SavingsOpportunityType =
   | 'switch_to_yearly'
@@ -34,6 +35,9 @@ export function countAnnualRenewalsWithoutReminder(subs: SubscriptionWithCosts[]
   ).length
 }
 
+// Categories where annual plans are commonly offered
+const YEARLY_PLAN_CATEGORIES: Category[] = ['streaming', 'music', 'productivity', 'cloud', 'ai', 'gaming', 'education']
+
 // Categories where family/shared plans are common
 const SHARED_PLAN_CATEGORIES: Category[] = ['streaming', 'music', 'gaming', 'cloud']
 
@@ -63,10 +67,14 @@ export function detectSavingsOpportunities(
   const currency = dominantCurrency(active)
   const opportunities: SavingsOpportunity[] = []
 
-  // ── 1. Switch to yearly — one card per monthly-billed subscription ─────────
+  // ── 1. Switch to yearly — only for known platforms or digital service categories
   const monthlySubs = active.filter(s => s.billing_period === 'monthly')
   for (const sub of monthlySubs) {
-    const saving = (sub.my_monthly_cost * 2) / 12   // ~2 months free/year ≈ 16.7%
+    const isKnownPlatform    = !!resolvePlatformFromSubscriptionName(sub.name)
+    const hasLikelyAnnualPlan = isKnownPlatform || YEARLY_PLAN_CATEGORIES.includes(sub.category)
+    if (!hasLikelyAnnualPlan) continue
+
+    const saving    = (sub.my_monthly_cost * 2) / 12   // ~2 months free/year ≈ 16.7%
     const savingPct = Math.round((saving / sub.my_monthly_cost) * 100)
     if (saving > 0.49) {
       opportunities.push({
