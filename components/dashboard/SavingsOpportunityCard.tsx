@@ -165,7 +165,7 @@ function InsightCardShell({
       {/* Body */}
       <div className="flex items-start gap-3 mb-3">
         {icon}
-        <div className="flex-1 min-w-0 pt-0.5">
+        <div className="min-w-0 pt-0.5" style={{ width: '80%' }}>
           <p
             className={`text-[14px] text-[#121212] dark:text-[#F2F2F7] ${inModal ? '' : 'line-clamp-3'}`}
             style={{ lineHeight: '1.45', ...(inModal ? {} : { minHeight: 'calc(3 * 1.45 * 14px)' }) }}
