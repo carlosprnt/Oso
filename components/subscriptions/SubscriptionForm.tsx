@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition, useRef, useMemo } from 'react'
+import { useState, useTransition, useRef, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createSubscription, updateSubscription, deleteSubscription } from '@/app/(dashboard)/subscriptions/actions'
 import { CATEGORIES } from '@/lib/constants/categories'
@@ -191,6 +191,20 @@ export default function SubscriptionForm({
   const [nextBillingDate, setNextBillingDate] = useState(
     subscription?.next_billing_date ?? '',
   )
+
+  // Auto-compute next billing date from start date when creating a new subscription
+  useEffect(() => {
+    if (subscription) return  // editing — don't overwrite
+    const d = new Date(startDate + 'T00:00:00')
+    if (billingPeriod === 'monthly') {
+      d.setMonth(d.getMonth() + 1)
+    } else if (billingPeriod === 'yearly') {
+      d.setFullYear(d.getFullYear() + 1)
+    } else {
+      return
+    }
+    setNextBillingDate(d.toISOString().split('T')[0])
+  }, [startDate, billingPeriod]) // eslint-disable-line react-hooks/exhaustive-deps
   const [logoUrl, setLogoUrl] = useState(
     subscription?.logo_url ?? prefill?.logoUrl ?? '',
   )
