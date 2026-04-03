@@ -163,15 +163,14 @@ function InsightCardShell({
         {onDismiss && (
           <button
             onClick={e => { e.stopPropagation(); onDismiss() }}
-            className="h-9 px-4 rounded-full text-[13px] font-semibold active:opacity-70 transition-opacity text-[#121212] dark:text-[#F2F2F7]"
-            style={{ background: 'rgba(142,142,147,0.12)' }}
+            className="h-9 px-4 rounded-full text-[13px] font-semibold active:opacity-70 transition-opacity text-[#121212] dark:text-[#F2F2F7] bg-transparent border border-[#C7C7CC] dark:border-[#48484A]"
           >
             Quitar
           </button>
         )}
         <button
           onClick={onCta}
-          className={`flex-1 h-9 rounded-full text-[13px] font-semibold active:opacity-70 transition-opacity text-[#3C3C43] dark:text-[#EBEBF5] ${
+          className={`flex-1 h-9 rounded-full text-[13px] font-semibold active:opacity-70 transition-opacity text-[#121212] dark:text-[#F2F2F7] ${
             inModal ? 'bg-[#E5E5EA] dark:bg-[#3A3A3C]' : 'bg-[#F2F2F7] dark:bg-[#2C2C2E]'
           }`}
         >
