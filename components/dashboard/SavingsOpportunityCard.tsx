@@ -159,7 +159,16 @@ function InsightCardShell({
       </div>
 
       {/* CTAs */}
-      <div className={`flex gap-2 ${onDismiss ? '' : ''}`}>
+      <div className="flex gap-2">
+        {onDismiss && (
+          <button
+            onClick={e => { e.stopPropagation(); onDismiss() }}
+            className="h-9 px-4 rounded-full text-[13px] font-semibold active:opacity-70 transition-opacity text-[#121212] dark:text-[#F2F2F7]"
+            style={{ background: 'rgba(142,142,147,0.12)' }}
+          >
+            Quitar
+          </button>
+        )}
         <button
           onClick={onCta}
           className={`flex-1 h-9 rounded-full text-[13px] font-semibold active:opacity-70 transition-opacity text-[#3C3C43] dark:text-[#EBEBF5] ${
@@ -168,15 +177,6 @@ function InsightCardShell({
         >
           {ctaLabel}
         </button>
-        {onDismiss && (
-          <button
-            onClick={e => { e.stopPropagation(); onDismiss() }}
-            className="h-9 px-4 rounded-full text-[13px] font-semibold active:opacity-70 transition-opacity text-[#8E8E93] dark:text-[#636366]"
-            style={{ background: 'rgba(142,142,147,0.12)' }}
-          >
-            Quitar
-          </button>
-        )}
       </div>
     </div>
   )
