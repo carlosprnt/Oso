@@ -160,8 +160,7 @@ function InsightCardShell({
         <button
           onClick={e => { e.stopPropagation(); onDismiss() }}
           className="self-start flex-shrink-0 rounded-full flex items-center justify-center"
-          style={{ width: 24, height: 24 }}
-          style={{ background: 'rgba(142,142,147,0.15)' }}
+          style={{ width: 24, height: 24, background: 'rgba(142,142,147,0.15)' }}
           aria-label="Descartar"
         >
           <span style={{ fontSize: 16, lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8E8E93', fontWeight: 700 }}>✕</span>
