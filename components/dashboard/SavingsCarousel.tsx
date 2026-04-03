@@ -220,7 +220,7 @@ export default function SavingsCarousel({ items, onReminderActivate, onAllDismis
             <button
               onClick={() => setShowAll(true)}
               className="w-full text-center text-[14px] font-medium text-[#3D3BF3] dark:text-[#8B89FF]"
-              style={{ marginTop: 16, marginBottom: 24 }}
+              style={{ marginTop: 16, marginBottom: 14 }}
             >
               Más sugerencias de ahorro
             </button>
