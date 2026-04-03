@@ -13,7 +13,7 @@ export type CarouselItem =
   | { kind: 'totalSavings'; totalAnnual: number; currency: string }
 
 const PEEK_COUNT      = 1
-const PEEK_OFFSET     = 4   // fixed px gap between stacked cards
+const PEEK_OFFSET     = 8   // fixed px gap between stacked cards
 const PEEK_SCALE      = 0.025
 const PEEK_DIM        = 0.10
 
