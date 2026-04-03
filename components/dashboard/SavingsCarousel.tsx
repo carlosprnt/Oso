@@ -97,7 +97,7 @@ export default function SavingsCarousel({ items, onReminderActivate, onAllDismis
     let count = 0
     const id = setInterval(async () => {
       if (isExitingRef.current || visibleCountRef.current <= 1) return
-      await frontAnim.start({ x: 22, rotate: 3, transition: { duration: 1.4, ease: [0.12, 0, 0.4, 1] } })
+      await frontAnim.start({ x: -10, rotate: -2, transition: { duration: 1.4, ease: [0.12, 0, 0.4, 1] } })
       await frontAnim.start({ x:  0, rotate: 0, transition: { duration: 0.25, ease: 'easeIn' } })
       count++
       if (count >= 2) clearInterval(id)
