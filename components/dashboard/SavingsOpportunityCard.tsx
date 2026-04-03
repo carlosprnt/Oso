@@ -164,7 +164,7 @@ function InsightCardShell({
           <button
             onClick={e => { e.stopPropagation(); onDismiss() }}
             className={`h-9 px-4 rounded-full text-[13px] font-semibold active:opacity-70 transition-opacity text-[#121212] dark:text-[#F2F2F7] ${
-              inModal ? 'bg-[#E5E5EA] dark:bg-[#3A3A3C]' : 'bg-[#F2F2F7] dark:bg-[#2C2C2E]'
+              inModal ? 'bg-white dark:bg-[#2C2C2E]' : 'bg-[#F2F2F7] dark:bg-[#2C2C2E]'
             }`}
           >
             Quitar
