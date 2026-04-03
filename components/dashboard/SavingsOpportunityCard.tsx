@@ -221,7 +221,7 @@ function InsightCardShell({
 export type InsightCardProps =
   | { kind: 'reminder';      annualCount: number; onActivate: () => void; onDismiss?: () => void; inModal?: boolean }
   | { kind: 'totalSavings';  totalAnnual: number; currency: string; onTap: () => void; onDismiss?: () => void; inModal?: boolean }
-  | { kind: 'savings';       opportunity: SavingsOpportunity; onTap: () => void; onDismiss?: () => void; inModal?: boolean }
+  | { kind: 'savings';       opportunity: SavingsOpportunity; onTap: () => void; onDismiss?: () => void; inModal?: boolean; ctaLabel?: string }
 
 export default function InsightCard(props: InsightCardProps) {
   if (props.kind === 'reminder') {
@@ -252,7 +252,7 @@ export default function InsightCard(props: InsightCardProps) {
     )
   }
 
-  const { opportunity, onTap, onDismiss, inModal } = props
+  const { opportunity, onTap, onDismiss, inModal, ctaLabel: ctaOverride } = props
   const { body, cta, logoUrl } = useSavingsContent(opportunity)
   return (
     <InsightCardShell
@@ -261,7 +261,7 @@ export default function InsightCard(props: InsightCardProps) {
           ? <SubscriptionAvatar name={opportunity.subscriptionName ?? ''} logoUrl={logoUrl} size="md" corner="rounded-[10px]" />
           : <OKHandIcon />
       }
-      body={body} ctaLabel={cta}
+      body={body} ctaLabel={ctaOverride ?? cta}
       onCta={onTap} onDismiss={onDismiss} inModal={inModal}
     />
   )

@@ -27,6 +27,7 @@ export default function InsightAllSheet({ isOpen, onClose, opportunities, onDeta
               kind="savings"
               inModal
               opportunity={opp}
+              ctaLabel="Ver más"
               onTap={() => { onDetail(opp); onClose() }}
             />
           ))
