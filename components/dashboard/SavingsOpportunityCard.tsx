@@ -163,16 +163,16 @@ function InsightCardShell({
         {onDismiss && (
           <button
             onClick={e => { e.stopPropagation(); onDismiss() }}
-            className="h-9 px-4 rounded-full text-[13px] font-semibold active:opacity-70 transition-opacity text-[#121212] dark:text-[#F2F2F7] bg-transparent border border-[#C7C7CC] dark:border-[#48484A]"
+            className={`h-9 px-4 rounded-full text-[13px] font-semibold active:opacity-70 transition-opacity text-[#121212] dark:text-[#F2F2F7] ${
+              inModal ? 'bg-[#E5E5EA] dark:bg-[#3A3A3C]' : 'bg-[#F2F2F7] dark:bg-[#2C2C2E]'
+            }`}
           >
             Quitar
           </button>
         )}
         <button
           onClick={onCta}
-          className={`flex-1 h-9 rounded-full text-[13px] font-semibold active:opacity-70 transition-opacity text-[#121212] dark:text-[#F2F2F7] ${
-            inModal ? 'bg-[#E5E5EA] dark:bg-[#3A3A3C]' : 'bg-[#F2F2F7] dark:bg-[#2C2C2E]'
-          }`}
+          className="flex-1 h-9 rounded-full text-[13px] font-semibold active:opacity-70 transition-opacity text-[#121212] dark:text-[#F2F2F7] bg-transparent border border-[#C7C7CC] dark:border-[#48484A]"
         >
           {ctaLabel}
         </button>
