@@ -243,7 +243,7 @@ const en = {
   savings: {
     cta: 'See suggestions',
     totalBody: 'You could save up to {amount} a year by reviewing the opportunities detected in your subscriptions.',
-    switchToYearlyBody: 'You could save up to {pct}% a year if you switch {name} to the annual plan.',
+    switchToYearlyBody: 'You could save up to {amount} a year if you switch {name} to the annual plan.',
     duplicateCategoryBody: 'You could save up to {amount} a year if you review your {category} services.',
     sharedPlanBody: 'You could save up to {amount} a year if you switch {name} to a shared plan.',
     bundleBody: 'You could save up to {amount} a year if you bundle some of your services together.',
@@ -522,7 +522,7 @@ const es: typeof en = {
   savings: {
     cta: 'Ver sugerencias',
     totalBody: 'Podrías ahorrar hasta {amount} al año si revisas las oportunidades detectadas en tus suscripciones.',
-    switchToYearlyBody: 'Podrías ahorrar hasta {pct}% al año si pasas {name} al plan anual.',
+    switchToYearlyBody: 'Podrías ahorrar hasta {amount} al año si pasas {name} al plan anual.',
     duplicateCategoryBody: 'Podrías ahorrar hasta {amount} al año si revisas tus servicios de {category}.',
     sharedPlanBody: 'Podrías ahorrar hasta {amount} al año si cambias {name} a un plan compartido.',
     bundleBody: 'Podrías ahorrar hasta {amount} al año si agrupas algunos de tus servicios.',

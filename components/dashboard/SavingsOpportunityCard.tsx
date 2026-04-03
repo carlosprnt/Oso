@@ -124,9 +124,8 @@ function useSavingsContent(opp: SavingsOpportunity) {
   switch (opp.type) {
     case 'switch_to_yearly': {
       const name = opp.subscriptionName ?? ''
-      const pct  = opp.savingPct ?? 17
       return {
-        body:    t('savings.switchToYearlyBody').replace('{pct}', String(pct)).replace('{name}', name),
+        body:    t('savings.switchToYearlyBody').replace('{amount}', amount).replace('{name}', name),
         cta:     t('savings.cta'),
         logoUrl: resolveSubscriptionLogoUrl(name, opp.subscriptionLogoUrl ?? null),
         showLogo: true,
