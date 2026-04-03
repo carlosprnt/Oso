@@ -223,7 +223,11 @@ export default function InsightCard(props: InsightCardProps) {
   const { body, cta, logoUrl, showLogo } = useSavingsContent(opportunity)
   return (
     <InsightCardShell
-      icon={<SavingsIcon />}
+      icon={
+        logoUrl
+          ? <SubscriptionAvatar name={opportunity.subscriptionName ?? ''} logoUrl={logoUrl} size="md" corner="rounded-[10px]" />
+          : <SavingsIcon />
+      }
       body={body} ctaLabel={cta}
       onCta={onTap} onDismiss={onDismiss} inModal={inModal}
     />
