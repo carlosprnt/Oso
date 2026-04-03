@@ -222,7 +222,7 @@ export default function SavingsCarousel({ items, onReminderActivate, onAllDismis
               className="w-full text-center text-[14px] font-medium text-[#3D3BF3] dark:text-[#8B89FF]"
               style={{ marginTop: 16, marginBottom: 24 }}
             >
-              Más oportunidades de ahorro
+              Más sugerencias de ahorro
             </button>
           )}
         </motion.div>

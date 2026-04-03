@@ -256,7 +256,7 @@ const en = {
     dismiss: 'Got it',
     viewAll: 'See all opportunities',
     viewAllDesc: '{count} more insights',
-    allTitle: 'Savings opportunities',
+    allTitle: 'Savings suggestions',
     allEmpty: 'No more suggestions.',
     // Detail sheet
     detailSavePerMonth: 'Save ~{amount}/month',
@@ -533,7 +533,7 @@ const es: typeof en = {
     dismiss: 'Entendido',
     viewAll: 'Ver todas las oportunidades',
     viewAllDesc: '{count} ideas más',
-    allTitle: 'Oportunidades de ahorro',
+    allTitle: 'Sugerencias de ahorro',
     allEmpty: 'No hay más sugerencias.',
     // Detail sheet
     detailSavePerMonth: 'Ahorra ~{amount}/mes',
