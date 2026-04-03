@@ -213,7 +213,6 @@ export default function SavingsCarousel({ items, opportunities, onReminderActiva
         totalAnnual={item.totalAnnual}
         currency={item.currency}
         onTap={() => setShowAll(true)}
-        onDismiss={() => dismiss(i)}
       />
     )
   }

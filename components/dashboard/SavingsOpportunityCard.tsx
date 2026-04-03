@@ -200,7 +200,7 @@ function InsightCardShell({
             onClick={e => { e.stopPropagation(); onDismiss() }}
             className="h-9 px-4 text-[13px] font-semibold active:opacity-70 transition-opacity text-[#8E8E93] dark:text-[#636366]"
           >
-            Quitar
+            No me interesa
           </button>
         )}
         <button

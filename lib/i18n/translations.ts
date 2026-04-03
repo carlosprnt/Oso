@@ -241,7 +241,7 @@ const en = {
     toastText: 'Reminders activated for your annual renewals',
   },
   savings: {
-    cta: 'See more',
+    cta: 'See suggestions',
     totalBody: 'You could save up to {amount} a year by reviewing the opportunities detected in your subscriptions.',
     switchToYearlyBody: 'You could save up to {pct}% a year if you switch {name} to the annual plan.',
     duplicateCategoryBody: 'You could save up to {amount} a year if you review your {category} services.',
@@ -520,7 +520,7 @@ const es: typeof en = {
     filter: 'Filtros',
   },
   savings: {
-    cta: 'Saber más',
+    cta: 'Ver sugerencias',
     totalBody: 'Podrías ahorrar hasta {amount} al año si revisas las oportunidades detectadas en tus suscripciones.',
     switchToYearlyBody: 'Podrías ahorrar hasta {pct}% al año si pasas {name} al plan anual.',
     duplicateCategoryBody: 'Podrías ahorrar hasta {amount} al año si revisas tus servicios de {category}.',
