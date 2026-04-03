@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Bell, Coins, HandCoins, Sparkles } from 'lucide-react'
+import { Bell, Coins, HandCoins } from 'lucide-react'
 import SubscriptionAvatar from '@/components/subscriptions/SubscriptionAvatar'
 import { resolveSubscriptionLogoUrl } from '@/lib/constants/platforms'
 import { formatCurrency } from '@/lib/utils/currency'
@@ -216,28 +216,12 @@ function InsightCardShell({
   )
 }
 
-// ─── View-all icon ────────────────────────────────────────────────────────────
-
-function ViewAllIcon() {
-  return (
-    <div
-      className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-      style={{ background: 'linear-gradient(135deg,#E8E6FF,#D4CFFF)' }}
-    >
-      <Sparkles
-        size={20} strokeWidth={2} className="text-[#3D3BF3]"
-        style={{ animation: 'sparkle-twinkle 2.4s ease-in-out infinite' }}
-      />
-    </div>
-  )
-}
-
 // ─── Public types & components ────────────────────────────────────────────────
 
 export type InsightCardProps =
-  | { kind: 'reminder';  annualCount: number; onActivate: () => void; onDismiss?: () => void; inModal?: boolean }
-  | { kind: 'savings';   opportunity: SavingsOpportunity; onTap: () => void; onDismiss?: () => void; inModal?: boolean }
-  | { kind: 'viewAll';   count: number; onTap: () => void; inModal?: boolean }
+  | { kind: 'reminder';      annualCount: number; onActivate: () => void; onDismiss?: () => void; inModal?: boolean }
+  | { kind: 'totalSavings';  totalAnnual: number; currency: string; onTap: () => void; onDismiss?: () => void; inModal?: boolean }
+  | { kind: 'savings';       opportunity: SavingsOpportunity; onTap: () => void; onDismiss?: () => void; inModal?: boolean }
 
 export default function InsightCard(props: InsightCardProps) {
   if (props.kind === 'reminder') {
@@ -252,18 +236,18 @@ export default function InsightCard(props: InsightCardProps) {
     )
   }
 
-  if (props.kind === 'viewAll') {
-    const { count, onTap, inModal } = props
-    const body = count === 1
-      ? 'Tienes 1 sugerencia de ahorro disponible.'
-      : `Tienes ${count} sugerencias de ahorro disponibles.`
+  if (props.kind === 'totalSavings') {
+    const { totalAnnual, currency, onTap, onDismiss, inModal } = props
+    const t      = useT()
+    const locale = useLocale()
+    const amount = formatCurrency(totalAnnual, currency, locale)
+    const body   = t('savings.totalBody').replace('{amount}', amount)
     return (
       <InsightCardShell
-        icon={<ViewAllIcon />}
+        icon={<SavingsIcon />}
         body={body}
-        ctaLabel="Ver todas"
-        onCta={onTap}
-        inModal={inModal}
+        ctaLabel={t('savings.cta')}
+        onCta={onTap} onDismiss={onDismiss} inModal={inModal}
       />
     )
   }

@@ -242,6 +242,7 @@ const en = {
   },
   savings: {
     cta: 'See more',
+    totalBody: 'You could save up to {amount} a year by reviewing the opportunities detected in your subscriptions.',
     switchToYearlyBody: 'You could save up to {pct}% a year if you switch {name} to the annual plan.',
     duplicateCategoryBody: 'You could save up to {amount} a year if you review your {category} services.',
     sharedPlanBody: 'You could save up to {amount} a year if you switch {name} to a shared plan.',
@@ -520,6 +521,7 @@ const es: typeof en = {
   },
   savings: {
     cta: 'Saber más',
+    totalBody: 'Podrías ahorrar hasta {amount} al año si revisas las oportunidades detectadas en tus suscripciones.',
     switchToYearlyBody: 'Podrías ahorrar hasta {pct}% al año si pasas {name} al plan anual.',
     duplicateCategoryBody: 'Podrías ahorrar hasta {amount} al año si revisas tus servicios de {category}.',
     sharedPlanBody: 'Podrías ahorrar hasta {amount} al año si cambias {name} a un plan compartido.',
@@ -561,7 +563,7 @@ const es: typeof en = {
   reminder: {
     cardBody: 'Podrías evitar una **renovación anual** por sorpresa si activas un aviso 7 días antes.',
     cardBodyMany: 'Podrías evitar {count} **renovaciones anuales** por sorpresa si activas avisos 7 días antes.',
-    cardCta: 'Activar notificaciones',
+    cardCta: 'Avisarme 7 días antes',
     toastText: 'Recordatorios activados para tus renovaciones anuales',
   },
 }

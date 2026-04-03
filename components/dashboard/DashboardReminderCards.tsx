@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { Bell } from 'lucide-react'
 import SavingsCarousel from './SavingsCarousel'
-import { detectSavingsOpportunities, countAnnualRenewalsWithoutReminder } from '@/lib/calculations/savings'
+import { detectSavingsOpportunities, countAnnualRenewalsWithoutReminder, sumAnnualSavings } from '@/lib/calculations/savings'
 import { useT } from '@/lib/i18n/LocaleProvider'
 import type { CarouselItem } from './SavingsCarousel'
 import type { SubscriptionWithCosts } from '@/types'
@@ -56,11 +56,14 @@ export default function DashboardReminderCards({ subscriptions }: { subscription
   const opportunities  = useMemo(() => detectSavingsOpportunities(subscriptions), [subscriptions])
   const annualCount    = useMemo(() => countAnnualRenewalsWithoutReminder(subscriptions), [subscriptions])
 
-  // Unified list: reminder card first (if any annual subs), then savings opportunities
+  // At most 2 top-level cards: reminder + total savings summary
   const items = useMemo<CarouselItem[]>(() => {
     const list: CarouselItem[] = []
     if (annualCount > 0) list.push({ kind: 'reminder', annualCount })
-    list.push(...opportunities.map(opp => ({ kind: 'savings' as const, opportunity: opp })))
+    if (opportunities.length > 0) {
+      const currency = opportunities[0]?.currency ?? 'EUR'
+      list.push({ kind: 'totalSavings', totalAnnual: sumAnnualSavings(opportunities), currency })
+    }
     return list
   }, [opportunities, annualCount])
 
@@ -71,6 +74,7 @@ export default function DashboardReminderCards({ subscriptions }: { subscription
       <div className="mb-2">
         <SavingsCarousel
           items={items}
+          opportunities={opportunities}
           onReminderActivate={() => setShowToast(true)}
           onAllDismissed={() => setDone(true)}
         />

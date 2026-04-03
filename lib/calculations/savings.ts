@@ -136,3 +136,7 @@ export function detectSavingsOpportunities(
 export function getBestSavingsOpportunity(subs: SubscriptionWithCosts[]): SavingsOpportunity | null {
   return detectSavingsOpportunities(subs)[0] ?? null
 }
+
+export function sumAnnualSavings(opportunities: SavingsOpportunity[]): number {
+  return opportunities.reduce((sum, o) => sum + o.estimatedMonthlySaving * 12, 0)
+}
