@@ -1,14 +1,15 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useTransition } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
-import { LogOut, Share2, Moon, Sun, ShieldCheck } from 'lucide-react'
+import { LogOut, Share2, Moon, Sun, ShieldCheck, ChevronRight, ChevronLeft, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import Image from 'next/image'
 import { getInitials, getAvatarPastel } from '@/lib/utils/logos'
 import { useTheme } from '@/components/ui/ThemeProvider'
 import { useT } from '@/lib/i18n/LocaleProvider'
+import { setDemoMode } from '@/app/(dashboard)/subscriptions/demo-action'
 
 interface UserAvatarMenuProps {
   shareText?: string
@@ -19,7 +20,9 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
   const { theme, toggle } = useTheme()
   const t = useT()
   const [open, setOpen] = useState(false)
+  const [demoOpen, setDemoOpen] = useState(false)
   const [imgError, setImgError] = useState(false)
+  const [isPending, startTransition] = useTransition()
   const [menuPos, setMenuPos] = useState({ top: 0, right: 0 })
   const [user, setUser] = useState<{ name: string; avatarUrl: string | null; email: string | null } | null>(null)
   const buttonRef   = useRef<HTMLButtonElement>(null)
@@ -66,7 +69,7 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
       const rect = buttonRef.current.getBoundingClientRect()
       setMenuPos({ top: rect.bottom + 8, right: window.innerWidth - rect.right })
     }
-    setOpen(o => !o)
+    setOpen(o => { if (o) setDemoOpen(false); return !o })
   }
 
   // When dropdown closes, animate back to face A (nearest 360n multiple going forward)
@@ -126,51 +129,108 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
     WebkitBackfaceVisibility: 'hidden' as any,
   }
 
+  const DEMO_MODES = [
+    { label: 'Sin suscripciones', count: 0 },
+    { label: '1 suscripción',     count: 1 },
+    { label: '2 suscripciones',   count: 2 },
+    { label: '3 suscripciones',   count: 3 },
+    { label: '20 suscripciones',  count: 20 },
+  ] as const
+
+  function handleDemoMode(count: number) {
+    startTransition(async () => {
+      await setDemoMode(count)
+      setOpen(false)
+      setDemoOpen(false)
+    })
+  }
+
   const dropdown = open ? (
     <div
       ref={dropdownRef}
       style={{ position: 'fixed', top: menuPos.top, right: menuPos.right, zIndex: 9999 }}
       className="w-56 bg-white dark:bg-[#1C1C1E] rounded-2xl border border-[#E5E5E5] dark:border-[#2C2C2E] shadow-[0_4px_24px_rgba(0,0,0,0.12)] overflow-hidden animate-fade-in-scale"
     >
-      <div className="px-4 py-3 border-b border-[#F0F0F0] dark:border-[#2C2C2E]">
-        <p className="text-sm font-semibold text-[#121212] dark:text-[#F2F2F7] truncate">{name}</p>
-      </div>
-      <div className="py-1.5">
-        <button
-          onClick={() => { toggle(); setOpen(false) }}
-          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#424242] dark:text-[#AEAEB2] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors text-left"
-        >
-          {theme === 'dark' ? <Sun size={15} className="text-[#616161] dark:text-[#8E8E93]" /> : <Moon size={15} className="text-[#616161]" />}
-          {theme === 'dark' ? t('nav.lightMode') : t('nav.darkMode')}
-        </button>
-        <button
-          onClick={handleShare}
-          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#424242] dark:text-[#AEAEB2] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors text-left"
-        >
-          <Share2 size={15} className="text-[#616161] dark:text-[#8E8E93]" />
-          {t('nav.shareData')}
-        </button>
-        {user?.email === 'carlosprnt@gmail.com' && (
-          <>
+      {demoOpen ? (
+        /* ── Demo submenu ─────────────────────────────────────────────── */
+        <>
+          <div className="px-4 py-3 border-b border-[#F0F0F0] dark:border-[#2C2C2E] flex items-center gap-2">
+            <button
+              onClick={() => setDemoOpen(false)}
+              className="text-[#3D3BF3] flex items-center gap-1 text-sm font-medium"
+            >
+              <ChevronLeft size={15} />
+              Demo
+            </button>
+          </div>
+          <div className="py-1.5">
+            {DEMO_MODES.map(({ label, count }) => (
+              <button
+                key={count}
+                onClick={() => handleDemoMode(count)}
+                disabled={isPending}
+                className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-[#424242] dark:text-[#AEAEB2] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors text-left disabled:opacity-50"
+              >
+                {label}
+                {isPending ? <Loader2 size={13} className="animate-spin text-[#8E8E93]" /> : null}
+              </button>
+            ))}
+          </div>
+        </>
+      ) : (
+        /* ── Normal menu ──────────────────────────────────────────────── */
+        <>
+          <div className="px-4 py-3 border-b border-[#F0F0F0] dark:border-[#2C2C2E]">
+            <p className="text-sm font-semibold text-[#121212] dark:text-[#F2F2F7] truncate">{name}</p>
+          </div>
+          <div className="py-1.5">
+            <button
+              onClick={() => { toggle(); setOpen(false) }}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#424242] dark:text-[#AEAEB2] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors text-left"
+            >
+              {theme === 'dark' ? <Sun size={15} className="text-[#616161] dark:text-[#8E8E93]" /> : <Moon size={15} className="text-[#616161]" />}
+              {theme === 'dark' ? t('nav.lightMode') : t('nav.darkMode')}
+            </button>
+            <button
+              onClick={handleShare}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#424242] dark:text-[#AEAEB2] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors text-left"
+            >
+              <Share2 size={15} className="text-[#616161] dark:text-[#8E8E93]" />
+              {t('nav.shareData')}
+            </button>
+            {user?.email === 'carlosprnt@gmail.com' && (
+              <>
+                <div className="h-px bg-[#F0F0F0] dark:bg-[#2C2C2E] mx-2 my-1" />
+                <button
+                  onClick={() => { setOpen(false); router.push('/admin/style-audit') }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#3D3BF3] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors text-left"
+                >
+                  <ShieldCheck size={15} />
+                  Admin
+                </button>
+                <button
+                  onClick={() => setDemoOpen(true)}
+                  className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-[#3D3BF3] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors text-left"
+                >
+                  <span className="flex items-center gap-3">
+                    <ChevronRight size={15} />
+                    Demo
+                  </span>
+                  <ChevronRight size={13} className="text-[#C7C7CC]" />
+                </button>
+              </>
+            )}
             <div className="h-px bg-[#F0F0F0] dark:bg-[#2C2C2E] mx-2 my-1" />
             <button
-              onClick={() => { setOpen(false); router.push('/admin/style-audit') }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#3D3BF3] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors text-left"
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-left"
             >
-              <ShieldCheck size={15} />
-              Admin
+              <LogOut size={15} />
+              {t('nav.logout')}
             </button>
-          </>
-        )}
-        <div className="h-px bg-[#F0F0F0] dark:bg-[#2C2C2E] mx-2 my-1" />
-        <button
-          onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-left"
-        >
-          <LogOut size={15} />
-          {t('nav.logout')}
-        </button>
-      </div>
+          </div>
+        </>
+      )}
     </div>
   ) : null
 
