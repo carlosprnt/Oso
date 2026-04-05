@@ -6,7 +6,6 @@ import { Plus } from 'lucide-react'
 import { PLATFORMS, resolvePlatformLogoUrl } from '@/lib/constants/platforms'
 import { getAvatarPastel, getInitials } from '@/lib/utils/logos'
 
-// Curated list of popular platforms to show in the quick-add grid
 const QUICK_ADD_IDS = [
   'netflix', 'spotify', 'disney-plus', 'youtube-premium', 'amazon-prime-video',
   'hbo-max', 'apple-tv-plus', 'apple-music', 'icloud', 'notion',
@@ -26,52 +25,67 @@ export default function QuickAddPlatforms() {
       <p className="text-[13px] font-semibold text-[#737373] dark:text-[#8E8E93] mb-3">
         Añade rápido
       </p>
-      <div className="grid grid-cols-4 gap-3">
+      <div className="flex flex-col gap-2">
         {QUICK_ADD_PLATFORMS.map(platform => {
           const logoUrl = resolvePlatformLogoUrl(platform)
           const { bg, fg } = getAvatarPastel(platform.name)
           const initials = getInitials(platform.name)
 
           return (
-            <button
+            <div
               key={platform.id}
-              onClick={() => router.push(`/subscriptions/new?preset=${platform.id}`)}
-              className="flex flex-col items-center gap-1.5 active:scale-95 transition-transform"
+              className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-[#F2F2F7] dark:bg-[#1C1C1E]"
             >
-              <div className="w-14 h-14 rounded-2xl overflow-hidden flex items-center justify-center flex-shrink-0"
-                style={{ background: logoUrl ? 'transparent' : bg }}>
+              {/* Logo */}
+              <div
+                className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0"
+                style={{ background: logoUrl ? 'transparent' : bg }}
+              >
                 {logoUrl ? (
                   <Image
                     src={logoUrl}
                     alt={platform.name}
-                    width={56}
-                    height={56}
+                    width={40}
+                    height={40}
                     className="w-full h-full object-cover"
                     unoptimized
                   />
                 ) : (
-                  <span className="text-[18px] font-bold" style={{ color: fg }}>{initials}</span>
+                  <span className="text-[15px] font-bold" style={{ color: fg }}>{initials}</span>
                 )}
               </div>
-              <p className="text-[11px] font-medium text-[#424242] dark:text-[#AEAEB2] text-center leading-tight line-clamp-2 w-full px-0.5">
+
+              {/* Name */}
+              <p className="text-[14px] font-semibold text-[#121212] dark:text-[#F2F2F7] flex-1 truncate">
                 {platform.name}
               </p>
-            </button>
+
+              {/* Add link */}
+              <button
+                onClick={() => router.push(`/subscriptions/new?preset=${platform.id}`)}
+                className="text-[13px] font-semibold text-[#3D3BF3] dark:text-[#8B89FF] flex-shrink-0 active:opacity-60 transition-opacity"
+              >
+                Añadir
+              </button>
+            </div>
           )
         })}
 
-        {/* Manual add button */}
-        <button
-          onClick={() => router.push('/subscriptions/new')}
-          className="flex flex-col items-center gap-1.5 active:scale-95 transition-transform"
-        >
-          <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-[#F2F2F7] dark:bg-[#2C2C2E]">
-            <Plus size={22} strokeWidth={2} className="text-[#8E8E93]" />
+        {/* Custom subscription */}
+        <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-[#F2F2F7] dark:bg-[#1C1C1E]">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 bg-white dark:bg-[#2C2C2E]">
+            <Plus size={18} strokeWidth={2} className="text-[#8E8E93]" />
           </div>
-          <p className="text-[11px] font-medium text-[#8E8E93] text-center leading-tight">
-            Otra
+          <p className="text-[14px] font-semibold text-[#121212] dark:text-[#F2F2F7] flex-1">
+            Otra suscripción
           </p>
-        </button>
+          <button
+            onClick={() => router.push('/subscriptions/new')}
+            className="text-[13px] font-semibold text-[#3D3BF3] dark:text-[#8B89FF] flex-shrink-0 active:opacity-60 transition-opacity"
+          >
+            Añadir
+          </button>
+        </div>
       </div>
     </div>
   )
