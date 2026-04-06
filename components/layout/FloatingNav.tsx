@@ -11,6 +11,7 @@ import SubscriptionForm from '@/components/subscriptions/SubscriptionForm'
 import GmailSubscriptionSearchSheet from '@/components/subscriptions/GmailSubscriptionSearchSheet'
 import { useT } from '@/lib/i18n/LocaleProvider'
 import { useTheme } from '@/components/ui/ThemeProvider'
+import { createClient } from '@/lib/supabase/client'
 import type { PlatformPreset } from '@/lib/constants/platforms'
 
 type Step = 'closed' | 'pick' | 'form' | 'gmail'
@@ -60,6 +61,23 @@ export default function FloatingNav() {
 
   const isDash = pathname === '/dashboard' || pathname.startsWith('/dashboard/')
   const isSubs = pathname === '/subscriptions' || pathname.startsWith('/subscriptions/')
+
+  // Detect empty subscriptions list so we can emphasize the "+" CTA
+  const [hasNoSubs, setHasNoSubs] = useState(false)
+  useEffect(() => {
+    if (!isSubs) { setHasNoSubs(false); return }
+    let cancelled = false
+    const supabase = createClient()
+    supabase
+      .from('subscriptions')
+      .select('id', { count: 'exact', head: true })
+      .then(({ count }) => {
+        if (!cancelled) setHasNoSubs((count ?? 0) === 0)
+      })
+    return () => { cancelled = true }
+  }, [isSubs, pathname])
+
+  const emphasizeAdd = isSubs && hasNoSubs
 
   // x offset of the sliding bg: Dashboard=0, Subscriptions=1
   const bgX = isSubs ? BTN_W + GAP : 0
@@ -132,20 +150,31 @@ export default function FloatingNav() {
           </div>
         </div>
 
-        {/* + button — right edge, 16px margin, same bottom as pill */}
-        <button
+        {/* + button — right edge, 16px margin, same bottom as pill.
+            When the user has no subscriptions yet, it scales to 2x to
+            emphasize it as the primary call to action. */}
+        <motion.button
           onClick={() => setStep('pick')}
           aria-label="Add subscription"
-          className="absolute right-4 pointer-events-auto flex items-center justify-center rounded-full bg-[#3D3BF3] active:scale-95 transition-transform duration-100"
+          className="absolute right-4 pointer-events-auto flex items-center justify-center rounded-full bg-[#3D3BF3]"
           style={{
             width: 56,
             height: 56,
+            originX: 1,
+            originY: 1,
             bottom: `calc(${bottomOffset} + 4px)`,
             boxShadow: '0 4px 16px rgba(61,59,243,0.40)',
           }}
+          animate={emphasizeAdd ? { scale: [1, 2, 1.9, 2] } : { scale: 1 }}
+          transition={
+            emphasizeAdd
+              ? { duration: 1.2, times: [0, 0.5, 0.75, 1], ease: 'easeOut' }
+              : { type: 'spring', stiffness: 300, damping: 22 }
+          }
+          whileTap={{ scale: emphasizeAdd ? 1.85 : 0.95 }}
         >
           <Plus size={22} color="#ffffff" strokeWidth={2.5} />
-        </button>
+        </motion.button>
       </nav>
 
       {/* Step 1 — Platform picker */}
