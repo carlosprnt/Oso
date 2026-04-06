@@ -114,6 +114,35 @@ const LOGOS: LogoConfig[] = [
     duration: 8.4, delay: 0.5,
     pileOffsetX: 145, pileRotate: 5, fallDelay: 0.16,
   },
+
+  // ── Row 5 (scattered extras) ────────────────────────────────────────────────
+  {
+    id: 'icloud', label: '☁',
+    src: 'https://svgl.app/library/icloud.svg',
+    bg: '#FFFFFF', size: 72, radius: 18,
+    left: '30%', top: '76%',
+    xKeys: [0, 12, -6, 8, 0], yKeys: [0, -12, 8, -4, 0],
+    duration: 7.8, delay: 2.4,
+    pileOffsetX: -30, pileRotate: 4, fallDelay: 0.21,
+  },
+  {
+    id: 'apple-music', label: '♫',
+    src: 'https://svgl.app/library/apple_music.svg',
+    bg: '#FFFFFF', size: 74, radius: 18,
+    left: '78%', top: '78%',
+    xKeys: [0, -10, 8, -6, 0], yKeys: [0, 14, -8, 6, 0],
+    duration: 8.6, delay: 1.0,
+    pileOffsetX: 90, pileRotate: -5, fallDelay: 0.24,
+  },
+  {
+    id: 'claude', label: 'C',
+    src: 'https://svgl.app/library/claude-ai-icon.svg',
+    bg: '#FFFFFF', size: 74, radius: 18,
+    left: '42%', top: '22%',
+    xKeys: [0, -12, 10, -4, 0], yKeys: [0, 8, -14, 10, 0],
+    duration: 8.2, delay: 1.6,
+    pileOffsetX: 20, pileRotate: -7, fallDelay: 0.27,
+  },
 ]
 
 // ─── Fallback logo image with text fallback ───────────────────────────────────
