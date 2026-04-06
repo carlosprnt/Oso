@@ -21,7 +21,7 @@ function isSchemaError(message: string): boolean {
 // CREATE
 // ============================================================
 
-export async function createSubscription(formData: SubscriptionFormData) {
+export async function createSubscription(formData: SubscriptionFormData, successRedirect?: string) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -47,8 +47,7 @@ export async function createSubscription(formData: SubscriptionFormData) {
 
   revalidatePath('/dashboard')
   revalidatePath('/subscriptions')
-  // Pass new ID so the list can highlight it
-  redirect(`/subscriptions?new=${result.data?.id ?? ''}`)
+  redirect(successRedirect ?? `/subscriptions?new=${result.data?.id ?? ''}`)
 }
 
 // ============================================================

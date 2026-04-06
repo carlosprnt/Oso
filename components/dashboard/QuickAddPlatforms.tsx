@@ -97,6 +97,7 @@ export default function QuickAddPlatforms() {
           mode="create"
           platformPreset={selected ?? undefined}
           onCancel={close}
+          successRedirect="/dashboard"
         />
       </BottomSheet>
     </>

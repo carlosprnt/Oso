@@ -18,6 +18,7 @@ interface SubscriptionFormProps {
   mode: 'create' | 'edit'
   platformPreset?: PlatformPreset
   onCancel?: () => void
+  successRedirect?: string
 }
 
 // ─── Helper sub-components ───────────────────────────────────────────────────
@@ -159,6 +160,7 @@ export default function SubscriptionForm({
   mode,
   platformPreset,
   onCancel,
+  successRedirect,
 }: SubscriptionFormProps) {
   const t = useT()
   const locale = useLocale()
@@ -323,7 +325,7 @@ export default function SubscriptionForm({
     startTransition(async () => {
       const result =
         mode === 'create'
-          ? await createSubscription(buildPayload())
+          ? await createSubscription(buildPayload(), successRedirect)
           : await updateSubscription(subscription!.id, buildPayload())
       if (result?.error) setError(result.error)
       else onCancel?.()
