@@ -640,10 +640,12 @@ export default function SubscriptionsView({
         </div>
       </motion.div>
 
-      {/* Sort control — just above cards */}
-      <div className="relative z-[30] px-1 mt-2 mb-[9px]">
-        <SortDropdown current={sortMode} onSelect={setSortMode} />
-      </div>
+      {/* Sort control — just above cards. Hidden when there are no subs. */}
+      {allCount > 0 && (
+        <div className="relative z-[30] px-1 mt-2 mb-[9px]">
+          <SortDropdown current={sortMode} onSelect={setSortMode} />
+        </div>
+      )}
 
       {/* ── Cards — higher z-index, scroll over the header ────── */}
       <div className="-mx-1 relative z-[1] space-y-5">
@@ -665,14 +667,25 @@ export default function SubscriptionsView({
 
         {/* Wallet stacked card list — active only */}
         {sortedSubscriptions.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <p className="text-sm font-medium text-[#121212] dark:text-[#F2F2F7] mb-1">
-              {allCount === 0 ? t('subscriptions.noSubscriptions') : t('subscriptions.noResults')}
-            </p>
-            <p className="text-xs text-[#737373] dark:text-[#8E8E93]">
-              {allCount === 0 ? t('subscriptions.getStarted') : t('subscriptions.noResultsHint')}
-            </p>
-          </div>
+          allCount === 0 ? (
+            <div className="pt-6">
+              <p className="text-[45px] font-extrabold text-[#121212] dark:text-[#F2F2F7] leading-[1.15] tracking-tight mb-2">
+                Aún no tienes suscripciones añadidas
+              </p>
+              <p className="text-[17px] font-bold text-[#121212] dark:text-[#F2F2F7] leading-snug">
+                {t('subscriptions.getStarted')}
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <p className="text-sm font-medium text-[#121212] dark:text-[#F2F2F7] mb-1">
+                {t('subscriptions.noResults')}
+              </p>
+              <p className="text-xs text-[#737373] dark:text-[#8E8E93]">
+                {t('subscriptions.noResultsHint')}
+              </p>
+            </div>
+          )
         ) : (
           <>
             {activeSubs.length > 0 && (
