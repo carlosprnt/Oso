@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import {
-  motion, AnimatePresence, LayoutGroup,
+  motion, AnimatePresence, LayoutGroup, useAnimationControls,
   useScroll, useVelocity, useSpring, useTransform, useMotionTemplate,
   type MotionValue,
 } from 'framer-motion'
@@ -535,6 +535,18 @@ export default function SubscriptionsView({
   const [filterOpen, setFilterOpen] = useState(false)
   const [calendarOpen, setCalendarOpen] = useState(false)
   const [sortMode, setSortMode] = useState<SortMode>('alphabetical')
+  const filterShake = useAnimationControls()
+
+  function handleFilterTap() {
+    if (allCount === 0) {
+      filterShake.start({
+        x: [0, -8, 8, -6, 6, -4, 4, 0],
+        transition: { duration: 0.45, ease: 'easeInOut' },
+      })
+      return
+    }
+    setFilterOpen(true)
+  }
 
   // ── Header scroll-fade: content scrolls OVER the header ──────────────────
   const scrollY = useEffectiveScrollY()
@@ -627,15 +639,16 @@ export default function SubscriptionsView({
             >
               <CalendarDays size={17} strokeWidth={2} className="text-[#333333] dark:text-[#F2F2F7]" />
             </button>
-            <button
-              onClick={() => setFilterOpen(true)}
+            <motion.button
+              onClick={handleFilterTap}
+              animate={filterShake}
               className="relative w-10 h-10 rounded-full bg-white dark:bg-[#1C1C1E] flex items-center justify-center transition-colors active:bg-[#F0F0F0] dark:active:bg-[#2C2C2E]"
             >
               <SlidersHorizontal size={17} strokeWidth={2} className="text-[#333333] dark:text-[#F2F2F7]" />
               {hasActiveFilters && (
                 <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#3D3BF3] border-2 border-white" />
               )}
-            </button>
+            </motion.button>
           </div>
         </div>
       </motion.div>
