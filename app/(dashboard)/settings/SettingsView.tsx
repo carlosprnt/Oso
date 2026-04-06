@@ -160,7 +160,7 @@ export default function SettingsView({ preferences }: Props) {
   ] as const
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#111111] -mx-4 sm:-mx-6 -my-6 lg:-my-8 px-5 pb-8">
+    <div className="min-h-screen -mx-4 sm:-mx-6 -my-6 lg:-my-8 px-5 pb-8">
       {/* Header */}
       <div
         className="flex items-center gap-3 pb-4"
