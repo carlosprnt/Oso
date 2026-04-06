@@ -60,6 +60,7 @@ export default function FloatingNav() {
 
   const isDash = pathname === '/dashboard' || pathname.startsWith('/dashboard/')
   const isSubs = pathname === '/subscriptions' || pathname.startsWith('/subscriptions/')
+  const hideNav = pathname === '/settings' || pathname.startsWith('/settings/')
 
   // SubscriptionsView broadcasts its count via a custom event so we can
   // emphasize the "+" CTA without a second Supabase roundtrip from here.
@@ -87,7 +88,8 @@ export default function FloatingNav() {
 
   return (
     <>
-      {/* ── Floating nav — mobile only ──────────────────────────────────────── */}
+      {/* ── Floating nav — mobile only, hidden on settings ────────────────── */}
+      {!hideNav && (
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 pointer-events-none"
         style={{ height: `calc(${BTN_H + PAD * 2}px + env(safe-area-inset-bottom))` }}
       >
@@ -172,6 +174,7 @@ export default function FloatingNav() {
           <Plus size={22} color="#ffffff" strokeWidth={2.5} />
         </motion.button>
       </nav>
+      )}
 
       {/* Step 1 — Platform picker */}
       <BottomSheet
