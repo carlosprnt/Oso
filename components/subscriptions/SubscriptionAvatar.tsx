@@ -54,7 +54,7 @@ export default function SubscriptionAvatar({
 
     return (
       <div
-        className={`${cls} ${corner} overflow-hidden flex-shrink-0 border border-[#E8E8E8] dark:border-[#3A3A3C] ${needsPadding ? 'bg-white dark:bg-white flex items-center justify-center' : ''}`}
+        className={`${cls} ${corner} overflow-hidden flex-shrink-0 flex items-center justify-center border border-[#E8E8E8] dark:border-[#3A3A3C] bg-white dark:bg-white`}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -62,7 +62,7 @@ export default function SubscriptionAvatar({
           alt={name}
           width={SIZE[size].px}
           height={SIZE[size].px}
-          className={needsPadding ? 'w-[78%] h-[78%] object-contain' : 'w-full h-full object-contain'}
+          className="w-[82%] h-[82%] object-contain"
           onError={() => setImgError(true)}
           loading="lazy"
         />
