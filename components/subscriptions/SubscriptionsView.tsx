@@ -540,11 +540,19 @@ export default function SubscriptionsView({
   const [sortMode, setSortMode] = useState<SortMode>('alphabetical')
   const filterShake = useAnimationControls()
 
+  const [removingChip, setRemovingChip] = useState<'status' | 'category' | null>(null)
+
   function clearFilter(key: 'status' | 'category') {
-    const p = new URLSearchParams()
-    if (key !== 'status' && currentStatus && currentStatus !== 'all') p.set('status', currentStatus)
-    if (key !== 'category' && currentCategory && currentCategory !== 'all') p.set('category', currentCategory)
-    router.push(`${pathname}${p.size ? '?' + p.toString() : ''}`, { scroll: false })
+    setRemovingChip(key)
+    // Wait for the exit animation to finish before navigating so the chip
+    // plays its destruction animation instead of vanishing instantly.
+    setTimeout(() => {
+      const p = new URLSearchParams()
+      if (key !== 'status' && currentStatus && currentStatus !== 'all') p.set('status', currentStatus)
+      if (key !== 'category' && currentCategory && currentCategory !== 'all') p.set('category', currentCategory)
+      router.push(`${pathname}${p.size ? '?' + p.toString() : ''}`, { scroll: false })
+      setRemovingChip(null)
+    }, 260)
   }
 
   function handleFilterTap() {
@@ -683,26 +691,40 @@ export default function SubscriptionsView({
         {/* Active filter chips */}
         {hasActiveFilters && (
           <div className="flex items-center gap-2 flex-wrap">
-            {currentStatus && currentStatus !== 'all' && (
-              <button
-                type="button"
-                onClick={() => clearFilter('status')}
-                className="inline-flex items-center gap-1.5 pl-3.5 pr-2 py-1.5 rounded-full bg-[#EFEFEF] dark:bg-[#2C2C2E] text-[#121212] dark:text-[#F2F2F7] text-[13px] font-medium active:opacity-70 transition-opacity"
-              >
-                {t(`status.${currentStatus}` as Parameters<typeof t>[0])}
-                <X size={14} strokeWidth={2.5} className="text-[#737373] dark:text-[#AEAEB2]" />
-              </button>
-            )}
-            {currentCategory && currentCategory !== 'all' && (
-              <button
-                type="button"
-                onClick={() => clearFilter('category')}
-                className="inline-flex items-center gap-1.5 pl-3.5 pr-2 py-1.5 rounded-full bg-[#EFEFEF] dark:bg-[#2C2C2E] text-[#121212] dark:text-[#F2F2F7] text-[13px] font-medium active:opacity-70 transition-opacity"
-              >
-                {t(`categories.${currentCategory}` as Parameters<typeof t>[0])}
-                <X size={14} strokeWidth={2.5} className="text-[#737373] dark:text-[#AEAEB2]" />
-              </button>
-            )}
+            <AnimatePresence>
+              {currentStatus && currentStatus !== 'all' && removingChip !== 'status' && (
+                <motion.button
+                  key="chip-status"
+                  type="button"
+                  onClick={() => clearFilter('status')}
+                  layout
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.4, filter: 'blur(4px)', y: -6 }}
+                  transition={{ duration: 0.25, ease: 'easeOut' }}
+                  className="inline-flex items-center gap-1.5 pl-3.5 pr-2 py-1.5 rounded-full bg-[#EFEFEF] dark:bg-[#2C2C2E] text-[#121212] dark:text-[#F2F2F7] text-[13px] font-medium active:opacity-70 transition-opacity"
+                >
+                  {t(`status.${currentStatus}` as Parameters<typeof t>[0])}
+                  <X size={14} strokeWidth={2.5} className="text-[#737373] dark:text-[#AEAEB2]" />
+                </motion.button>
+              )}
+              {currentCategory && currentCategory !== 'all' && removingChip !== 'category' && (
+                <motion.button
+                  key="chip-category"
+                  type="button"
+                  onClick={() => clearFilter('category')}
+                  layout
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.4, filter: 'blur(4px)', y: -6 }}
+                  transition={{ duration: 0.25, ease: 'easeOut' }}
+                  className="inline-flex items-center gap-1.5 pl-3.5 pr-2 py-1.5 rounded-full bg-[#EFEFEF] dark:bg-[#2C2C2E] text-[#121212] dark:text-[#F2F2F7] text-[13px] font-medium active:opacity-70 transition-opacity"
+                >
+                  {t(`categories.${currentCategory}` as Parameters<typeof t>[0])}
+                  <X size={14} strokeWidth={2.5} className="text-[#737373] dark:text-[#AEAEB2]" />
+                </motion.button>
+              )}
+            </AnimatePresence>
           </div>
         )}
 
