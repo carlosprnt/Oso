@@ -1,179 +1,47 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
+import { ChevronRight, X, Calendar, Mail, Sparkles } from 'lucide-react'
 import { getOAuthRedirectUrl } from '@/lib/platform'
 import { createClient } from '@/lib/supabase/client'
 
-// ─── Logo tile configuration ─────────────────────────────────────────────────
-interface LogoConfig {
-  id: string
-  label: string          // fallback text if image fails
-  src: string            // Simple Icons CDN URL
-  bg: string             // tile background colour
-  size: number
-  radius: number
-  left: string           // initial CSS left (% of vw)
-  top: string            // initial CSS top (% of vh)
-  xKeys: number[]        // idle x-drift keyframes
-  yKeys: number[]        // idle y-drift keyframes
-  duration: number
-  delay: number
-  pileOffsetX: number    // horizontal offset from screen centre when piled (px)
-  pileRotate: number     // tilt angle when landed (deg)
-  fallDelay: number      // stagger delay for the fall spring
+// ─── Content ─────────────────────────────────────────────────────────────────
+interface Slide {
+  icon: React.ReactNode
+  title: string
+  body: string
 }
 
-const LOGOS: LogoConfig[] = [
-  // ── Row 1 (top area) ────────────────────────────────────────────────────────
+const SLIDES: Slide[] = [
   {
-    id: 'spotify', label: 'S',
-    src: 'https://cdn.simpleicons.org/spotify',
-    bg: '#FFFFFF', size: 78, radius: 20,
-    left: '4%', top: '10%',
-    xKeys: [0, 14, 5, -10, 0], yKeys: [0, -10, 16, 5, 0],
-    duration: 7.2, delay: 0,
-    pileOffsetX: -155, pileRotate: 12, fallDelay: 0.00,
+    icon: <Sparkles size={32} className="text-white" />,
+    title: 'Todas tus suscripciones en un solo sitio',
+    body: 'Perezoso te muestra cuánto pagas al mes, qué se renueva esta semana y dónde puedes ahorrar.',
   },
   {
-    id: 'notion', label: 'N',
-    src: 'https://cdn.simpleicons.org/notion',
-    bg: '#FFFFFF', size: 76, radius: 18,
-    left: '38%', top: '5%',
-    xKeys: [0, -8, 12, -4, 0], yKeys: [0, 14, -6, 10, 0],
-    duration: 8.8, delay: 0.6,
-    pileOffsetX: -15, pileRotate: -3, fallDelay: 0.04,
+    icon: <Calendar size={32} className="text-white" />,
+    title: 'Calendario con próximas renovaciones',
+    body: 'Visualiza de un vistazo todo lo que se va a cobrar en los próximos días y meses.',
   },
   {
-    id: 'netflix', label: 'N',
-    src: 'https://cdn.simpleicons.org/netflix',
-    bg: '#FFFFFF', size: 78, radius: 20,
-    left: '68%', top: '9%',
-    xKeys: [0, -12, -4, 9, 0], yKeys: [0, 14, -8, 12, 0],
-    duration: 8.1, delay: 1.2,
-    pileOffsetX: 110, pileRotate: -9, fallDelay: 0.06,
-  },
-
-  // ── Row 2 (middle area, orbits around Perezoso logo at ~top:22%) ────────────
-  {
-    id: 'google', label: 'G',
-    src: 'https://cdn.simpleicons.org/google',
-    bg: '#FFFFFF', size: 74, radius: 18,
-    left: '3%', top: '34%',
-    xKeys: [0, 16, 6, -13, 0], yKeys: [0, -7, 18, -5, 0],
-    duration: 6.9, delay: 1.8,
-    pileOffsetX: -135, pileRotate: 8, fallDelay: 0.11,
+    icon: <Mail size={32} className="text-white" />,
+    title: 'Detección automática desde tu Gmail',
+    body: 'Conecta tu correo y Perezoso encontrará por ti las suscripciones que ya estás pagando.',
   },
   {
-    id: 'openai', label: 'AI',
-    src: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/openai.svg',
-    bg: '#FFFFFF', size: 74, radius: 18,
-    left: '70%', top: '32%',
-    xKeys: [0, -14, -5, 11, 0], yKeys: [0, 12, -14, 6, 0],
-    duration: 9.0, delay: 0.4,
-    pileOffsetX: 60, pileRotate: 6, fallDelay: 0.14,
-  },
-
-  // ── Row 3 (lower-middle) ─────────────────────────────────────────────────────
-  {
-    id: 'primevideo', label: 'PV',
-    src: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/amazon-prime-video.svg',
-    bg: '#FFFFFF', size: 74, radius: 18,
-    left: '17%', top: '50%',
-    xKeys: [0, 13, 4, -11, 0], yKeys: [0, 8, -14, 9, 0],
-    duration: 6.8, delay: 0.8,
-    pileOffsetX: -60, pileRotate: -6, fallDelay: 0.13,
-  },
-  {
-    id: 'apple', label: '',
-    src: 'https://cdn.simpleicons.org/apple',
-    bg: '#FFFFFF', size: 74, radius: 18,
-    left: '63%', top: '48%',
-    xKeys: [0, -11, -6, 14, 0], yKeys: [0, 13, -6, -10, 0],
-    duration: 9.2, delay: 2.1,
-    pileOffsetX: 45, pileRotate: 7, fallDelay: 0.19,
-  },
-
-  // ── Row 4 (bottom, just above card) ─────────────────────────────────────────
-  {
-    id: 'youtube', label: 'YT',
-    src: 'https://cdn.simpleicons.org/youtube',
-    bg: '#FFFFFF', size: 76, radius: 18,
-    left: '8%', top: '63%',
-    xKeys: [0, 15, 6, -12, 0], yKeys: [0, -10, 15, 4, 0],
-    duration: 7.6, delay: 1.5,
-    pileOffsetX: -105, pileRotate: -14, fallDelay: 0.09,
-  },
-  {
-    id: 'disneyplus', label: 'D+',
-    src: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/disney-plus.svg',
-    bg: '#FFFFFF', size: 80, radius: 22,
-    left: '55%', top: '65%',
-    xKeys: [0, -13, -4, 11, 0], yKeys: [0, 11, -10, -8, 0],
-    duration: 8.4, delay: 0.5,
-    pileOffsetX: 145, pileRotate: 5, fallDelay: 0.16,
-  },
-
-  // ── Row 5 (scattered extras) ────────────────────────────────────────────────
-  {
-    id: 'icloud', label: '☁',
-    src: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/icloud.svg',
-    bg: '#FFFFFF', size: 72, radius: 18,
-    left: '30%', top: '76%',
-    xKeys: [0, 12, -6, 8, 0], yKeys: [0, -12, 8, -4, 0],
-    duration: 7.8, delay: 2.4,
-    pileOffsetX: -30, pileRotate: 4, fallDelay: 0.21,
-  },
-  {
-    id: 'apple-music', label: '♫',
-    src: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/apple-music.svg',
-    bg: '#FFFFFF', size: 74, radius: 18,
-    left: '78%', top: '78%',
-    xKeys: [0, -10, 8, -6, 0], yKeys: [0, 14, -8, 6, 0],
-    duration: 8.6, delay: 1.0,
-    pileOffsetX: 90, pileRotate: -5, fallDelay: 0.24,
-  },
-  {
-    id: 'claude', label: 'C',
-    src: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/claude.svg',
-    bg: '#FFFFFF', size: 74, radius: 18,
-    left: '42%', top: '22%',
-    xKeys: [0, -12, 10, -4, 0], yKeys: [0, 8, -14, 10, 0],
-    duration: 8.2, delay: 1.6,
-    pileOffsetX: 20, pileRotate: -7, fallDelay: 0.27,
+    icon: (
+      <div className="w-8 h-8 flex items-center justify-center">
+        <span className="text-[24px] leading-none">💸</span>
+      </div>
+    ),
+    title: 'Insights de gasto y sugerencias de ahorro',
+    body: 'Descubre patrones y recomendaciones para reducir lo que pagas cada mes sin renunciar a lo que importa.',
   },
 ]
 
-// ─── Fallback logo image with text fallback ───────────────────────────────────
-function LogoTile({ logo }: { logo: LogoConfig }) {
-  const [imgError, setImgError] = useState(false)
-  return (
-    <div
-      style={{
-        width: logo.size, height: logo.size, borderRadius: logo.radius,
-        background: logo.bg,
-        boxShadow: '0 3px 14px rgba(0,0,0,0.15)',
-        overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}
-    >
-      {imgError ? (
-        <span style={{ fontSize: logo.size * 0.34, fontWeight: 700, color: '#FFFFFF', letterSpacing: -0.5 }}>
-          {logo.label}
-        </span>
-      ) : (
-        <img
-          src={logo.src}
-          alt={logo.id}
-          onError={() => setImgError(true)}
-          style={{ width: '62%', height: '62%', objectFit: 'contain', display: 'block' }}
-        />
-      )}
-    </div>
-  )
-}
-
-// ─── Google icon SVG ──────────────────────────────────────────────────────────
+// ─── Google button + SVG ─────────────────────────────────────────────────────
 function GoogleIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -185,182 +53,230 @@ function GoogleIcon() {
   )
 }
 
+function AuthButtons({
+  isLoading,
+  error,
+  onGoogle,
+}: {
+  isLoading: boolean
+  error: string | null
+  onGoogle: () => void
+}) {
+  return (
+    <div className="space-y-2">
+      <button
+        onClick={onGoogle}
+        disabled={isLoading}
+        className="w-full h-12 flex items-center justify-center gap-3 rounded-full border border-[#E8E8E8] bg-white text-[15px] font-medium text-[#121212] active:bg-[#F2F2F7] transition-colors disabled:opacity-60"
+      >
+        {isLoading
+          ? <span className="w-5 h-5 border-2 border-[#E8E8E8] border-t-[#3D3BF3] rounded-full animate-spin" />
+          : <GoogleIcon />}
+        {isLoading ? 'Iniciando sesión…' : 'Continuar con Google'}
+      </button>
+
+      <button
+        disabled
+        className="w-full h-12 flex items-center justify-center gap-3 rounded-full border border-[#E8E8E8] bg-white text-[15px] font-medium text-[#121212] opacity-40 cursor-not-allowed"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+          <path d="M17.05 12.536c-.024-2.422 1.977-3.586 2.068-3.643-1.127-1.65-2.881-1.875-3.505-1.9-1.495-.15-2.917.879-3.676.879-.757 0-1.933-.857-3.176-.833-1.635.025-3.142.948-3.984 2.411-1.697 2.94-.434 7.29 1.222 9.685.81 1.172 1.77 2.489 3.034 2.443 1.218-.05 1.679-.79 3.153-.79 1.474 0 1.888.79 3.178.764 1.311-.024 2.14-1.196 2.945-2.372.927-1.36 1.308-2.68 1.333-2.748-.03-.013-2.561-.983-2.592-3.896zm-2.39-7.168c.677-.821 1.135-1.956 1.009-3.091-.978.04-2.162.651-2.862 1.472-.627.728-1.176 1.891-1.028 3.007 1.091.085 2.203-.567 2.881-1.388z" />
+        </svg>
+        Continuar con Apple
+      </button>
+
+      {error && (
+        <p className="text-[12px] text-red-600 text-center bg-red-50 rounded-lg px-3 py-2">{error}</p>
+      )}
+
+      <p className="text-[11px] text-[#8E8E93] text-center leading-relaxed pt-1">
+        Al continuar aceptas nuestros{' '}
+        <a href="/terms" className="underline">Términos</a>{' '}y la{' '}
+        <a href="/privacy" className="underline">Política de privacidad</a>.
+      </p>
+    </div>
+  )
+}
+
 // ─── Main screen ─────────────────────────────────────────────────────────────
 export default function LoginScreen() {
-  const [phase, setPhase] = useState<'idle' | 'falling'>('idle')
+  const [slide, setSlide] = useState(0)
+  const [sheetOpen, setSheetOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [loginError, setLoginError] = useState<string | null>(null)
-  const vRef = useRef({ w: 390, h: 844 })
+  const [error, setError] = useState<string | null>(null)
+  const totalSlides = SLIDES.length + 1 // +1 for the final login slide
 
-  useEffect(() => {
-    vRef.current = { w: window.innerWidth, h: window.innerHeight }
-  }, [])
-
-  /**
-   * Calculate the x/y delta each logo must travel to land at the pile zone.
-   * The pile zone is ~300px above the bottom (just above the sign-in card).
-   * Logo left/top are CSS % values; framer-motion x/y are additional transforms.
-   */
-  function getFallTarget(logo: LogoConfig) {
-    const { w, h } = vRef.current
-    const initLeft = parseFloat(logo.left) / 100 * w
-    const initTop  = parseFloat(logo.top) / 100 * h
-    // Pile: logo top-left sits ~300px from bottom, scattered around the centre
-    const pileTop  = h - 305
-    const pileLeft = w / 2 + logo.pileOffsetX
-    return {
-      x: pileLeft - initLeft,
-      y: pileTop - initTop,
-      rotate: logo.pileRotate,
+  async function handleGoogleLogin() {
+    if (isLoading) return
+    setIsLoading(true)
+    setError(null)
+    const supabase = createClient()
+    const redirectTo = getOAuthRedirectUrl('/auth/callback')
+    const { error: err } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo,
+        queryParams: { access_type: 'offline', prompt: 'select_account' },
+      },
+    })
+    if (err) {
+      setError(err.message)
+      setIsLoading(false)
     }
   }
 
-  async function handleGoogleLogin() {
-    if (phase === 'falling' || isLoading) return
-    setPhase('falling')
-    setLoginError(null)
-
-    // Wait for the last logo to land before redirecting
-    // Longest stagger = 0.19s + ~0.45s spring settle ≈ 640ms total
-    setTimeout(async () => {
-      setIsLoading(true)
-      const supabase = createClient()
-      const redirectTo = getOAuthRedirectUrl('/auth/callback')
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo,
-          queryParams: { access_type: 'offline', prompt: 'select_account' },
-        },
-      })
-      if (error) {
-        setLoginError(error.message)
-        setIsLoading(false)
-        setPhase('idle')
-      }
-      // On success the browser is redirected — no further action needed
-    }, 680)
+  function openSignIn() {
+    setError(null)
+    setSheetOpen(true)
   }
 
-  const isFalling = phase === 'falling'
+  function next() {
+    if (slide < totalSlides - 1) setSlide(slide + 1)
+  }
+
+  function goTo(i: number) { setSlide(i) }
+
+  // Touch swipe handling
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+  function onTouchStart(e: React.TouchEvent) { setTouchStart(e.touches[0].clientX) }
+  function onTouchEnd(e: React.TouchEvent) {
+    if (touchStart === null) return
+    const delta = e.changedTouches[0].clientX - touchStart
+    if (delta < -50 && slide < totalSlides - 1) setSlide(slide + 1)
+    else if (delta > 50 && slide > 0) setSlide(slide - 1)
+    setTouchStart(null)
+  }
 
   return (
-    <div className="fixed inset-0 bg-[#ECECEC]" style={{ overflow: 'hidden' }}>
-
-      {/* ── Hero zone ─────────────────────────────────────────────────────── */}
-      <div className="absolute inset-0">
-
-        {/* Perezoso app icon — always static, centre anchor */}
-        <div
-          className="absolute"
-          style={{ left: '50%', marginLeft: -72, top: '22%' }}
-        >
-          <Image
-            src="/logo.png"
-            alt="Perezoso"
-            width={144}
-            height={144}
-            className="rounded-[34px]"
-            priority
-          />
-        </div>
-
-        {/* Floating service logos */}
-        {LOGOS.map((logo) => {
-          const ft = isFalling ? getFallTarget(logo) : null
-          return (
+    <div
+      className="relative min-h-screen bg-white overflow-hidden flex flex-col"
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+    >
+      {/* Slides */}
+      <div className="flex-1 flex items-center justify-center px-6">
+        <AnimatePresence mode="wait">
+          {slide < SLIDES.length ? (
             <motion.div
-              key={logo.id}
-              className="absolute"
-              style={{ left: logo.left, top: logo.top }}
-              animate={
-                ft
-                  ? { x: ft.x, y: ft.y, rotate: ft.rotate }
-                  : { x: logo.xKeys, y: logo.yKeys, rotate: 0 }
-              }
-              transition={
-                ft
-                  ? {
-                      type: 'spring',
-                      stiffness: 420,
-                      damping: 28,
-                      delay: logo.fallDelay,
-                    }
-                  : {
-                      duration: logo.duration,
-                      ease: 'easeInOut',
-                      repeat: Infinity,
-                      delay: logo.delay,
-                    }
-              }
+              key={`slide-${slide}`}
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -30 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className="w-full max-w-sm flex flex-col items-center text-center"
             >
-              <LogoTile logo={logo} />
+              <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#3D3BF3] to-[#7C3AED] flex items-center justify-center mb-8 shadow-[0_8px_24px_rgba(61,59,243,0.25)]">
+                {SLIDES[slide].icon}
+              </div>
+              <h1 className="text-[28px] font-extrabold text-[#121212] leading-tight mb-3">
+                {SLIDES[slide].title}
+              </h1>
+              <p className="text-[15px] text-[#424242] leading-relaxed">
+                {SLIDES[slide].body}
+              </p>
             </motion.div>
-          )
-        })}
-      </div>
-
-      {/* ── Sign-in card — anchored at bottom, always above logos ─────────── */}
-      <div
-        className="absolute bottom-0 left-0 right-0 px-5 z-10"
-        style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom))' }}
-      >
-        <div className="bg-white rounded-3xl border border-[#E8E8E8] shadow-[0_2px_20px_rgba(0,0,0,0.07)] p-6">
-          <h1 className="text-[22px] font-extrabold text-[#121212] leading-tight">
-            Todas tus suscripciones en un solo sitio
-          </h1>
-          <p className="text-[14px] text-[#616161] mt-1.5 mb-4 leading-snug">
-            Perezoso te muestra cuánto pagas al mes, qué se renueva esta semana y dónde puedes ahorrar.
-          </p>
-
-          <ul className="space-y-2 mb-5">
-            {[
-              'Calendario con próximas renovaciones',
-              'Detección automática desde tu Gmail',
-              'Insights de gasto y sugerencias de ahorro',
-            ].map((item) => (
-              <li key={item} className="flex items-start gap-2 text-[13px] text-[#424242] leading-snug">
-                <span className="mt-[5px] w-1.5 h-1.5 rounded-full bg-[#3D3BF3] flex-shrink-0" />
-                {item}
-              </li>
-            ))}
-          </ul>
-
-          <button
-            onClick={handleGoogleLogin}
-            disabled={isLoading || isFalling}
-            className="
-              w-full flex items-center justify-center gap-3
-              px-4 py-3 rounded-xl border border-gray-200 bg-white
-              text-sm font-medium text-gray-800
-              hover:bg-gray-50 hover:border-gray-300
-              transition-all duration-150
-              disabled:opacity-60 disabled:cursor-not-allowed
-              shadow-sm
-            "
-          >
-            {isLoading ? (
-              <span className="w-5 h-5 border-2 border-gray-300 border-t-indigo-500 rounded-full animate-spin" />
-            ) : (
-              <GoogleIcon />
-            )}
-            {isLoading ? 'Signing in…' : isFalling ? 'One moment…' : 'Continue with Google'}
-          </button>
-
-          {loginError && (
-            <p className="text-xs text-red-600 text-center bg-red-50 rounded-lg px-3 py-2 mt-3">
-              {loginError}
-            </p>
+          ) : (
+            <motion.div
+              key="slide-login"
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -30 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className="w-full max-w-sm flex flex-col items-center text-center"
+            >
+              <div className="w-24 h-24 rounded-[26px] overflow-hidden mb-6 shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
+                <Image src="/logo.png" alt="Perezoso" width={96} height={96} className="w-full h-full object-cover" />
+              </div>
+              <h1 className="text-[28px] font-extrabold text-[#121212] leading-tight mb-3">
+                Empieza ahora
+              </h1>
+              <p className="text-[15px] text-[#424242] leading-relaxed mb-6">
+                Inicia sesión y vuelca todas tus suscripciones en un solo sitio.
+              </p>
+              <div className="w-full">
+                <AuthButtons isLoading={isLoading} error={error} onGoogle={handleGoogleLogin} />
+              </div>
+            </motion.div>
           )}
-
-          <p className="text-[11px] text-[#8E8E93] text-center leading-relaxed mt-4">
-            Al continuar aceptas nuestros{' '}
-            <a href="/terms" className="underline">Términos</a>
-            {' '}y la{' '}
-            <a href="/privacy" className="underline">Política de privacidad</a>.
-          </p>
-        </div>
+        </AnimatePresence>
       </div>
+
+      {/* Dots + CTA */}
+      <div
+        className="px-6 pb-8 pt-4 flex flex-col items-center gap-5"
+        style={{ paddingBottom: 'max(32px, env(safe-area-inset-bottom))' }}
+      >
+        <div className="flex items-center gap-1.5">
+          {Array.from({ length: totalSlides }).map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i)}
+              aria-label={`Ir a la pantalla ${i + 1}`}
+              className="h-2 rounded-full transition-all"
+              style={{
+                width: i === slide ? 24 : 8,
+                backgroundColor: i === slide ? '#3D3BF3' : '#E8E8E8',
+              }}
+            />
+          ))}
+        </div>
+
+        {slide < SLIDES.length ? (
+          <div className="w-full max-w-sm flex flex-col gap-2">
+            <button
+              onClick={next}
+              className="w-full h-12 rounded-full bg-[#3D3BF3] text-white text-[15px] font-semibold active:bg-[#3230D0] transition-colors flex items-center justify-center gap-1"
+            >
+              Siguiente
+              <ChevronRight size={16} />
+            </button>
+            <button
+              onClick={openSignIn}
+              className="w-full h-12 text-[15px] font-semibold text-[#3D3BF3] active:opacity-70 transition-opacity"
+            >
+              Iniciar sesión
+            </button>
+          </div>
+        ) : null}
+      </div>
+
+      {/* ── Sign-in half modal ─────────────────────────────────────────── */}
+      <AnimatePresence>
+        {sheetOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[200] flex items-end justify-center"
+            style={{ background: 'rgba(0,0,0,0.45)' }}
+            onClick={() => !isLoading && setSheetOpen(false)}
+          >
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', stiffness: 380, damping: 34 }}
+              className="w-full max-w-xl bg-white rounded-t-[32px] px-5 pt-4 pb-6"
+              style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom))' }}
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-[17px] font-semibold text-[#121212]">Iniciar sesión</h3>
+                <button
+                  onClick={() => setSheetOpen(false)}
+                  disabled={isLoading}
+                  className="w-9 h-9 rounded-full bg-[#F2F2F7] flex items-center justify-center text-[#616161] active:bg-[#E8E8E8] transition-colors"
+                  aria-label="Cerrar"
+                >
+                  <X size={16} strokeWidth={2.5} />
+                </button>
+              </div>
+              <AuthButtons isLoading={isLoading} error={error} onGoogle={handleGoogleLogin} />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
