@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, ChevronRight, Plus, X, Bell, Star, Share2, Mail, Moon, Coins, Tag } from 'lucide-react'
+import { ArrowLeft, ChevronRight, Plus, X, Bell, Star, Share2, Mail, Moon, Coins, Tag, Trash2 } from 'lucide-react'
 import { CURRENCIES } from '@/lib/constants/currencies'
 import { useTheme } from '@/components/ui/ThemeProvider'
 import {
@@ -10,6 +10,7 @@ import {
   setNotificationsEnabled,
   addCustomCategory,
   removeCustomCategory,
+  deleteAccount,
   type UserPreferences,
 } from './actions'
 
@@ -100,6 +101,22 @@ export default function SettingsView({ preferences }: Props) {
   const [notifications, setNotifications] = useState(preferences.notifications_enabled)
   const [categories, setCategories] = useState<string[]>(preferences.custom_categories)
   const [newCategory, setNewCategory] = useState('')
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+
+  async function handleDeleteAccount() {
+    setIsDeleting(true)
+    setDeleteError(null)
+    const result = await deleteAccount()
+    if (result?.error) {
+      setDeleteError(result.error)
+      setIsDeleting(false)
+      return
+    }
+    router.push('/login')
+    router.refresh()
+  }
 
   function handleCurrency(e: React.ChangeEvent<HTMLSelectElement>) {
     const code = e.target.value
@@ -313,7 +330,64 @@ export default function SettingsView({ preferences }: Props) {
         />
       </Group>
 
+      {/* ── Danger zone ────────────────────────────────────────────────── */}
+      <Group>
+        <button
+          type="button"
+          onClick={() => setShowDeleteConfirm(true)}
+          className="w-full flex items-center gap-3 px-4 min-h-[44px] py-2 text-left active:bg-[#F0F0F0] dark:active:bg-[#2C2C2E] transition-colors"
+        >
+          <IconTile bg="#DC2626"><Trash2 size={15} /></IconTile>
+          <span className="flex-1 text-[15px] font-medium text-[#DC2626]">Eliminar cuenta</span>
+        </button>
+      </Group>
+
       <div className="h-8" />
+
+      {/* Delete confirmation half-modal */}
+      {showDeleteConfirm && (
+        <div
+          className="fixed inset-0 z-[100] flex items-end justify-center"
+          style={{ background: 'rgba(0,0,0,0.45)' }}
+          onClick={() => !isDeleting && setShowDeleteConfirm(false)}
+        >
+          <div
+            className="w-full max-w-xl bg-white dark:bg-[#1C1C1E] rounded-t-[32px] px-5 pt-5 pb-6"
+            style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom))' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <h3 className="text-[17px] font-semibold text-[#121212] dark:text-[#F2F2F7] mb-1">
+              ¿Eliminar tu cuenta?
+            </h3>
+            <p className="text-[14px] text-[#737373] dark:text-[#AEAEB2] mb-5">
+              Se borrarán permanentemente tus suscripciones, preferencias y tu cuenta. Esta acción no se puede deshacer.
+            </p>
+            {deleteError && (
+              <p className="mb-3 text-[13px] text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400 rounded-xl px-3 py-2">
+                {deleteError}
+              </p>
+            )}
+            <div className="flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={handleDeleteAccount}
+                disabled={isDeleting}
+                className="w-full h-12 rounded-full bg-red-500 text-white text-[15px] font-semibold active:opacity-80 transition-opacity disabled:opacity-40"
+              >
+                {isDeleting ? 'Eliminando…' : 'Sí, eliminar mi cuenta'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={isDeleting}
+                className="w-full h-12 rounded-full bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#121212] dark:text-[#F2F2F7] text-[15px] font-medium active:opacity-80 transition-opacity disabled:opacity-40"
+              >
+                Volver
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -306,10 +306,25 @@ export default function LoginScreen() {
         style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom))' }}
       >
         <div className="bg-white rounded-3xl border border-[#E8E8E8] shadow-[0_2px_20px_rgba(0,0,0,0.07)] p-6">
-          <h1 className="text-2xl font-bold text-[#121212] mb-1">Sign in</h1>
-          <p className="text-sm text-[#616161] mb-5">
-            Continue with your Google account to get started.
+          <h1 className="text-[22px] font-extrabold text-[#121212] leading-tight">
+            Todas tus suscripciones en un solo sitio
+          </h1>
+          <p className="text-[14px] text-[#616161] mt-1.5 mb-4 leading-snug">
+            Perezoso te muestra cuánto pagas al mes, qué se renueva esta semana y dónde puedes ahorrar.
           </p>
+
+          <ul className="space-y-2 mb-5">
+            {[
+              'Calendario con próximas renovaciones',
+              'Detección automática desde tu Gmail',
+              'Insights de gasto y sugerencias de ahorro',
+            ].map((item) => (
+              <li key={item} className="flex items-start gap-2 text-[13px] text-[#424242] leading-snug">
+                <span className="mt-[5px] w-1.5 h-1.5 rounded-full bg-[#3D3BF3] flex-shrink-0" />
+                {item}
+              </li>
+            ))}
+          </ul>
 
           <button
             onClick={handleGoogleLogin}
@@ -337,6 +352,13 @@ export default function LoginScreen() {
               {loginError}
             </p>
           )}
+
+          <p className="text-[11px] text-[#8E8E93] text-center leading-relaxed mt-4">
+            Al continuar aceptas nuestros{' '}
+            <a href="/terms" className="underline">Términos</a>
+            {' '}y la{' '}
+            <a href="/privacy" className="underline">Política de privacidad</a>.
+          </p>
         </div>
       </div>
     </div>

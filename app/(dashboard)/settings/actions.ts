@@ -57,3 +57,20 @@ export async function removeCustomCategory(name: string) {
   const prefs = await getPreferences()
   return mergePreferences({ custom_categories: prefs.custom_categories.filter(c => c !== name) })
 }
+
+/**
+ * Permanent account deletion. Delegates to the SECURITY DEFINER
+ * Postgres function `delete_my_account` which wipes user-owned rows
+ * and the auth.users entry in a single transaction.
+ */
+export async function deleteAccount() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  const { error } = await supabase.rpc('delete_my_account')
+  if (error) return { error: error.message }
+
+  await supabase.auth.signOut()
+  return { ok: true as const }
+}
