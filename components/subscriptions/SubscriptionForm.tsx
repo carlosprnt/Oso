@@ -579,15 +579,32 @@ export default function SubscriptionForm({
               </button>
             )}
           </Row>
-          <Row label={t('form.notes')} last>
-            <input
-              type="text"
+          <div className="px-4 py-3">
+            <span className="text-[16px] text-[#121212] dark:text-[#F2F2F7]">{t('form.notes')}</span>
+            <textarea
               value={notes}
-              onChange={e => setNotes(e.target.value)}
+              onChange={e => {
+                setNotes(e.target.value)
+                const el = e.currentTarget
+                el.style.height = 'auto'
+                el.style.height = `${el.scrollHeight}px`
+              }}
+              onFocus={e => {
+                const el = e.currentTarget
+                el.style.height = 'auto'
+                el.style.height = `${Math.max(el.scrollHeight, 96)}px`
+              }}
+              onBlur={e => {
+                const el = e.currentTarget
+                el.style.height = 'auto'
+                el.style.height = `${el.scrollHeight}px`
+              }}
               placeholder={t('form.notesPlaceholder')}
-              className="bg-transparent text-[16px] text-[#555555] dark:text-[#AEAEB2] placeholder:text-[#BBBBBB] dark:placeholder:text-[#636366] outline-none text-right w-40 truncate" style={{ fontSize: 16 }}
+              rows={1}
+              className="mt-2 block w-full resize-none bg-transparent text-[16px] text-[#555555] dark:text-[#AEAEB2] placeholder:text-[#BBBBBB] dark:placeholder:text-[#636366] outline-none leading-snug transition-[height] duration-150"
+              style={{ fontSize: 16 }}
             />
-          </Row>
+          </div>
         </Section>
 
         {/* ── Status change (active mode — paused/cancelled) ──────────── */}
