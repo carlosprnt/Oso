@@ -106,7 +106,7 @@ export default function Insights({ subscriptions, stats }: InsightsProps) {
               ? `${formatCurrency(highest.my_monthly_cost, highest.currency)} ${perMonth} · ${t(`categories.${highest.category}` as Parameters<typeof t>[0])}`
               : ''
           }
-          border="border-r border-b border-[#F7F8FA] dark:border-[#111111]"
+          border="border-r border-b border-[#F7F8FA] dark:border-[#121212]"
         />
 
         {/* ② Top category */}
@@ -120,7 +120,7 @@ export default function Insights({ subscriptions, stats }: InsightsProps) {
               ? `${formatCurrency(topCat.monthly_cost, dominantCurrency, locale)} ${perMonth} · ${topCat.count} ${locale === 'es' ? 'suscr.' : 'subs'}`
               : ''
           }
-          border="border-b border-[#F7F8FA] dark:border-[#111111]"
+          border="border-b border-[#F7F8FA] dark:border-[#121212]"
         />
 
         {/* ③ Shared plans */}
@@ -138,7 +138,7 @@ export default function Insights({ subscriptions, stats }: InsightsProps) {
               ? t('dashboard.saving').replace('{amount}', `${formatCurrency(sharedSavings, dominantCurrency, locale)} ${perMonth}`)
               : ''
           }
-          border="border-r border-[#F7F8FA] dark:border-[#111111]"
+          border="border-r border-[#F7F8FA] dark:border-[#121212]"
         />
 
         {/* ④ Renews soon */}

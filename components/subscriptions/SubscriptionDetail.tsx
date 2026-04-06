@@ -120,11 +120,11 @@ export default function SubscriptionDetail({ subscription: sub }: SubscriptionDe
 
   return (
     <>
-      <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#111111] -mx-4 sm:-mx-6 px-4 sm:px-6 pb-28">
+      <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#121212] -mx-4 sm:-mx-6 px-4 sm:px-6 pb-28">
 
         {/* Back button */}
         <div
-          className="flex items-center pb-4 bg-[#F7F8FA] dark:bg-[#111111]"
+          className="flex items-center pb-4 bg-[#F7F8FA] dark:bg-[#121212]"
           style={{ paddingTop: 'max(16px, env(safe-area-inset-top))' }}
         >
           <button

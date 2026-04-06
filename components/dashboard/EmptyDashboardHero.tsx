@@ -29,7 +29,7 @@ export default function EmptyDashboardHero({ firstName, shareText }: Props) {
   }, [scrollY])
 
   return (
-    <div ref={ref} className="sticky top-0 pb-5 bg-[#F7F8FA] dark:bg-[#111111]">
+    <div ref={ref} className="sticky top-0 pb-5 bg-[#F7F8FA] dark:bg-[#121212]">
       {/* Greeting + avatar */}
       <div className="flex items-center justify-between mb-3">
         <p className="text-[17px] font-bold text-black dark:text-[#F2F2F7]">

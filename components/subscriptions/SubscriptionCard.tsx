@@ -105,11 +105,11 @@ export const CARD_COLOR_PRESETS: Array<{
 }> = [
   {
     hex: null, label: 'White',
-    theme: { bg: '#FFFFFF', border: '#E8E8E8', title: '#111111', subtitle: '#999999', price: '#111111', dark: false },
+    theme: { bg: '#FFFFFF', border: '#E8E8E8', title: '#121212', subtitle: '#737373', price: '#121212', dark: false },
   },
   {
-    hex: '#111111', label: 'Black',
-    theme: { bg: '#111111', border: 'transparent', title: '#FFFFFF', subtitle: '#666666', price: '#FFFFFF', dark: true },
+    hex: '#121212', label: 'Black',
+    theme: { bg: '#121212', border: 'transparent', title: '#FFFFFF', subtitle: '#737373', price: '#FFFFFF', dark: true },
   },
   {
     hex: '#1A3B8A', label: 'Navy',

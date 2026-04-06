@@ -205,7 +205,7 @@ export default function DashboardSummaryHero({
   return (
     <div
       ref={ref}
-      className="sticky top-0 pb-5 bg-[#F7F8FA] dark:bg-[#111111]"
+      className="sticky top-0 pb-5 bg-[#F7F8FA] dark:bg-[#121212]"
     >
       {/* Greeting + avatar */}
       <div className="flex items-center justify-between mb-3">

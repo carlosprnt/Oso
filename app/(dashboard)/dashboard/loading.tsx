@@ -31,7 +31,7 @@ export default function DashboardLoading() {
           ].map((border, i) => (
             <div
               key={i}
-              className={`p-4 ${border} border-[#F7F8FA] dark:border-[#111111]`}
+              className={`p-4 ${border} border-[#F7F8FA] dark:border-[#121212]`}
             >
               {/* Icon container 40×40 */}
               <div className={`${S} w-10 h-10 rounded-2xl mb-2.5`} />

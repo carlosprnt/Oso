@@ -173,7 +173,7 @@ input, select, textarea {
 
 /* ── Dark mode base ─────────────────────────────────────────────────────── */
 .dark body {
-  background-color: #111111;
+  background-color: #121212;
   color: #F2F2F7;
 }
 .dark ::-webkit-scrollbar-thumb { background: #2C2C2E; }

@@ -79,8 +79,8 @@ export default function FloatingNav() {
   const bgX = isSubs ? BTN_W + GAP : 0
 
   // Icon colors depend on dark mode
-  const activeIconColor = isDarkMode ? '#111111' : '#ffffff'
-  const inactiveIconColor = isDarkMode ? '#AEAEB2' : '#111111'
+  const activeIconColor = isDarkMode ? '#121212' : '#ffffff'
+  const inactiveIconColor = isDarkMode ? '#AEAEB2' : '#121212'
 
   // Bottom offset: 20px + safe-area
   const bottomOffset = 'calc(env(safe-area-inset-bottom) - 20px)'
@@ -119,7 +119,7 @@ export default function FloatingNav() {
             {/* Sliding indicator */}
             <motion.div
               className="absolute rounded-full"
-              style={{ width: BTN_W, height: BTN_H, top: PAD, left: PAD, zIndex: 1, backgroundColor: isDarkMode ? '#F2F2F7' : '#111111' }}
+              style={{ width: BTN_W, height: BTN_H, top: PAD, left: PAD, zIndex: 1, backgroundColor: isDarkMode ? '#F2F2F7' : '#121212' }}
               animate={{ x: bgX }}
               transition={{ type: 'spring', stiffness: 420, damping: 32, mass: 0.8 }}
             />

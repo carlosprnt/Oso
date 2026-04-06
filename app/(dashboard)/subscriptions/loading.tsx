@@ -2,9 +2,9 @@ export default function SubscriptionsLoading() {
   const S = 'bg-[#EBEBEB] dark:bg-[#2C2C2E] animate-pulse'
 
   return (
-    <div className="bg-[#F7F8FA] dark:bg-[#111111]">
+    <div className="bg-[#F7F8FA] dark:bg-[#121212]">
       {/* ── Sticky header ── */}
-      <div className="sticky top-0 z-[20] pb-4 bg-[#F7F8FA] dark:bg-[#111111]">
+      <div className="sticky top-0 z-[20] pb-4 bg-[#F7F8FA] dark:bg-[#121212]">
         {/* Title + icon buttons */}
         <div className="flex items-center justify-between pt-2">
           <div className={`${S} h-9 w-48 rounded-xl`} />

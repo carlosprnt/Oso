@@ -3,14 +3,10 @@
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const TEXT_COLORS = [
-  { hex: '#121212', uses: 111, role: 'Primary text (light)', dark: false, issue: 'Duplicated with #111111' },
-  { hex: '#111111', uses: 26, role: 'Primary text alt (light)', dark: false, issue: 'Nearly identical to #121212 — merge' },
+  { hex: '#121212', uses: 132, role: 'Primary text (light)', dark: false, issue: null },
   { hex: '#424242', uses: 34, role: 'Secondary text', dark: false, issue: null },
   { hex: '#616161', uses: 21, role: 'Muted text', dark: false, issue: null },
-  { hex: '#888888', uses: 6, role: 'Grey text', dark: false, issue: 'Overlaps with #737373, #999999' },
-  { hex: '#737373', uses: 65, role: 'Grey text alt', dark: false, issue: 'Too close to #888888' },
-  { hex: '#999999', uses: 5, role: 'Grey text alt 2', dark: false, issue: 'Too close to #888888' },
-  { hex: '#666666', uses: 4, role: 'Grey text alt 3', dark: false, issue: 'Too close to #888888' },
+  { hex: '#737373', uses: 69, role: 'Grey text', dark: false, issue: null },
   { hex: '#F2F2F7', uses: 115, role: 'Primary text (dark)', dark: true, issue: null },
   { hex: '#AEAEB2', uses: 58, role: 'Secondary text (dark)', dark: true, issue: null },
   { hex: '#8E8E93', uses: 104, role: 'Muted text (dark)', dark: true, issue: null },
@@ -22,7 +18,7 @@ const BG_COLORS = [
   { hex: '#FAFAFA', uses: 7, role: 'Page background alt', dark: false, issue: 'Nearly identical to #F7F8FA — merge' },
   { hex: '#F5F5F5', uses: 36, role: 'Input / hover surface', dark: false, issue: 'Close to #F0F0F0' },
   { hex: '#F0F0F0', uses: 51, role: 'Skeleton / divider', dark: false, issue: 'Close to #F5F5F5' },
-  { hex: '#111111', uses: 26, role: 'Page background (dark)', dark: true, issue: null },
+  { hex: '#121212', uses: 26, role: 'Page background (dark)', dark: true, issue: null },
   { hex: '#1C1C1E', uses: 53, role: 'Card surface (dark)', dark: true, issue: null },
   { hex: '#2C2C2E', uses: 134, role: 'Secondary surface (dark)', dark: true, issue: 'Most used bg — needs token' },
   { hex: '#3A3A3C', uses: 42, role: 'Interactive / border (dark)', dark: true, issue: null },
@@ -40,8 +36,7 @@ const BORDER_COLORS = [
 ]
 
 const ACCENT_COLORS = [
-  { hex: '#3D3BF3', uses: 61, role: 'Primary action (ACTUAL)', issue: 'Not in tokens! Widely used' },
-  { hex: '#5B21B6', uses: 7, role: 'Accent (defined in tokens)', issue: 'Defined but barely used — token drift' },
+  { hex: '#3D3BF3', uses: 66, role: 'Primary action — brand indigo', issue: null },
   { hex: '#991B1B', uses: 10, role: 'Danger / error', issue: null },
   { hex: '#16A34A', uses: 9, role: 'Success', issue: null },
   { hex: '#92400E', uses: 3, role: 'Warning', issue: null },
@@ -73,10 +68,10 @@ const RADIUS_VALUES = [
 ]
 
 const FINDINGS = [
-  { severity: 'high', title: '#121212 vs #111111 used interchangeably', detail: '137 combined uses. Delta E < 1 — visually identical. #111111 usage halved recently, continue the merge.' },
-  { severity: 'high', title: 'Accent token drift widening: #3D3BF3 now at 61 uses', detail: 'tokens.css still defines violet #5B21B6; real indigo #3D3BF3 is the brand color across FABs, CTAs, chips and links. Promote to token and remove #5B21B6.' },
-  { severity: 'high', title: '4 near-identical grey text values', detail: '#737373 (65), #888888 (6), #999999 (5), #666666 (4) — #737373 dominates; the other three can be deleted outright.' },
-  { severity: 'high', title: 'CSS tokens defined but ignored', detail: 'globals.css defines --color-text-primary, --color-surface etc. Almost no component uses them — all hardcode raw hex.' },
+  { severity: 'low', title: '#111111 merged into #121212 ✓', detail: '132 combined uses now under a single value. #111111 no longer appears anywhere in the codebase.' },
+  { severity: 'low', title: 'Accent token aligned ✓', detail: '#5B21B6 fully removed. tokens.css --color-accent now matches the real brand indigo #3D3BF3 (66 uses across the app).' },
+  { severity: 'low', title: 'Grey text values collapsed ✓', detail: '#888888, #999999, #666666 removed (0 uses). All muted-grey text is now #737373 (69 uses) + #616161 for slightly darker labels.' },
+  { severity: 'high', title: 'CSS tokens defined but ignored', detail: 'globals.css defines --color-text-primary, --color-surface etc. Almost no component uses them — all hardcode raw hex. Next step: migrate components to var(--color-*).' },
   { severity: 'medium', title: '6 near-identical light border values', detail: '#E8E8E8 (25), #EFEFEF (21), #E0E0E0 (12), #E5E5E5 (11), #EDEDED (5), plus #F0F0F0 (51) as divider. Collapse to 2 tokens (subtle, default).' },
   { severity: 'medium', title: '3 near-identical light surface backgrounds', detail: '#F7F8FA (24), #FAFAFA (7), #F5F5F5 (36) used as page/section backgrounds. Consolidate to 2.' },
   { severity: 'medium', title: 'Custom pixel font sizes instead of scale', detail: '11 distinct px sizes (10→45). Mostly 1–2px apart. Should map to a named scale (xs, sm, md, lg, xl, 2xl, hero).' },
@@ -87,15 +82,15 @@ const FINDINGS = [
 ]
 
 const PROPOSED_TOKENS = [
-  { token: 'color.text.primary', light: '#121212', dark: '#F2F2F7', replaces: '#121212, #111111' },
+  { token: 'color.text.primary', light: '#121212', dark: '#F2F2F7', replaces: '#121212 (consolidated)' },
   { token: 'color.text.secondary', light: '#424242', dark: '#AEAEB2', replaces: '#424242' },
-  { token: 'color.text.muted', light: '#737373', dark: '#8E8E93', replaces: '#888888, #737373, #999999, #666666, #616161' },
+  { token: 'color.text.muted', light: '#737373', dark: '#8E8E93', replaces: '#737373, #616161 (consolidated)' },
   { token: 'color.surface.base', light: '#FFFFFF', dark: '#1C1C1E', replaces: '#FFFFFF / #1C1C1E' },
   { token: 'color.surface.raised', light: '#F7F8FA', dark: '#2C2C2E', replaces: '#F7F8FA, #FAFAFA / #2C2C2E' },
   { token: 'color.surface.subtle', light: '#F0F0F0', dark: '#3A3A3C', replaces: '#F5F5F5, #F0F0F0 / #3A3A3C' },
   { token: 'color.border.subtle', light: '#E8E8E8', dark: '#2C2C2E', replaces: '#E8E8E8, #E5E5E5, #E0E0E0, #EDEDED, #EFEFEF' },
   { token: 'color.border.default', light: '#D4D4D4', dark: '#3A3A3C', replaces: '#D4D4D4' },
-  { token: 'color.accent', light: '#3D3BF3', dark: '#3D3BF3', replaces: '#3D3BF3 (replace #5B21B6 in tokens)' },
+  { token: 'color.accent', light: '#3D3BF3', dark: '#3D3BF3', replaces: '#3D3BF3 (brand indigo — already in tokens)' },
   { token: 'color.danger', light: '#991B1B', dark: '#F87171', replaces: '#991B1B' },
   { token: 'color.success', light: '#16A34A', dark: '#4ADE80', replaces: '#16A34A' },
 ]
@@ -140,10 +135,10 @@ export default function StyleAuditClient() {
         </p>
         <div className="flex gap-4 mt-4 flex-wrap">
           {[
-            ['11', 'Findings detectados'],
+            ['3', 'Fixes aplicados ✓'],
             ['6', 'Borders redundantes'],
             ['11', 'Font sizes distintos'],
-            ['61', '#3D3BF3 hardcoded'],
+            ['66', '#3D3BF3 hardcoded'],
           ].map(([n, label]) => (
             <div key={label} className="bg-white dark:bg-[#1C1C1E] border border-[#E8E8E8] dark:border-[#2C2C2E] rounded-xl px-4 py-2">
               <p className="text-[22px] font-bold text-[#121212] dark:text-[#F2F2F7] leading-none">{n}</p>
@@ -154,7 +149,7 @@ export default function StyleAuditClient() {
       </div>
 
       {/* Sticky nav */}
-      <div className="sticky top-0 z-10 bg-[#F7F8FA] dark:bg-[#111111] py-3 mb-6 flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+      <div className="sticky top-0 z-10 bg-[#F7F8FA] dark:bg-[#121212] py-3 mb-6 flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden">
         {SECTIONS.map(s => (
           <a key={s} href={`#${s.toLowerCase()}`}
             className="flex-shrink-0 px-4 py-1.5 rounded-full text-[13px] font-medium bg-white dark:bg-[#2C2C2E] border border-[#E8E8E8] dark:border-[#3A3A3C] text-[#424242] dark:text-[#AEAEB2] hover:bg-[#F0F0F0] dark:hover:bg-[#3A3A3C] transition-colors">
@@ -337,9 +332,9 @@ export default function StyleAuditClient() {
           <h3 className="text-[14px] font-semibold text-[#121212] dark:text-[#F2F2F7]">Plan de implementación</h3>
           {[
             {
-              phase: 'Fase 1 — Quick wins',
+              phase: 'Fase 1 — Quick wins ✓ completada',
               color: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800/40 text-green-800 dark:text-green-300',
-              items: ['Unificar #121212 + #111111 → un solo valor', 'Reemplazar #5B21B6 por #3D3BF3 en globals.css', 'Colapsar los 4 grises de texto → 3 valores semánticos', 'Eliminar rounded-2xl → usar rounded-2xl'],
+              items: ['✓ Unificado #111111 → #121212', '✓ #5B21B6 eliminado; --color-accent ya es #3D3BF3', '✓ Grises #888888/#999999/#666666 colapsados en #737373', 'Pendiente: estandarizar rounded-[16px] en QuickAdd tiles'],
             },
             {
               phase: 'Fase 2 — Normalización media',
