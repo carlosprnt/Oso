@@ -11,7 +11,6 @@ import SubscriptionForm from '@/components/subscriptions/SubscriptionForm'
 import GmailSubscriptionSearchSheet from '@/components/subscriptions/GmailSubscriptionSearchSheet'
 import { useT } from '@/lib/i18n/LocaleProvider'
 import { useTheme } from '@/components/ui/ThemeProvider'
-import { createClient } from '@/lib/supabase/client'
 import type { PlatformPreset } from '@/lib/constants/platforms'
 
 type Step = 'closed' | 'pick' | 'form' | 'gmail'
@@ -62,20 +61,17 @@ export default function FloatingNav() {
   const isDash = pathname === '/dashboard' || pathname.startsWith('/dashboard/')
   const isSubs = pathname === '/subscriptions' || pathname.startsWith('/subscriptions/')
 
-  // Detect empty subscriptions list so we can emphasize the "+" CTA
+  // SubscriptionsView broadcasts its count via a custom event so we can
+  // emphasize the "+" CTA without a second Supabase roundtrip from here.
   const [hasNoSubs, setHasNoSubs] = useState(false)
   useEffect(() => {
-    if (!isSubs) { setHasNoSubs(false); return }
-    let cancelled = false
-    const supabase = createClient()
-    supabase
-      .from('subscriptions')
-      .select('id', { count: 'exact', head: true })
-      .then(({ count }) => {
-        if (!cancelled) setHasNoSubs((count ?? 0) === 0)
-      })
-    return () => { cancelled = true }
-  }, [isSubs, pathname])
+    function onCount(e: Event) {
+      const count = (e as CustomEvent<number>).detail
+      setHasNoSubs(count === 0)
+    }
+    window.addEventListener('perezoso:subs-count', onCount)
+    return () => window.removeEventListener('perezoso:subs-count', onCount)
+  }, [])
 
   const emphasizeAdd = isSubs && hasNoSubs
 

@@ -549,6 +549,14 @@ export default function SubscriptionsView({
     setFilterOpen(true)
   }
 
+  // Broadcast count so FloatingNav can emphasize the "+" CTA without
+  // re-querying Supabase from the layout.
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent('perezoso:subs-count', { detail: allCount }),
+    )
+  }, [allCount])
+
   // ── Header scroll-fade: content scrolls OVER the header ──────────────────
   const scrollY = useEffectiveScrollY()
   const headerOpacity      = useTransform(scrollY, [0, 130], [1, 0])

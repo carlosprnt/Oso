@@ -31,6 +31,11 @@ function Section({ children }: { children: React.ReactNode }) {
   )
 }
 
+function autoSize(el: HTMLTextAreaElement, min = 0) {
+  el.style.height = 'auto'
+  el.style.height = `${Math.max(el.scrollHeight, min)}px`
+}
+
 function Row({
   label,
   last = false,
@@ -583,22 +588,9 @@ export default function SubscriptionForm({
             <span className="text-[16px] text-[#121212] dark:text-[#F2F2F7]">{t('form.notes')}</span>
             <textarea
               value={notes}
-              onChange={e => {
-                setNotes(e.target.value)
-                const el = e.currentTarget
-                el.style.height = 'auto'
-                el.style.height = `${el.scrollHeight}px`
-              }}
-              onFocus={e => {
-                const el = e.currentTarget
-                el.style.height = 'auto'
-                el.style.height = `${Math.max(el.scrollHeight, 96)}px`
-              }}
-              onBlur={e => {
-                const el = e.currentTarget
-                el.style.height = 'auto'
-                el.style.height = `${el.scrollHeight}px`
-              }}
+              onChange={e => { setNotes(e.target.value); autoSize(e.currentTarget) }}
+              onFocus={e => autoSize(e.currentTarget, 96)}
+              onBlur={e => autoSize(e.currentTarget)}
               placeholder={t('form.notesPlaceholder')}
               rows={1}
               className="mt-2 block w-full resize-none bg-transparent text-[16px] text-[#555555] dark:text-[#AEAEB2] placeholder:text-[#BBBBBB] dark:placeholder:text-[#636366] outline-none leading-snug transition-[height] duration-150"
