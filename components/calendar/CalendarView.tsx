@@ -79,7 +79,7 @@ function CellLogo({ name, logoUrl, size }: { name: string; logoUrl: string | nul
   if (logoUrl && !imgError) {
     return (
       <div
-        className={`overflow-hidden flex-shrink-0 flex items-center justify-center border border-[#E4E4E4] dark:border-[#3A3A3C] dark:bg-white ${isAuto ? 'bg-[#F5F5F5]' : 'bg-transparent'}`}
+        className="overflow-hidden flex-shrink-0 flex items-center justify-center border border-[#E4E4E4] dark:border-[#3A3A3C] bg-white"
         style={{ width: size, height: size, borderRadius: r }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -88,7 +88,7 @@ function CellLogo({ name, logoUrl, size }: { name: string; logoUrl: string | nul
           alt={name}
           width={size}
           height={size}
-          className={isAuto ? 'w-[84%] h-[84%] object-contain' : 'w-full h-full object-cover'}
+          className="w-[84%] h-[84%] object-contain"
           loading="lazy"
           onError={() => setImgError(true)}
         />
