@@ -276,7 +276,7 @@ export default function LoginScreen() {
         className="absolute bottom-0 left-0 right-0 px-5 z-10"
         style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom))' }}
       >
-        <div className="bg-white rounded-3xl border border-[#E0E0E0] shadow-[0_2px_20px_rgba(0,0,0,0.07)] p-6">
+        <div className="bg-white rounded-3xl border border-[#E8E8E8] shadow-[0_2px_20px_rgba(0,0,0,0.07)] p-6">
           <h1 className="text-2xl font-bold text-[#121212] mb-1">Sign in</h1>
           <p className="text-sm text-[#616161] mb-5">
             Continue with your Google account to get started.

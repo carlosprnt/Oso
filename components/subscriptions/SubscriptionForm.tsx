@@ -25,7 +25,7 @@ interface SubscriptionFormProps {
 
 function Section({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-5 mb-3 bg-white dark:bg-[#1C1C1E] rounded-2xl overflow-hidden border border-[#EFEFEF] dark:border-[#2C2C2E]">
+    <div className="mx-5 mb-3 bg-white dark:bg-[#1C1C1E] rounded-2xl overflow-hidden border border-[#F0F0F0] dark:border-[#2C2C2E]">
       {children}
     </div>
   )
@@ -59,7 +59,7 @@ function Row({
   return (
     <div
       className={`flex items-center justify-between px-4 min-h-[52px] py-3 ${
-        last ? '' : 'border-b border-[#EFEFEF] dark:border-[#2C2C2E]'
+        last ? '' : 'border-b border-[#F0F0F0] dark:border-[#2C2C2E]'
       }`}
     >
       <span className="text-[16px] text-[#121212] dark:text-[#F2F2F7]">{label}</span>
@@ -83,7 +83,7 @@ function SelectRow({
   return (
     <div
       className={`relative flex items-center justify-between px-4 min-h-[52px] py-3 ${
-        last ? '' : 'border-b border-[#EFEFEF] dark:border-[#2C2C2E]'
+        last ? '' : 'border-b border-[#F0F0F0] dark:border-[#2C2C2E]'
       }`}
     >
       <span className="text-[16px] text-[#121212] dark:text-[#F2F2F7] pointer-events-none">{label}</span>
@@ -120,12 +120,12 @@ function DateRow({
   return (
     <label
       className={`relative flex items-center justify-between px-4 min-h-[52px] py-3 cursor-pointer ${
-        last ? '' : 'border-b border-[#EFEFEF] dark:border-[#2C2C2E]'
+        last ? '' : 'border-b border-[#F0F0F0] dark:border-[#2C2C2E]'
       }`}
     >
       <span className="text-[16px] text-[#121212] dark:text-[#F2F2F7] pointer-events-none">{label}</span>
       <div className="flex-shrink-0 ml-4 pointer-events-none">
-        <span className="bg-[#EFEFEF] dark:bg-[#3A3A3C] rounded-full px-3 py-1.5 text-[13px] font-medium text-[#121212] dark:text-[#F2F2F7]">
+        <span className="bg-[#F0F0F0] dark:bg-[#3A3A3C] rounded-full px-3 py-1.5 text-[13px] font-medium text-[#121212] dark:text-[#F2F2F7]">
           {formatted}
         </span>
       </div>
@@ -399,7 +399,7 @@ export default function SubscriptionForm({
         )}
 
         {/* ── Hero card: name + price (no avatar) ─────────────────────── */}
-        <div className="mx-5 mb-3 bg-[#F5F5F5] dark:bg-[#1C1C1E] rounded-2xl px-4 py-4 border border-[#EFEFEF] dark:border-[#2C2C2E]">
+        <div className="mx-5 mb-3 bg-[#F5F5F5] dark:bg-[#1C1C1E] rounded-2xl px-4 py-4 border border-[#F0F0F0] dark:border-[#2C2C2E]">
           <input
             type="text"
             value={name}
@@ -477,7 +477,7 @@ export default function SubscriptionForm({
                 min="1"
                 value={billingIntervalCount}
                 onChange={e => setBillingIntervalCount(e.target.value)}
-                className="bg-[#EFEFEF] dark:bg-[#2C2C2E] rounded-xl px-3 py-1.5 text-[16px] text-[#121212] dark:text-[#F2F2F7] outline-none w-20 text-right tabular-nums" style={{ fontSize: 16 }}
+                className="bg-[#F0F0F0] dark:bg-[#2C2C2E] rounded-xl px-3 py-1.5 text-[16px] text-[#121212] dark:text-[#F2F2F7] outline-none w-20 text-right tabular-nums" style={{ fontSize: 16 }}
               />
             </Row>
           )}
@@ -550,7 +550,7 @@ export default function SubscriptionForm({
                   min="2"
                   value={sharedWithCount}
                   onChange={e => setSharedWithCount(e.target.value)}
-                  className="bg-[#EFEFEF] dark:bg-[#2C2C2E] rounded-xl px-3 py-1.5 text-[16px] text-[#121212] dark:text-[#F2F2F7] outline-none w-20 text-right tabular-nums" style={{ fontSize: 16 }}
+                  className="bg-[#F0F0F0] dark:bg-[#2C2C2E] rounded-xl px-3 py-1.5 text-[16px] text-[#121212] dark:text-[#F2F2F7] outline-none w-20 text-right tabular-nums" style={{ fontSize: 16 }}
                 />
               </Row>
               <SelectRow
@@ -576,7 +576,7 @@ export default function SubscriptionForm({
                     value={userShareAmount}
                     onChange={e => setUserShareAmount(e.target.value)}
                     placeholder="4.99"
-                    className="bg-[#EFEFEF] dark:bg-[#2C2C2E] rounded-xl px-3 py-1.5 text-[16px] text-[#121212] dark:text-[#F2F2F7] placeholder:text-[#BBBBBB] dark:placeholder:text-[#636366] outline-none w-24 text-right tabular-nums" style={{ fontSize: 16 }}
+                    className="bg-[#F0F0F0] dark:bg-[#2C2C2E] rounded-xl px-3 py-1.5 text-[16px] text-[#121212] dark:text-[#F2F2F7] placeholder:text-[#BBBBBB] dark:placeholder:text-[#636366] outline-none w-24 text-right tabular-nums" style={{ fontSize: 16 }}
                   />
                 </Row>
               )}
@@ -621,7 +621,7 @@ export default function SubscriptionForm({
 
         {/* ── Status change (active mode — paused/cancelled) ──────────── */}
         {status === 'active' && (
-          <div className="mx-5 mb-3 bg-white dark:bg-[#1C1C1E] rounded-2xl overflow-hidden border border-[#EFEFEF] dark:border-[#2C2C2E]">
+          <div className="mx-5 mb-3 bg-white dark:bg-[#1C1C1E] rounded-2xl overflow-hidden border border-[#F0F0F0] dark:border-[#2C2C2E]">
             <SelectRow
               label={t('form.status')}
               value={t(`status.${status}` as Parameters<typeof t>[0])}
@@ -641,7 +641,7 @@ export default function SubscriptionForm({
         )}
 
         {/* ── Reminder ────────────────────────────────────────────────── */}
-        <div className="mx-5 mb-3 bg-white dark:bg-[#1C1C1E] rounded-2xl overflow-hidden border border-[#EFEFEF] dark:border-[#2C2C2E]">
+        <div className="mx-5 mb-3 bg-white dark:bg-[#1C1C1E] rounded-2xl overflow-hidden border border-[#F0F0F0] dark:border-[#2C2C2E]">
           <div className="flex items-center px-4 min-h-[52px] py-3">
             <Bell size={16} className="text-[#C0C0C0] dark:text-[#8E8E93] flex-shrink-0 mr-3" />
             <span className="text-[16px] text-[#121212] dark:text-[#F2F2F7] flex-1">{t('form.reminderToggle')}</span>
@@ -673,7 +673,7 @@ export default function SubscriptionForm({
                 transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
                 style={{ overflow: 'hidden' }}
               >
-                <div className="border-t border-[#EFEFEF] dark:border-[#2C2C2E] px-4 py-3.5">
+                <div className="border-t border-[#F0F0F0] dark:border-[#2C2C2E] px-4 py-3.5">
                   <p className="text-[11px] font-semibold text-[#A0A0A0] dark:text-[#8E8E93] uppercase tracking-wider mb-3">
                     {t('form.reminderAdvance')}
                   </p>
@@ -716,13 +716,13 @@ export default function SubscriptionForm({
 
       {/* ── Save + Cancel buttons — sticky at the bottom ────────────── */}
       <div
-        className="flex-shrink-0 sticky bottom-0 px-5 pt-3 pb-4 bg-white dark:bg-[#1C1C1E] border-t border-[#EFEFEF] dark:border-[#2C2C2E]"
+        className="flex-shrink-0 sticky bottom-0 px-5 pt-3 pb-4 bg-white dark:bg-[#1C1C1E] border-t border-[#F0F0F0] dark:border-[#2C2C2E]"
       >
         <div className="flex gap-3">
           <button
             type="button"
             onClick={requestClose}
-            className="h-12 px-5 rounded-full border border-[#E0E0E0] dark:border-[#3A3A3C] text-[15px] font-medium text-[#444444] dark:text-[#AEAEB2] active:bg-[#F5F5F5] dark:active:bg-[#2C2C2E] transition-colors flex-shrink-0"
+            className="h-12 px-5 rounded-full border border-[#E8E8E8] dark:border-[#3A3A3C] text-[15px] font-medium text-[#444444] dark:text-[#AEAEB2] active:bg-[#F5F5F5] dark:active:bg-[#2C2C2E] transition-colors flex-shrink-0"
           >
             {t('form.cancel')}
           </button>

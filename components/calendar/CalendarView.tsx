@@ -366,7 +366,7 @@ export default function CalendarView({ subscriptions }: Props) {
             return (
               <div
                 key={i}
-                className="rounded-[12px] bg-[#FAFAFA] dark:bg-[#252527]"
+                className="rounded-[12px] bg-[#F7F8FA] dark:bg-[#252527]"
                 style={{ minHeight: 80, border: '1.5px solid transparent' }}
               />
             )

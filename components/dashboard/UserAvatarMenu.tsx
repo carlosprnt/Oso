@@ -157,7 +157,7 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
     <div
       ref={dropdownRef}
       style={{ position: 'fixed', top: menuPos.top, right: menuPos.right, zIndex: 9999 }}
-      className="w-56 bg-white dark:bg-[#1C1C1E] rounded-2xl border border-[#E5E5E5] dark:border-[#2C2C2E] shadow-[0_4px_24px_rgba(0,0,0,0.12)] overflow-hidden animate-fade-in-scale"
+      className="w-56 bg-white dark:bg-[#1C1C1E] rounded-2xl border border-[#E8E8E8] dark:border-[#2C2C2E] shadow-[0_4px_24px_rgba(0,0,0,0.12)] overflow-hidden animate-fade-in-scale"
     >
       {demoOpen ? (
         /* ── Demo submenu ─────────────────────────────────────────────── */

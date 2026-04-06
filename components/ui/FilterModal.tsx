@@ -119,7 +119,7 @@ export default function FilterModal({ currentStatus, currentCategory }: FilterMo
             </div>
 
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-[#E5E5E5] dark:border-[#2C2C2E]">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-[#E8E8E8] dark:border-[#2C2C2E]">
               <h2 className="text-base font-semibold text-[#121212] dark:text-[#F2F2F7]">Filters</h2>
               <button
                 onClick={() => setIsOpen(false)}
@@ -199,7 +199,7 @@ export default function FilterModal({ currentStatus, currentCategory }: FilterMo
             </div>
 
             {/* Footer */}
-            <div className="flex gap-3 px-5 py-4 border-t border-[#E5E5E5] dark:border-[#2C2C2E]">
+            <div className="flex gap-3 px-5 py-4 border-t border-[#E8E8E8] dark:border-[#2C2C2E]">
               <Button variant="secondary" onClick={reset} className="flex-1">
                 Reset
               </Button>

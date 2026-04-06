@@ -33,7 +33,7 @@ export default function Sidebar({ profile }: SidebarProps) {
     <aside className="
       hidden lg:flex flex-col
       w-56 min-h-screen
-      bg-white dark:bg-[#1C1C1E] border-r border-[#E5E5E5] dark:border-[#2C2C2E]
+      bg-white dark:bg-[#1C1C1E] border-r border-[#E8E8E8] dark:border-[#2C2C2E]
       px-3 py-6
       fixed left-0 top-0 bottom-0
     ">
@@ -74,7 +74,7 @@ export default function Sidebar({ profile }: SidebarProps) {
       </nav>
 
       {/* User / logout */}
-      <div className="border-t border-[#E5E5E5] dark:border-[#2C2C2E] pt-4 mt-4">
+      <div className="border-t border-[#E8E8E8] dark:border-[#2C2C2E] pt-4 mt-4">
         {profile?.full_name && (
           <div className="px-3 mb-3">
             <p className="text-xs font-medium text-[#121212] dark:text-[#F2F2F7] truncate">{profile.full_name}</p>

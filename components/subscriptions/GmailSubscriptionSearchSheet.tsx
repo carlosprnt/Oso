@@ -418,7 +418,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
               </button>
               <button
                 onClick={() => doSearch(tokenRef.current ?? undefined)}
-                className="w-full h-12 rounded-2xl border border-[#E0E0E0] dark:border-[#3A3A3C] text-[#444444] dark:text-[#AEAEB2] text-sm font-medium hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors flex items-center justify-center gap-1.5"
+                className="w-full h-12 rounded-2xl border border-[#E8E8E8] dark:border-[#3A3A3C] text-[#444444] dark:text-[#AEAEB2] text-sm font-medium hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors flex items-center justify-center gap-1.5"
               >
                 <RefreshCw size={14} />
                 {t('gmail.tryAgain')}

@@ -54,7 +54,7 @@ export default function SubscriptionAvatar({
 
     return (
       <div
-        className={`${cls} ${corner} overflow-hidden flex-shrink-0 border border-[#E0E0E0] dark:border-[#3A3A3C] ${needsPadding ? 'bg-white dark:bg-white flex items-center justify-center' : ''}`}
+        className={`${cls} ${corner} overflow-hidden flex-shrink-0 border border-[#E8E8E8] dark:border-[#3A3A3C] ${needsPadding ? 'bg-white dark:bg-white flex items-center justify-center' : ''}`}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -73,7 +73,7 @@ export default function SubscriptionAvatar({
   // Initials fallback — deterministic pastel background
   return (
     <div
-      className={`${cls} ${corner} flex-shrink-0 flex items-center justify-center select-none border border-[#E0E0E0] dark:border-[#3A3A3C] ${text}`}
+      className={`${cls} ${corner} flex-shrink-0 flex items-center justify-center select-none border border-[#E8E8E8] dark:border-[#3A3A3C] ${text}`}
       style={{ backgroundColor: bg, color: fg }}
       aria-label={`${name} avatar`}
     >

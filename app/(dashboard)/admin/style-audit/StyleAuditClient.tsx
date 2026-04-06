@@ -14,22 +14,18 @@ const TEXT_COLORS = [
 
 const BG_COLORS = [
   { hex: '#FFFFFF', uses: 20, role: 'Card surface', dark: false, issue: null },
-  { hex: '#F7F8FA', uses: 24, role: 'Page background', dark: false, issue: 'Very close to #FAFAFA' },
-  { hex: '#FAFAFA', uses: 7, role: 'Page background alt', dark: false, issue: 'Nearly identical to #F7F8FA — merge' },
-  { hex: '#F5F5F5', uses: 36, role: 'Input / hover surface', dark: false, issue: 'Close to #F0F0F0' },
-  { hex: '#F0F0F0', uses: 51, role: 'Skeleton / divider', dark: false, issue: 'Close to #F5F5F5' },
+  { hex: '#F7F8FA', uses: 27, role: 'Page background', dark: false, issue: null },
+  { hex: '#F5F5F5', uses: 36, role: 'Input / hover surface', dark: false, issue: null },
+  { hex: '#F0F0F0', uses: 72, role: 'Skeleton / divider', dark: false, issue: null },
   { hex: '#1C1C1E', uses: 52, role: 'Card surface (dark)', dark: true, issue: null },
-  { hex: '#2C2C2E', uses: 134, role: 'Secondary surface (dark)', dark: true, issue: 'Most used bg — needs token' },
+  { hex: '#2C2C2E', uses: 134, role: 'Secondary surface (dark)', dark: true, issue: 'Most used bg — also used as border' },
   { hex: '#3A3A3C', uses: 42, role: 'Interactive / border (dark)', dark: true, issue: null },
 ]
 
 const BORDER_COLORS = [
   { hex: '#D4D4D4', uses: 20, role: 'Primary border', dark: false, issue: null },
-  { hex: '#E8E8E8', uses: 25, role: 'Subtle border', dark: false, issue: 'Too close to #E5E5E5, #E0E0E0' },
-  { hex: '#E5E5E5', uses: 11, role: 'Subtle border alt', dark: false, issue: 'Too close to #E8E8E8' },
-  { hex: '#E0E0E0', uses: 12, role: 'Subtle border alt 2', dark: false, issue: 'Too close to #E8E8E8' },
-  { hex: '#EDEDED', uses: 5, role: 'Divider', dark: false, issue: 'Too close to #EFEFEF' },
-  { hex: '#EFEFEF', uses: 21, role: 'Divider alt', dark: false, issue: 'Too close to #EDEDED' },
+  { hex: '#E8E8E8', uses: 40, role: 'Subtle border', dark: false, issue: null },
+  { hex: '#F0F0F0', uses: 72, role: 'Divider', dark: false, issue: null },
   { hex: '#2C2C2E', uses: 134, role: 'Border (dark)', dark: true, issue: 'Shared with bg — ambiguous' },
   { hex: '#3A3A3C', uses: 42, role: 'Accent border (dark)', dark: true, issue: null },
 ]
@@ -59,24 +55,23 @@ const RADIUS_VALUES = [
   { cls: 'rounded-md', px: '10px', uses: 23, role: 'Badges, small chips' },
   { cls: 'rounded-lg', px: '14px', uses: 13, role: 'Small containers' },
   { cls: 'rounded-xl', px: '18px', uses: 45, role: 'Inputs, buttons, cards' },
-  { cls: 'rounded-2xl', px: '28px', uses: 60, role: 'Cards, modals' },
-  { cls: 'rounded-3xl', px: '32px', uses: 3, role: 'Hero cards' },
-  { cls: 'rounded-[16px]', px: '16px', uses: 8, role: 'Platform logo tiles (one-off)' },
+  { cls: 'rounded-2xl', px: '16px', uses: 68, role: 'Cards, modals, platform tiles' },
+  { cls: 'rounded-3xl', px: '24px', uses: 3, role: 'Hero cards' },
   { cls: 'rounded-t-*', px: '32px top', uses: 4, role: 'Bottom sheets / half-modals' },
   { cls: 'rounded-full', px: '9999px', uses: 89, role: 'Pills, avatars, FABs, close buttons' },
 ]
 
 const FINDINGS = [
-  { severity: 'low', title: '#111111 merged into #121212 ✓', detail: '132 combined uses now under a single value. #111111 no longer appears anywhere in the codebase.' },
-  { severity: 'low', title: 'Accent token aligned ✓', detail: '#5B21B6 fully removed. tokens.css --color-accent now matches the real brand indigo #3D3BF3 (66 uses across the app).' },
-  { severity: 'low', title: 'Grey text values collapsed ✓', detail: '#888888, #999999, #666666 removed (0 uses). All muted-grey text is now #737373 (69 uses) + #616161 for slightly darker labels.' },
-  { severity: 'high', title: 'CSS tokens defined but ignored', detail: 'globals.css defines --color-text-primary, --color-surface etc. Almost no component uses them — all hardcode raw hex. Next step: migrate components to var(--color-*).' },
-  { severity: 'medium', title: '6 near-identical light border values', detail: '#E8E8E8 (25), #EFEFEF (21), #E0E0E0 (12), #E5E5E5 (11), #EDEDED (5), plus #F0F0F0 (51) as divider. Collapse to 2 tokens (subtle, default).' },
-  { severity: 'medium', title: '3 near-identical light surface backgrounds', detail: '#F7F8FA (24), #FAFAFA (7), #F5F5F5 (36) used as page/section backgrounds. Consolidate to 2.' },
+  { severity: 'low', title: '#111111 merged into #121212 ✓', detail: '131 uses under a single value. #111111 no longer appears anywhere in the codebase.' },
+  { severity: 'low', title: 'Accent token aligned ✓', detail: '#5B21B6 fully removed. --color-accent is indigo #3D3BF3 (65 uses), matching real product usage.' },
+  { severity: 'low', title: 'Grey text values collapsed ✓', detail: '#888888, #999999, #666666 removed. All muted-grey text is now #737373 (67) + #616161 (22) for slightly darker labels.' },
+  { severity: 'low', title: 'Light borders consolidated ✓', detail: '#E5E5E5, #E0E0E0, #EDEDED, #EFEFEF all merged. Only #E8E8E8 (40, subtle border) and #F0F0F0 (72, divider) remain.' },
+  { severity: 'low', title: 'Light surface backgrounds consolidated ✓', detail: '#FAFAFA merged into #F7F8FA (27). Page bg now uses one value; #F5F5F5 (36) stays as the input/hover surface.' },
+  { severity: 'low', title: 'rounded-[16px] removed ✓', detail: 'All 8 occurrences replaced with rounded-2xl (16px in Tailwind v4 default). Single radius for tiles, cards and modals.' },
+  { severity: 'high', title: 'CSS tokens defined but ignored', detail: 'globals.css defines --color-text-primary, --color-surface, --color-border etc. Almost no component uses them — all hardcode raw hex. Next step: migrate components to bg-[var(--color-surface)] etc.' },
   { severity: 'medium', title: 'Custom pixel font sizes instead of scale', detail: '11 distinct px sizes (10→45). Mostly 1–2px apart. Should map to a named scale (xs, sm, md, lg, xl, 2xl, hero).' },
-  { severity: 'medium', title: 'rounded-full has taken over (88 uses)', detail: 'After unifying close buttons, FABs, chips and avatars, rounded-full is the most-used radius by far. Should become the canonical pill/circle token.' },
+  { severity: 'medium', title: 'rounded-full has taken over (89 uses)', detail: 'After unifying close buttons, FABs, chips and avatars, rounded-full is the most-used radius by far. Should become the canonical pill/circle token.' },
   { severity: 'low', title: '#2C2C2E used for both bg AND border in dark mode', detail: '134 uses as background, also used as border. Makes intent unclear — different tokens needed.' },
-  { severity: 'low', title: 'rounded-[16px] hard-coded in platform tiles', detail: '6 occurrences of rounded-[16px] on QuickAdd platform logos. Either promote to rounded-2xl (→18px) or introduce a dedicated tile radius.' },
   { severity: 'low', title: 'Shadows nearly absent', detail: 'Only shadow-sm and one custom box-shadow in use. Consider a consistent 2-level elevation system.' },
 ]
 
@@ -85,9 +80,9 @@ const PROPOSED_TOKENS = [
   { token: 'color.text.secondary', light: '#424242', dark: '#AEAEB2', replaces: '#424242' },
   { token: 'color.text.muted', light: '#737373', dark: '#8E8E93', replaces: '#737373, #616161 (consolidated)' },
   { token: 'color.surface.base', light: '#FFFFFF', dark: '#1C1C1E', replaces: '#FFFFFF / #1C1C1E' },
-  { token: 'color.surface.raised', light: '#F7F8FA', dark: '#2C2C2E', replaces: '#F7F8FA, #FAFAFA / #2C2C2E' },
+  { token: 'color.surface.raised', light: '#F7F8FA', dark: '#2C2C2E', replaces: '#F7F8FA (consolidated) / #2C2C2E' },
   { token: 'color.surface.subtle', light: '#F0F0F0', dark: '#3A3A3C', replaces: '#F5F5F5, #F0F0F0 / #3A3A3C' },
-  { token: 'color.border.subtle', light: '#E8E8E8', dark: '#2C2C2E', replaces: '#E8E8E8, #E5E5E5, #E0E0E0, #EDEDED, #EFEFEF' },
+  { token: 'color.border.subtle', light: '#E8E8E8', dark: '#2C2C2E', replaces: '#E8E8E8 (consolidated from 4 values)' },
   { token: 'color.border.default', light: '#D4D4D4', dark: '#3A3A3C', replaces: '#D4D4D4' },
   { token: 'color.accent', light: '#3D3BF3', dark: '#3D3BF3', replaces: '#3D3BF3 (brand indigo — already in tokens)' },
   { token: 'color.danger', light: '#991B1B', dark: '#F87171', replaces: '#991B1B' },
@@ -134,8 +129,8 @@ export default function StyleAuditClient() {
         </p>
         <div className="flex gap-4 mt-4 flex-wrap">
           {[
-            ['3', 'Fixes aplicados ✓'],
-            ['6', 'Borders redundantes'],
+            ['6', 'Fixes aplicados ✓'],
+            ['2', 'Border values light'],
             ['11', 'Font sizes distintos'],
             ['65', '#3D3BF3 hardcoded'],
           ].map(([n, label]) => (
@@ -283,7 +278,7 @@ export default function StyleAuditClient() {
               <span className="text-[12px] text-[#999] dark:text-[#8E8E93] w-14 flex-shrink-0">{r.px}</span>
               <span className="text-[13px] text-[#737373] dark:text-[#8E8E93] flex-1">{r.role}</span>
               <span className="text-[11px] text-[#bbb] dark:text-[#8E8E93]">{r.uses}×</span>
-              {r.cls === 'rounded-[16px]' && (
+              {r.cls === 'rounded-2xl' && (
                 <span className="text-[11px] text-orange-600 bg-orange-50 dark:bg-orange-900/20 dark:text-orange-400 px-2 py-0.5 rounded-full flex-shrink-0">override</span>
               )}
             </div>
@@ -333,12 +328,12 @@ export default function StyleAuditClient() {
             {
               phase: 'Fase 1 — Quick wins ✓ completada',
               color: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800/40 text-green-800 dark:text-green-300',
-              items: ['✓ Unificado #111111 → #121212', '✓ #5B21B6 eliminado; --color-accent ya es #3D3BF3', '✓ Grises #888888/#999999/#666666 colapsados en #737373', 'Pendiente: estandarizar rounded-[16px] en QuickAdd tiles'],
+              items: ['✓ Unificado #111111 → #121212', '✓ #5B21B6 eliminado; --color-accent ya es #3D3BF3', '✓ Grises #888888/#999999/#666666 → #737373', '✓ Borders #E5E5E5/#E0E0E0/#EDEDED/#EFEFEF → #E8E8E8/#F0F0F0', '✓ #FAFAFA → #F7F8FA', '✓ rounded-[16px] → rounded-2xl'],
             },
             {
               phase: 'Fase 2 — Normalización media',
               color: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800/40 text-blue-800 dark:text-blue-300',
-              items: ['Unificar 6 valores de border → 2 tokens (subtle, default)', 'Consolidar 3 superficies claras → 2 tokens (surface.base, surface.raised)', 'Adoptar escala tipográfica de 6 tamaños nombrados', 'Añadir token para #2C2C2E bg vs border en dark'],
+              items: ['✓ Borders consolidados a 2 valores (#E8E8E8, #F0F0F0)', '✓ Superficies consolidadas (2 valores: #F7F8FA, #F5F5F5)', 'Adoptar escala tipográfica de 6 tamaños nombrados', 'Añadir token para #2C2C2E bg vs border en dark'],
             },
             {
               phase: 'Fase 3 — Adopción de tokens',

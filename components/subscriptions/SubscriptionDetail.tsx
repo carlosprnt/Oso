@@ -129,7 +129,7 @@ export default function SubscriptionDetail({ subscription: sub }: SubscriptionDe
         >
           <button
             onClick={() => router.back()}
-            className="w-9 h-9 rounded-xl flex items-center justify-center bg-white dark:bg-[#2C2C2E] border border-[#E5E5E5] dark:border-[#3A3A3C] active:border-[#D4D4D4] transition-colors"
+            className="w-9 h-9 rounded-xl flex items-center justify-center bg-white dark:bg-[#2C2C2E] border border-[#E8E8E8] dark:border-[#3A3A3C] active:border-[#D4D4D4] transition-colors"
           >
             <ArrowLeft size={17} className="text-[#121212] dark:text-[#F2F2F7]" />
           </button>

@@ -194,8 +194,8 @@ function WalletCard({ sub, isNew, index, velocityMv, isSelected, onOpen, viewMod
           <div className="text-right flex-shrink-0">
             {numSkeleton ? (
               <div className="flex flex-col items-end gap-1.5">
-                <div className="h-5 w-20 rounded-lg bg-[#EFEFEF] dark:bg-[#3A3A3C] animate-pulse" />
-                <div className="h-4 w-12 rounded-md bg-[#EFEFEF] dark:bg-[#3A3A3C] animate-pulse" />
+                <div className="h-5 w-20 rounded-lg bg-[#F0F0F0] dark:bg-[#3A3A3C] animate-pulse" />
+                <div className="h-4 w-12 rounded-md bg-[#F0F0F0] dark:bg-[#3A3A3C] animate-pulse" />
               </div>
             ) : (
               <>
@@ -410,7 +410,7 @@ function FilterSheet({ isOpen, currentStatus, currentCategory, onClose }: Filter
               { value: 'cancelled' as const, label: t('status.cancelled') },
             ] as Array<{ value: SubscriptionStatus | 'all'; label: string }>).map(opt => (
               <button key={opt.value} onClick={() => setStatus(s => s === opt.value ? 'all' : opt.value)}
-                className={`flex-shrink-0 flex items-center gap-1.5 px-4 h-12 rounded-full text-sm font-medium border transition-colors duration-150 ${status === opt.value ? 'bg-[#3D3BF3] text-white border-[#3D3BF3]' : 'bg-white dark:bg-[#2A2A2C] text-[#444444] dark:text-[#AEAEB2] border-[#E0E0E0] dark:border-[#3A3A3C]'}`}>
+                className={`flex-shrink-0 flex items-center gap-1.5 px-4 h-12 rounded-full text-sm font-medium border transition-colors duration-150 ${status === opt.value ? 'bg-[#3D3BF3] text-white border-[#3D3BF3]' : 'bg-white dark:bg-[#2A2A2C] text-[#444444] dark:text-[#AEAEB2] border-[#E8E8E8] dark:border-[#3A3A3C]'}`}>
                 {status === opt.value && <Check size={12} strokeWidth={3} />}
                 {opt.label}
               </button>
@@ -425,7 +425,7 @@ function FilterSheet({ isOpen, currentStatus, currentCategory, onClose }: Filter
               const active = category === cat.value
               return (
                 <button key={cat.value} onClick={() => setCategory(c => c === cat.value ? 'all' : cat.value)}
-                  className={`flex items-center gap-2 px-3 h-12 rounded-full text-sm font-medium border transition-colors duration-150 ${active ? 'bg-[#3D3BF3] text-white border-[#3D3BF3]' : 'bg-white dark:bg-[#2A2A2C] text-[#444444] dark:text-[#AEAEB2] border-[#E0E0E0] dark:border-[#3A3A3C]'}`}>
+                  className={`flex items-center gap-2 px-3 h-12 rounded-full text-sm font-medium border transition-colors duration-150 ${active ? 'bg-[#3D3BF3] text-white border-[#3D3BF3]' : 'bg-white dark:bg-[#2A2A2C] text-[#444444] dark:text-[#AEAEB2] border-[#E8E8E8] dark:border-[#3A3A3C]'}`}>
                   <Icon size={13} strokeWidth={2} />
                   {t(`categories.${cat.value}` as Parameters<typeof t>[0])}
                 </button>
@@ -492,7 +492,7 @@ function SortDropdown({
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute top-full left-0 mt-2 w-44 bg-white dark:bg-[#1C1C1E] rounded-2xl border border-[#E5E5E5] dark:border-[#2C2C2E] shadow-[0_4px_24px_rgba(0,0,0,0.12)] z-50 animate-fade-in-scale">
+        <div className="absolute top-full left-0 mt-2 w-44 bg-white dark:bg-[#1C1C1E] rounded-2xl border border-[#E8E8E8] dark:border-[#2C2C2E] shadow-[0_4px_24px_rgba(0,0,0,0.12)] z-50 animate-fade-in-scale">
           <div className="p-2">
             {options.map(({ mode, label }) => {
               const active = current === mode
@@ -702,7 +702,7 @@ export default function SubscriptionsView({
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.4, filter: 'blur(4px)', y: -6 }}
                   transition={{ duration: 0.25, ease: 'easeOut' }}
-                  className="inline-flex items-center gap-1.5 pl-3.5 pr-2 py-1.5 rounded-full bg-[#EFEFEF] dark:bg-[#2C2C2E] text-[#121212] dark:text-[#F2F2F7] text-[13px] font-medium active:opacity-70 transition-opacity"
+                  className="inline-flex items-center gap-1.5 pl-3.5 pr-2 py-1.5 rounded-full bg-[#F0F0F0] dark:bg-[#2C2C2E] text-[#121212] dark:text-[#F2F2F7] text-[13px] font-medium active:opacity-70 transition-opacity"
                 >
                   {t(`status.${currentStatus}` as Parameters<typeof t>[0])}
                   <X size={14} strokeWidth={2.5} className="text-[#737373] dark:text-[#AEAEB2]" />
@@ -718,7 +718,7 @@ export default function SubscriptionsView({
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.4, filter: 'blur(4px)', y: -6 }}
                   transition={{ duration: 0.25, ease: 'easeOut' }}
-                  className="inline-flex items-center gap-1.5 pl-3.5 pr-2 py-1.5 rounded-full bg-[#EFEFEF] dark:bg-[#2C2C2E] text-[#121212] dark:text-[#F2F2F7] text-[13px] font-medium active:opacity-70 transition-opacity"
+                  className="inline-flex items-center gap-1.5 pl-3.5 pr-2 py-1.5 rounded-full bg-[#F0F0F0] dark:bg-[#2C2C2E] text-[#121212] dark:text-[#F2F2F7] text-[13px] font-medium active:opacity-70 transition-opacity"
                 >
                   {t(`categories.${currentCategory}` as Parameters<typeof t>[0])}
                   <X size={14} strokeWidth={2.5} className="text-[#737373] dark:text-[#AEAEB2]" />

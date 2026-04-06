@@ -97,7 +97,7 @@ export default function DashboardLoading() {
           {[...Array(3)].map((_, i) => (
             <div
               key={i}
-              className="flex-shrink-0 w-[185px] bg-white dark:bg-[#1C1C1E] rounded-[16px] p-4 space-y-2"
+              className="flex-shrink-0 w-[185px] bg-white dark:bg-[#1C1C1E] rounded-2xl p-4 space-y-2"
             >
               <div className={`${S} h-3 w-6`} />
               {/* Logo md = 44px */}

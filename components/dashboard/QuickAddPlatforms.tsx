@@ -32,7 +32,7 @@ function PlatformRow({
 
   return (
     <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-[#F2F2F7] dark:bg-[#1C1C1E]">
-      <div className="w-10 h-10 rounded-[16px] overflow-hidden flex items-center justify-center flex-shrink-0 bg-white dark:bg-[#2C2C2E]">
+      <div className="w-10 h-10 rounded-2xl overflow-hidden flex items-center justify-center flex-shrink-0 bg-white dark:bg-[#2C2C2E]">
         {logoUrl ? (
           <Image src={logoUrl} alt={platform.name} width={40} height={40} className="w-full h-full object-contain" unoptimized />
         ) : (
@@ -78,7 +78,7 @@ export default function QuickAddPlatforms() {
             onClick={() => setSelected(null)}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl bg-[#F2F2F7] dark:bg-[#1C1C1E] text-left active:opacity-60 transition-opacity"
           >
-            <div className="w-10 h-10 rounded-[16px] flex items-center justify-center flex-shrink-0 bg-white dark:bg-[#2C2C2E]">
+            <div className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 bg-white dark:bg-[#2C2C2E]">
               <Plus size={18} strokeWidth={2} className="text-[#8E8E93]" />
             </div>
             <p className="text-[14px] font-semibold text-[#121212] dark:text-[#F2F2F7] flex-1">
