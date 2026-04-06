@@ -62,7 +62,7 @@ export default function SubscriptionAvatar({
           alt={name}
           width={SIZE[size].px}
           height={SIZE[size].px}
-          className={needsPadding ? 'w-[78%] h-[78%] object-contain' : 'w-full h-full object-cover'}
+          className={needsPadding ? 'w-[78%] h-[78%] object-contain' : 'w-full h-full object-contain'}
           onError={() => setImgError(true)}
           loading="lazy"
         />
