@@ -67,7 +67,7 @@ const LOGOS: LogoConfig[] = [
   },
   {
     id: 'openai', label: 'AI',
-    src: 'https://cdn.simpleicons.org/openai',
+    src: 'https://svgl.app/library/openai_dark.svg',
     bg: '#FFFFFF', size: 74, radius: 18,
     left: '70%', top: '32%',
     xKeys: [0, -14, -5, 11, 0], yKeys: [0, 12, -14, 6, 0],
@@ -77,8 +77,8 @@ const LOGOS: LogoConfig[] = [
 
   // ── Row 3 (lower-middle) ─────────────────────────────────────────────────────
   {
-    id: 'amazon', label: 'A',
-    src: 'https://cdn.simpleicons.org/amazon',
+    id: 'primevideo', label: 'PV',
+    src: 'https://svgl.app/library/prime_video.svg',
     bg: '#FFFFFF', size: 74, radius: 18,
     left: '17%', top: '50%',
     xKeys: [0, 13, 4, -11, 0], yKeys: [0, 8, -14, 9, 0],
@@ -107,7 +107,7 @@ const LOGOS: LogoConfig[] = [
   },
   {
     id: 'disneyplus', label: 'D+',
-    src: 'https://cdn.simpleicons.org/disneyplus',
+    src: 'https://svgl.app/library/disney_plus.svg',
     bg: '#FFFFFF', size: 80, radius: 22,
     left: '55%', top: '65%',
     xKeys: [0, -13, -4, 11, 0], yKeys: [0, 11, -10, -8, 0],
