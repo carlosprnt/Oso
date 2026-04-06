@@ -120,12 +120,11 @@ export async function setDemoMode(count: number) {
       next_billing_date: offsetDate(days_offset),
       trial_end_date: sub.status === 'trial' ? offsetDate(days_offset) : null,
       notes: null,
-      start_date: null,
-      card_color: null,
     }))
     const { error: insertError } = await supabase.from('subscriptions').insert(rows)
     if (insertError) {
       console.error('[setDemoMode] insert failed', insertError, { count, rows })
+      throw new Error(`Demo insert failed: ${insertError.message}`)
     }
   }
 
