@@ -702,33 +702,13 @@ export default function SubscriptionForm({
         {/* ── Delete (edit mode) ──────────────────────────────────────── */}
         {mode === 'edit' && (
           <div className="mx-5 mb-3">
-            {showDeleteConfirm ? (
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={handleDelete}
-                  disabled={isPending}
-                  className="flex-1 h-12 rounded-2xl bg-red-600 text-white text-sm font-semibold active:bg-red-700 transition-colors disabled:opacity-40"
-                >
-                  {t('form.confirmDelete')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowDeleteConfirm(false)}
-                  className="h-12 px-5 rounded-2xl bg-[#EFEFEF] dark:bg-[#2C2C2E] text-[#444444] dark:text-[#AEAEB2] text-sm font-medium"
-                >
-                  {t('form.keepIt')}
-                </button>
-              </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setShowDeleteConfirm(true)}
-                className="w-full h-12 rounded-2xl bg-[#F5F5F5] dark:bg-[#1C1C1E] text-red-500 dark:text-red-500 text-sm font-medium active:bg-[#EBEBEB] dark:active:bg-[#2C2C2E] transition-colors"
-              >
-                {t('form.delete')}
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => setShowDeleteConfirm(true)}
+              className="w-full h-12 rounded-2xl bg-[#F5F5F5] dark:bg-[#1C1C1E] text-red-500 dark:text-red-500 text-sm font-medium active:bg-[#EBEBEB] dark:active:bg-[#2C2C2E] transition-colors"
+            >
+              {t('form.delete')}
+            </button>
           </div>
         )}
 
@@ -761,6 +741,44 @@ export default function SubscriptionForm({
           </button>
         </div>
       </div>
+
+      {/* ── Delete confirmation — half-modal ─────────────────────────── */}
+      {showDeleteConfirm && (
+        <div
+          className="absolute inset-0 z-10 flex items-end justify-center"
+          style={{ background: 'rgba(0,0,0,0.45)' }}
+          onClick={() => setShowDeleteConfirm(false)}
+        >
+          <div
+            className="w-full bg-white dark:bg-[#1C1C1E] rounded-t-[32px] px-5 pt-5 pb-4"
+            onClick={e => e.stopPropagation()}
+          >
+            <h3 className="text-[17px] font-semibold text-[#121212] dark:text-[#F2F2F7] mb-1">
+              {t('form.deleteTitle')}
+            </h3>
+            <p className="text-[14px] text-[#737373] dark:text-[#AEAEB2] mb-5">
+              {t('form.deleteMessage')}
+            </p>
+            <div className="flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={isPending}
+                className="w-full h-12 rounded-full bg-red-500 text-white text-[15px] font-semibold active:opacity-80 transition-opacity disabled:opacity-40"
+              >
+                {t('form.confirmDelete')}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowDeleteConfirm(false)}
+                className="w-full h-12 rounded-full bg-[#F5F5F5] dark:bg-[#2C2C2E] text-[#121212] dark:text-[#F2F2F7] text-[15px] font-medium active:opacity-80 transition-opacity"
+              >
+                {t('form.keepIt')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Discard changes confirmation ─────────────────────────────── */}
       {showCancelConfirm && (
