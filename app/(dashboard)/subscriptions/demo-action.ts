@@ -95,22 +95,23 @@ export async function setDemoMode(count: number) {
   await supabase.from('subscriptions').delete().eq('user_id', user.id)
 
   if (count > 0) {
-    // Curated picks for the small demo sizes so the screenshots are
-    // recognisable (Netflix / Netflix + Claude). Larger counts fall back
-    // to the first N entries of DEMO_SUBSCRIPTIONS.
-    const pickByName = (names: string[]) =>
-      names
-        .map((n) => DEMO_SUBSCRIPTIONS.find((s) => s.name === n))
-        .filter((s): s is (typeof DEMO_SUBSCRIPTIONS)[number] => Boolean(s))
-
-    const CURATED: Record<number, string[]> = {
-      1: ['Netflix'],
-      2: ['Netflix', 'Claude Pro'],
+    // Curated picks for the small demo sizes (Netflix / Netflix + Claude).
+    // Larger counts fall back to the first N entries of DEMO_SUBSCRIPTIONS.
+    const byName = (n: string) => {
+      const match = DEMO_SUBSCRIPTIONS.find((s) => s.name === n)
+      if (!match) throw new Error(`Demo subscription not found: ${n}`)
+      return match
     }
 
-    const slice = CURATED[count]
-      ? pickByName(CURATED[count])
-      : DEMO_SUBSCRIPTIONS.slice(0, Math.min(count, DEMO_SUBSCRIPTIONS.length))
+    let slice: typeof DEMO_SUBSCRIPTIONS
+    if (count === 1) {
+      slice = [byName('Netflix')]
+    } else if (count === 2) {
+      slice = [byName('Netflix'), byName('Claude Pro')]
+    } else {
+      slice = DEMO_SUBSCRIPTIONS.slice(0, Math.min(count, DEMO_SUBSCRIPTIONS.length))
+    }
+
     const rows = slice.map(({ days_offset, ...sub }) => ({
       ...sub,
       user_id: user.id,
@@ -122,7 +123,10 @@ export async function setDemoMode(count: number) {
       start_date: null,
       card_color: null,
     }))
-    await supabase.from('subscriptions').insert(rows)
+    const { error: insertError } = await supabase.from('subscriptions').insert(rows)
+    if (insertError) {
+      console.error('[setDemoMode] insert failed', insertError, { count, rows })
+    }
   }
 
   revalidatePath('/dashboard')
