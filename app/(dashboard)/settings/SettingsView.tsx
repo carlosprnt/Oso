@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Sparkles, ChevronRight, Plus, X, Bell, Star, Share2, Mail, Sun, Moon, Monitor, Coins, Tag, Check } from 'lucide-react'
+import { ArrowLeft, ChevronRight, Plus, X, Bell, Star, Share2, Mail, Sun, Moon, Monitor, Coins, Tag, Check } from 'lucide-react'
 import { CURRENCIES } from '@/lib/constants/currencies'
 import { useTheme } from '@/components/ui/ThemeProvider'
 import {
@@ -162,8 +162,9 @@ export default function SettingsView({ preferences }: Props) {
       {/* ── Perezoso Plus ──────────────────────────────────────────────── */}
       <Group>
         <div className="flex items-center gap-3 px-4 py-4">
-          <div className="w-11 h-11 rounded-[10px] bg-gradient-to-br from-[#3D3BF3] to-[#7C3AED] flex items-center justify-center flex-shrink-0">
-            <Sparkles size={20} className="text-white" />
+          <div className="w-11 h-11 rounded-[10px] overflow-hidden flex-shrink-0 bg-white">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="Perezoso" className="w-full h-full object-cover" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[15px] font-semibold text-[#121212] dark:text-[#F2F2F7] leading-tight">Perezoso Plus</p>
