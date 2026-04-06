@@ -29,8 +29,8 @@ const LOGOS: LogoConfig[] = [
   // ── Row 1 (top area) ────────────────────────────────────────────────────────
   {
     id: 'spotify', label: 'S',
-    src: 'https://cdn.simpleicons.org/spotify/FFFFFF',
-    bg: '#1DB954', size: 78, radius: 20,
+    src: 'https://cdn.simpleicons.org/spotify',
+    bg: '#FFFFFF', size: 78, radius: 20,
     left: '4%', top: '10%',
     xKeys: [0, 14, 5, -10, 0], yKeys: [0, -10, 16, 5, 0],
     duration: 7.2, delay: 0,
@@ -38,8 +38,8 @@ const LOGOS: LogoConfig[] = [
   },
   {
     id: 'notion', label: 'N',
-    src: 'https://cdn.simpleicons.org/notion/FFFFFF',
-    bg: '#000000', size: 76, radius: 18,
+    src: 'https://cdn.simpleicons.org/notion',
+    bg: '#FFFFFF', size: 76, radius: 18,
     left: '38%', top: '5%',
     xKeys: [0, -8, 12, -4, 0], yKeys: [0, 14, -6, 10, 0],
     duration: 8.8, delay: 0.6,
@@ -47,8 +47,8 @@ const LOGOS: LogoConfig[] = [
   },
   {
     id: 'netflix', label: 'N',
-    src: 'https://cdn.simpleicons.org/netflix/FFFFFF',
-    bg: '#E50914', size: 78, radius: 20,
+    src: 'https://cdn.simpleicons.org/netflix',
+    bg: '#FFFFFF', size: 78, radius: 20,
     left: '68%', top: '9%',
     xKeys: [0, -12, -4, 9, 0], yKeys: [0, 14, -8, 12, 0],
     duration: 8.1, delay: 1.2,
@@ -58,8 +58,8 @@ const LOGOS: LogoConfig[] = [
   // ── Row 2 (middle area, orbits around Perezoso logo at ~top:22%) ────────────
   {
     id: 'google', label: 'G',
-    src: 'https://cdn.simpleicons.org/google/FFFFFF',
-    bg: '#4285F4', size: 74, radius: 18,
+    src: 'https://cdn.simpleicons.org/google',
+    bg: '#FFFFFF', size: 74, radius: 18,
     left: '3%', top: '34%',
     xKeys: [0, 16, 6, -13, 0], yKeys: [0, -7, 18, -5, 0],
     duration: 6.9, delay: 1.8,
@@ -67,8 +67,8 @@ const LOGOS: LogoConfig[] = [
   },
   {
     id: 'openai', label: 'AI',
-    src: 'https://cdn.simpleicons.org/openai/FFFFFF',
-    bg: '#10A37F', size: 74, radius: 18,
+    src: 'https://cdn.simpleicons.org/openai',
+    bg: '#FFFFFF', size: 74, radius: 18,
     left: '70%', top: '32%',
     xKeys: [0, -14, -5, 11, 0], yKeys: [0, 12, -14, 6, 0],
     duration: 9.0, delay: 0.4,
@@ -78,8 +78,8 @@ const LOGOS: LogoConfig[] = [
   // ── Row 3 (lower-middle) ─────────────────────────────────────────────────────
   {
     id: 'amazon', label: 'A',
-    src: 'https://cdn.simpleicons.org/amazon/FFFFFF',
-    bg: '#FF9900', size: 74, radius: 18,
+    src: 'https://cdn.simpleicons.org/amazon',
+    bg: '#FFFFFF', size: 74, radius: 18,
     left: '17%', top: '50%',
     xKeys: [0, 13, 4, -11, 0], yKeys: [0, 8, -14, 9, 0],
     duration: 6.8, delay: 0.8,
@@ -87,8 +87,8 @@ const LOGOS: LogoConfig[] = [
   },
   {
     id: 'apple', label: '',
-    src: 'https://cdn.simpleicons.org/apple/FFFFFF',
-    bg: '#1C1C1E', size: 74, radius: 18,
+    src: 'https://cdn.simpleicons.org/apple',
+    bg: '#FFFFFF', size: 74, radius: 18,
     left: '63%', top: '48%',
     xKeys: [0, -11, -6, 14, 0], yKeys: [0, 13, -6, -10, 0],
     duration: 9.2, delay: 2.1,
@@ -98,8 +98,8 @@ const LOGOS: LogoConfig[] = [
   // ── Row 4 (bottom, just above card) ─────────────────────────────────────────
   {
     id: 'youtube', label: 'YT',
-    src: 'https://cdn.simpleicons.org/youtube/FFFFFF',
-    bg: '#FF0000', size: 76, radius: 18,
+    src: 'https://cdn.simpleicons.org/youtube',
+    bg: '#FFFFFF', size: 76, radius: 18,
     left: '8%', top: '63%',
     xKeys: [0, 15, 6, -12, 0], yKeys: [0, -10, 15, 4, 0],
     duration: 7.6, delay: 1.5,
@@ -107,8 +107,8 @@ const LOGOS: LogoConfig[] = [
   },
   {
     id: 'disneyplus', label: 'D+',
-    src: 'https://cdn.simpleicons.org/disneyplus/FFFFFF',
-    bg: '#0D3B7A', size: 80, radius: 22,
+    src: 'https://cdn.simpleicons.org/disneyplus',
+    bg: '#FFFFFF', size: 80, radius: 22,
     left: '55%', top: '65%',
     xKeys: [0, -13, -4, 11, 0], yKeys: [0, 11, -10, -8, 0],
     duration: 8.4, delay: 0.5,
