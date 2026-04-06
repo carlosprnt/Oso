@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { ChevronRight, X } from 'lucide-react'
 import { getOAuthRedirectUrl } from '@/lib/platform'
 import { createClient } from '@/lib/supabase/client'
+import haptics from '@/lib/haptics'
 
 // ─── Content ─────────────────────────────────────────────────────────────────
 interface Slide {
@@ -124,14 +125,21 @@ export default function LoginScreen() {
 
   function openSignIn() {
     setError(null)
+    haptics.tap('medium')
     setSheetOpen(true)
   }
 
   function next() {
-    if (slide < totalSlides - 1) setSlide(slide + 1)
+    if (slide < totalSlides - 1) {
+      haptics.selection()
+      setSlide(slide + 1)
+    }
   }
 
-  function goTo(i: number) { setSlide(i) }
+  function goTo(i: number) {
+    if (i !== slide) haptics.selection()
+    setSlide(i)
+  }
 
   // Touch swipe handling
   const [touchStart, setTouchStart] = useState<number | null>(null)

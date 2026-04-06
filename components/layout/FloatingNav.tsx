@@ -11,6 +11,7 @@ import SubscriptionForm from '@/components/subscriptions/SubscriptionForm'
 import GmailSubscriptionSearchSheet from '@/components/subscriptions/GmailSubscriptionSearchSheet'
 import { useT } from '@/lib/i18n/LocaleProvider'
 import { useTheme } from '@/components/ui/ThemeProvider'
+import haptics from '@/lib/haptics'
 import type { PlatformPreset } from '@/lib/constants/platforms'
 
 type Step = 'closed' | 'pick' | 'form' | 'gmail'
@@ -152,7 +153,7 @@ export default function FloatingNav() {
             When the user has no subscriptions yet, it scales to 2x to
             emphasize it as the primary call to action. */}
         <motion.button
-          onClick={() => setStep('pick')}
+          onClick={() => { haptics.tap('medium'); setStep('pick') }}
           aria-label="Add subscription"
           className="absolute right-4 pointer-events-auto flex items-center justify-center rounded-full bg-[#3D3BF3]"
           style={{

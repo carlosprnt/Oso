@@ -13,6 +13,7 @@ import {
   deleteAccount,
   type UserPreferences,
 } from './actions'
+import haptics from '@/lib/haptics'
 
 interface Props {
   preferences: UserPreferences
@@ -108,10 +109,12 @@ export default function SettingsView({ preferences }: Props) {
   async function handleDeleteAccount() {
     setIsDeleting(true)
     setDeleteError(null)
+    haptics.warning()
     const result = await deleteAccount()
     if (result?.error) {
       setDeleteError(result.error)
       setIsDeleting(false)
+      haptics.error()
       return
     }
     router.push('/login')
@@ -121,12 +124,14 @@ export default function SettingsView({ preferences }: Props) {
   function handleCurrency(e: React.ChangeEvent<HTMLSelectElement>) {
     const code = e.target.value
     setCurrency(code)
+    haptics.selection()
     startTransition(() => { setPreferredCurrency(code) })
   }
 
   function handleNotifications() {
     const next = !notifications
     setNotifications(next)
+    haptics.selection()
     startTransition(() => { setNotificationsEnabled(next) })
   }
 
@@ -135,11 +140,13 @@ export default function SettingsView({ preferences }: Props) {
     if (!trimmed || categories.includes(trimmed)) return
     setCategories([...categories, trimmed])
     setNewCategory('')
+    haptics.success()
     startTransition(() => { addCustomCategory(trimmed) })
   }
 
   function handleRemoveCategory(name: string) {
     setCategories(categories.filter(c => c !== name))
+    haptics.tap()
     startTransition(() => { removeCustomCategory(name) })
   }
 
@@ -245,7 +252,7 @@ export default function SettingsView({ preferences }: Props) {
           <ChevronRight size={15} className="text-[#C7C7CC]" />
           <select
             value={preference}
-            onChange={e => setPreference(e.target.value as typeof preference)}
+            onChange={e => { haptics.selection(); setPreference(e.target.value as typeof preference) }}
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer appearance-none"
             style={{ fontSize: 16 }}
             aria-label="Apariencia"

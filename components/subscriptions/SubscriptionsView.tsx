@@ -15,6 +15,7 @@ import CalendarView from '@/components/calendar/CalendarView'
 import SubscriptionAvatar from '@/components/subscriptions/SubscriptionAvatar'
 import QuickAddPlatforms from '@/components/dashboard/QuickAddPlatforms'
 import { AnalyticsEvents } from '@/lib/analytics'
+import haptics from '@/lib/haptics'
 import { resolveSubscriptionLogoUrl } from '@/lib/constants/platforms'
 import { formatCurrency } from '@/lib/utils/currency'
 import { CATEGORIES } from '@/lib/constants/categories'
@@ -551,6 +552,7 @@ export default function SubscriptionsView({
 
   function clearFilter(key: 'status' | 'category') {
     setRemovingChip(key)
+    haptics.tap()
     // Wait for the exit animation to finish before navigating so the chip
     // plays its destruction animation instead of vanishing instantly.
     setTimeout(() => {
@@ -564,6 +566,7 @@ export default function SubscriptionsView({
 
   function handleFilterTap() {
     if (allCount === 0) {
+      haptics.error()
       filterShake.start({
         x: [0, -8, 8, -6, 6, -4, 4, 0],
         transition: { duration: 0.45, ease: 'easeInOut' },

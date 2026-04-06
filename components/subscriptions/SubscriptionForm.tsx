@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createSubscription, updateSubscription, deleteSubscription } from '@/app/(dashboard)/subscriptions/actions'
 import { AnalyticsEvents } from '@/lib/analytics'
 import { createClient } from '@/lib/supabase/client'
+import haptics from '@/lib/haptics'
 import { CATEGORIES } from '@/lib/constants/categories'
 import { CURRENCIES, BILLING_PERIOD_LABELS } from '@/lib/constants/currencies'
 import { AlertCircle, Bell, ChevronsUpDown, X } from 'lucide-react'
@@ -380,6 +381,7 @@ export default function SubscriptionForm({
           : await updateSubscription(subscription!.id, payload)
       if (result?.error) {
         setError(result.error)
+        haptics.error()
         AnalyticsEvents.errorShown('subscription_form', result.error)
         return
       }
@@ -392,6 +394,7 @@ export default function SubscriptionForm({
         currency: payload.currency,
         source: platformPreset ? 'detected' as const : 'manual' as const,
       }
+      haptics.success()
       if (mode === 'create') {
         // isFirst is derived in PostHog via a first-time-event cohort.
         AnalyticsEvents.subscriptionCreated(analyticsProps, false)
@@ -404,9 +407,11 @@ export default function SubscriptionForm({
 
   async function handleDelete() {
     startTransition(async () => {
+      haptics.warning()
       const result = await deleteSubscription(subscription!.id)
       if (result?.error) {
         setError(result.error)
+        haptics.error()
         AnalyticsEvents.errorShown('subscription_form', result.error)
         return
       }
