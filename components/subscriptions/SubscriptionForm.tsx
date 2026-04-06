@@ -4,6 +4,7 @@ import { useState, useTransition, useRef, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createSubscription, updateSubscription, deleteSubscription } from '@/app/(dashboard)/subscriptions/actions'
 import { AnalyticsEvents } from '@/lib/analytics'
+import { createClient } from '@/lib/supabase/client'
 import { CATEGORIES } from '@/lib/constants/categories'
 import { CURRENCIES, BILLING_PERIOD_LABELS } from '@/lib/constants/currencies'
 import { AlertCircle, Bell, ChevronsUpDown, X } from 'lucide-react'
@@ -254,6 +255,17 @@ export default function SubscriptionForm({
   )
   const [notes, setNotes] = useState(subscription?.notes ?? '')
   const [currency, setCurrency] = useState(subscription?.currency ?? 'EUR')
+
+  // On create, pick up the user's preferred currency from auth metadata.
+  useEffect(() => {
+    if (mode !== 'create' || subscription?.currency) return
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data }) => {
+      const pref = (data.user?.user_metadata as { preferences?: { preferred_currency?: string } } | undefined)?.preferences?.preferred_currency
+      if (pref) setCurrency(pref)
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // ── Dirty state detection ────────────────────────────────────────────────
   const initialSnapshot = useRef({

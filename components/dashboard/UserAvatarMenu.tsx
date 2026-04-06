@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
-import { LogOut, Share2, Moon, Sun, ShieldCheck, ChevronRight, ChevronLeft, Loader2, RotateCcw } from 'lucide-react'
+import { LogOut, Share2, Moon, Sun, ShieldCheck, ChevronRight, ChevronLeft, Loader2, RotateCcw, Settings } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import Image from 'next/image'
 import { getInitials, getAvatarPastel } from '@/lib/utils/logos'
@@ -210,6 +210,13 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
             >
               {theme === 'dark' ? <Sun size={15} className="text-[#616161] dark:text-[#8E8E93]" /> : <Moon size={15} className="text-[#616161]" />}
               {theme === 'dark' ? t('nav.lightMode') : t('nav.darkMode')}
+            </button>
+            <button
+              onClick={() => { setOpen(false); router.push('/settings') }}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#424242] dark:text-[#AEAEB2] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors text-left"
+            >
+              <Settings size={15} className="text-[#616161] dark:text-[#8E8E93]" />
+              Ajustes
             </button>
             <button
               onClick={handleShare}

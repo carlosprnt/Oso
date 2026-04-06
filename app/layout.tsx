@@ -44,7 +44,7 @@ export default async function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{if(localStorage.getItem('perezoso_theme')==='dark')document.documentElement.classList.add('dark')}catch(e){}`
+            __html: `try{var p=localStorage.getItem('perezoso_theme');var d=p==='dark'||(p==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark')}catch(e){}`
           }}
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
