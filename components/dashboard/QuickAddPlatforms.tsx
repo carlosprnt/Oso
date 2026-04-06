@@ -73,21 +73,18 @@ export default function QuickAddPlatforms() {
             <PlatformRow key={platform.id} platform={platform} onAdd={setSelected} />
           ))}
 
-          {/* Custom / manual */}
-          <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-[#F2F2F7] dark:bg-[#1C1C1E]">
+          {/* Custom / manual — whole card is clickable */}
+          <button
+            onClick={() => setSelected(null)}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl bg-[#F2F2F7] dark:bg-[#1C1C1E] text-left active:opacity-60 transition-opacity"
+          >
             <div className="w-10 h-10 rounded-[16px] flex items-center justify-center flex-shrink-0 bg-white dark:bg-[#2C2C2E]">
               <Plus size={18} strokeWidth={2} className="text-[#8E8E93]" />
             </div>
             <p className="text-[14px] font-semibold text-[#121212] dark:text-[#F2F2F7] flex-1">
-              Otra suscripción
+              Añadir manualmente
             </p>
-            <button
-              onClick={() => setSelected(null)}
-              className="text-[13px] font-semibold text-[#3D3BF3] dark:text-[#8B89FF] flex-shrink-0 active:opacity-60 transition-opacity"
-            >
-              Añadir
-            </button>
-          </div>
+          </button>
         </div>
       </div>
 
