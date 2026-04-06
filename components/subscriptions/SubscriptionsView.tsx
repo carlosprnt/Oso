@@ -746,7 +746,7 @@ export default function SubscriptionsView({
                 style={{ opacity: headerOpacity, filter: headerFilter, pointerEvents: headerPointerEvents }}
               >
                 <p className="text-[45px] font-extrabold text-[#121212] dark:text-[#F2F2F7] leading-[1.15] tracking-tight mb-2">
-                  Aún no tienes suscripciones añadidas
+                  Todavía no has añadido ninguna
                 </p>
                 <p className="text-[17px] font-bold text-[#121212] dark:text-[#F2F2F7] leading-snug mb-6">
                   {t('subscriptions.getStarted')}
