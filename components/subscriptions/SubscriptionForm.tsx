@@ -36,6 +36,17 @@ function autoSize(el: HTMLTextAreaElement, min = 0) {
   el.style.height = `${Math.max(el.scrollHeight, min)}px`
 }
 
+/** Same day-of-month as today, next month (clamped to last day if needed). */
+function defaultNextBillingDate(): string {
+  const today = new Date()
+  const y = today.getFullYear()
+  const m = today.getMonth() + 1
+  const day = today.getDate()
+  const lastDayNextMonth = new Date(y, m + 1, 0).getDate()
+  const d = new Date(y, m, Math.min(day, lastDayNextMonth))
+  return d.toISOString().split('T')[0]
+}
+
 function Row({
   label,
   last = false,
@@ -196,7 +207,7 @@ export default function SubscriptionForm({
     subscription?.start_date ?? new Date().toISOString().split('T')[0],
   )
   const [nextBillingDate, setNextBillingDate] = useState(
-    subscription?.next_billing_date ?? '',
+    subscription?.next_billing_date ?? defaultNextBillingDate(),
   )
 
   // Auto-compute next billing date from start date when creating a new subscription
