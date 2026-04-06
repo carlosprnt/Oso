@@ -742,12 +742,16 @@ export default function SubscriptionsView({
         {sortedSubscriptions.length === 0 ? (
           allCount === 0 ? (
             <div className="pt-6">
-              <p className="text-[45px] font-extrabold text-[#121212] dark:text-[#F2F2F7] leading-[1.15] tracking-tight mb-2">
-                Aún no tienes suscripciones añadidas
-              </p>
-              <p className="text-[17px] font-bold text-[#121212] dark:text-[#F2F2F7] leading-snug mb-6">
-                {t('subscriptions.getStarted')}
-              </p>
+              <motion.div
+                style={{ opacity: headerOpacity, filter: headerFilter, pointerEvents: headerPointerEvents }}
+              >
+                <p className="text-[45px] font-extrabold text-[#121212] dark:text-[#F2F2F7] leading-[1.15] tracking-tight mb-2">
+                  Aún no tienes suscripciones añadidas
+                </p>
+                <p className="text-[17px] font-bold text-[#121212] dark:text-[#F2F2F7] leading-snug mb-6">
+                  {t('subscriptions.getStarted')}
+                </p>
+              </motion.div>
               <QuickAddPlatforms />
             </div>
           ) : (
