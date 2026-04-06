@@ -208,9 +208,14 @@ export default function SubscriptionForm({
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>(
     subscription?.billing_period ?? (prefill?.billingPeriod as BillingPeriod) ?? 'monthly',
   )
-  const [category, setCategory] = useState<Category>(
+  // Category is widened to string so custom user categories from Settings
+  // can live in the select. They are mapped back to 'other' on save
+  // because the subscriptions table still has a CHECK constraint on this
+  // column — a future migration will lift that.
+  const [category, setCategory] = useState<string>(
     subscription?.category ?? (prefill?.category as Category) ?? 'other',
   )
+  const [customCategories, setCustomCategories] = useState<string[]>([])
   const [startDate, setStartDate] = useState(
     subscription?.start_date ?? new Date().toISOString().split('T')[0],
   )
@@ -256,13 +261,18 @@ export default function SubscriptionForm({
   const [notes, setNotes] = useState(subscription?.notes ?? '')
   const [currency, setCurrency] = useState(subscription?.currency ?? 'EUR')
 
-  // On create, pick up the user's preferred currency from auth metadata.
+  // Pick up user preferences from auth metadata: preferred currency
+  // (create only) and the list of custom categories (always).
   useEffect(() => {
-    if (mode !== 'create' || subscription?.currency) return
     const supabase = createClient()
     supabase.auth.getUser().then(({ data }) => {
-      const pref = (data.user?.user_metadata as { preferences?: { preferred_currency?: string } } | undefined)?.preferences?.preferred_currency
-      if (pref) setCurrency(pref)
+      const prefs = (data.user?.user_metadata as {
+        preferences?: { preferred_currency?: string; custom_categories?: string[] }
+      } | undefined)?.preferences
+      if (prefs?.custom_categories) setCustomCategories(prefs.custom_categories)
+      if (mode === 'create' && !subscription?.currency && prefs?.preferred_currency) {
+        setCurrency(prefs.preferred_currency)
+      }
     })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -322,6 +332,7 @@ export default function SubscriptionForm({
   const billingLabel =
     BILLING_PERIOD_LABELS[billingPeriod] ?? billingPeriod
   const categoryMeta = CATEGORIES.find(c => c.value === category)
+  const isCustomCategory = !categoryMeta && customCategories.includes(category)
   const categoryLabel = categoryMeta
     ? t(`categories.${categoryMeta.value}` as Parameters<typeof t>[0])
     : category
@@ -332,7 +343,10 @@ export default function SubscriptionForm({
       name: name.trim(),
       logo_url: logoUrl.trim() || null,
       card_color: null,
-      category,
+      // Custom user categories get persisted as 'other' to satisfy the
+      // DB CHECK constraint. The label remains visible in the picker
+      // while editing in-session.
+      category: (CATEGORIES.some(c => c.value === category) ? category : 'other') as Category,
       price_amount: parseFloat(priceAmount) || 0,
       currency,
       billing_period: billingPeriod,
@@ -566,7 +580,7 @@ export default function SubscriptionForm({
           <SelectRow label={t('form.category')} value={categoryLabel} last>
             <select
               value={category}
-              onChange={e => setCategory(e.target.value as Category)}
+              onChange={e => setCategory(e.target.value)}
               className={selectCls}
             >
               {CATEGORIES.map(cat => (
@@ -574,6 +588,13 @@ export default function SubscriptionForm({
                   {t(`categories.${cat.value}` as Parameters<typeof t>[0])}
                 </option>
               ))}
+              {customCategories.length > 0 && (
+                <optgroup label="Personalizadas">
+                  {customCategories.map(name => (
+                    <option key={name} value={name}>{name}</option>
+                  ))}
+                </optgroup>
+              )}
             </select>
           </SelectRow>
         </Section>
