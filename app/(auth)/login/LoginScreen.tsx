@@ -276,32 +276,14 @@ export default function LoginScreen() {
               className="absolute inset-0"
               variants={{
                 enter: {},
-                center: { transition: { staggerChildren: 0.05 } },
+                center: { transition: { staggerChildren: 0.05, delayChildren: 0.3 } },
                 exit:   { transition: { staggerChildren: 0.035 } },
               }}
               initial="enter"
               animate="center"
               exit="exit"
             >
-              {/*
-                Center logo is the FIRST child → stagger delay 0 → appears before
-                the service logos which follow with 0.05 s × index gap.
-              */}
-              <motion.div
-                className="absolute pointer-events-none"
-                style={{ top: '30%', left: '50%', transform: 'translate(-50%, -50%)' }}
-                variants={{
-                  enter:  { opacity: 0, scale: 0.55 },
-                  center: { opacity: 1, scale: 1,   transition: { duration: 0.55, ease: [0.34, 1.56, 0.64, 1] } },
-                  exit:   { opacity: 0, scale: 0.8, filter: 'blur(6px)', transition: { duration: 0.22 } },
-                }}
-              >
-                <div className="w-[88px] h-[88px] rounded-[24px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.18)]">
-                  <Image src="/logo.png" alt="Perezoso" width={88} height={88} className="w-full h-full object-cover" />
-                </div>
-              </motion.div>
-
-              {/* Floating subscription logos — appear one by one after the center logo */}
+              {/* Floating subscription logos */}
               {FLOATING_LOGOS.map((logo) => (
                 <motion.div
                   key={logo.slug}
@@ -354,6 +336,29 @@ export default function LoginScreen() {
           )}
         </AnimatePresence>
       </motion.div>
+
+      {/* ── Slide 0 center logo — fixed to visual center of available screen ── */}
+      <AnimatePresence>
+        {slide === 0 && (
+          <motion.div
+            key="perezoso-logo"
+            className="absolute pointer-events-none z-[5]"
+            style={{
+              // Center between safe-area-top and the ~260 px panel at the bottom
+              top: 'calc(env(safe-area-inset-top) + (100vh - env(safe-area-inset-top) - 260px) / 2)',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+            }}
+            initial={{ opacity: 0, scale: 0.55 }}
+            animate={{ opacity: 1, scale: 1, transition: { duration: 0.55, ease: [0.34, 1.56, 0.64, 1] } }}
+            exit={{ opacity: 0, scale: 0.8, filter: 'blur(6px)', transition: { duration: 0.22 } }}
+          >
+            <div className="w-[88px] h-[88px] rounded-[24px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.18)]">
+              <Image src="/logo.png" alt="Perezoso" width={88} height={88} className="w-full h-full object-cover" />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Fixed bottom panel: title + body + dots + buttons ── */}
       <div
