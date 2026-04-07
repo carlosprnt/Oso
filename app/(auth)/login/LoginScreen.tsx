@@ -159,7 +159,7 @@ export default function LoginScreen() {
       onTouchEnd={onTouchEnd}
     >
       {/* ── Image / logo – absolute, sits behind the fixed bottom panel ── */}
-      <div className="absolute top-[120px] left-5 right-5 h-[600px] z-0 overflow-hidden rounded-[28px] pointer-events-none">
+      <div className="absolute top-[80px] left-5 right-5 h-[600px] z-0 overflow-hidden rounded-[28px] pointer-events-none">
         <AnimatePresence mode="wait">
           {slide < SLIDES.length ? (
             <motion.img
@@ -192,7 +192,7 @@ export default function LoginScreen() {
 
       {/* ── Fixed bottom panel: title + body + dots + buttons ── */}
       <div
-        className="fixed bottom-0 left-0 right-0 px-6 z-10"
+        className="fixed bottom-0 left-0 right-0 bg-white px-6 pt-6 z-10 rounded-t-[28px] shadow-[0_-8px_24px_rgba(0,0,0,0.06)]"
         style={{ paddingBottom: 'max(32px, env(safe-area-inset-bottom))' }}
       >
         <div className="w-full max-w-sm mx-auto">
