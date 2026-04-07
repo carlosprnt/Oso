@@ -400,11 +400,15 @@ export default function SubscriptionForm({
         // isFirst is derived in PostHog via a first-time-event cohort.
         AnalyticsEvents.subscriptionCreated(analyticsProps, false)
         subscriptionToastBus.emit('created')
+        onCancel?.()
+        const newId = (result as { id?: string })?.id
+        router.push(successRedirect ?? `/subscriptions?new=${newId ?? ''}`)
       } else {
         AnalyticsEvents.subscriptionUpdated({ subscription_id: subscription!.id, ...analyticsProps })
         subscriptionToastBus.emit('updated')
+        onCancel?.()
+        router.push('/subscriptions')
       }
-      onCancel?.()
     })
   }
 

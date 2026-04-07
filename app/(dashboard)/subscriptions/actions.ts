@@ -58,7 +58,7 @@ export async function createSubscription(formData: SubscriptionFormData, success
 
   revalidatePath('/dashboard')
   revalidatePath('/subscriptions')
-  redirect(successRedirect ?? `/subscriptions?new=${result.data?.id ?? ''}`)
+  return { id: result.data?.id ?? '' }
 }
 
 // ============================================================
@@ -102,7 +102,7 @@ export async function updateSubscription(id: string, formData: SubscriptionFormD
 
   revalidatePath('/dashboard')
   revalidatePath('/subscriptions')
-  redirect('/subscriptions')
+  return { success: true }
 }
 
 // ============================================================
