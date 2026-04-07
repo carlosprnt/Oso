@@ -338,27 +338,42 @@ export default function LoginScreen() {
 
     </div>
 
-    {/* ── Sign-in modal — outside overflow:hidden root ── */}
+    {/*
+      ── Sign-in modal — two independent fixed layers ──────────────────────
+      Backdrop and panel are siblings, not parent/child.
+      • Backdrop: fixed inset-0, color set via CSS class (never via animated
+        property — Framer Motion backgroundColor doesn't paint reliably on
+        iOS composited layers). Only opacity is animated.
+      • Panel: separate fixed element at z-[201], animates y independently.
+      No parent wrapper → no stacking context, overflow, flex, or transform
+      that could clip or limit the backdrop's coverage.
+    */}
     <AnimatePresence>
       {sheetOpen && (
         <motion.div
-          key="sheet"
-          initial={{ backgroundColor: 'rgba(0,0,0,0)' }}
-          animate={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
-          exit={{ backgroundColor: 'rgba(0,0,0,0)' }}
+          key="backdrop"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-[200] flex items-end justify-center"
+          className="fixed inset-0 z-[200] bg-black/50"
           onClick={() => !isLoading && setSheetOpen(false)}
+        />
+      )}
+    </AnimatePresence>
+    <AnimatePresence>
+      {sheetOpen && (
+        <motion.div
+          key="sheet-panel"
+          initial={{ y: '100%' }}
+          animate={{ y: 0 }}
+          exit={{ y: '100%' }}
+          transition={{ type: 'spring', stiffness: 380, damping: 34 }}
+          className="fixed bottom-0 left-0 right-0 z-[201] bg-white rounded-t-[40px] px-5 pt-4"
+          style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom))' }}
+          onClick={e => e.stopPropagation()}
         >
-          <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', stiffness: 380, damping: 34 }}
-            className="w-full max-w-xl bg-white rounded-t-[40px] px-5 pt-4 pb-6"
-            style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom))' }}
-            onClick={e => e.stopPropagation()}
-          >
+          <div className="w-full max-w-xl mx-auto">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-[17px] font-semibold text-[#121212]">Iniciar sesión</h3>
               <button
@@ -371,7 +386,7 @@ export default function LoginScreen() {
               </button>
             </div>
             <AuthButtons isLoading={isLoading} error={error} onGoogle={handleGoogleLogin} />
-          </motion.div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
