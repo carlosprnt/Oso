@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useLayoutEffect, useCallback } from 'react'
-import { motion, AnimatePresence, useMotionValue, useTransform, animate, useAnimate } from 'framer-motion'
+import { motion, AnimatePresence, useMotionValue, useTransform, animate } from 'framer-motion'
 import Image from 'next/image'
 import { ArrowRight, X } from 'lucide-react'
 import { getOAuthRedirectUrl } from '@/lib/platform'
@@ -162,16 +162,16 @@ export default function LoginScreen() {
   const [textHeight, setTextHeight] = useState<number | undefined>(undefined)
 
   // Bubble-bounce: tap on slide 0 makes logos jump randomly
-  const [heroScope, animateHero] = useAnimate()
+  const heroRef = useRef<HTMLDivElement>(null)
   function handleHeroTap() {
     haptics.tap('light')
     FLOATING_LOGOS.forEach((logo) => {
-      if (!heroScope.current) return
-      const el = heroScope.current.querySelector<HTMLElement>(`[data-slug="${logo.slug}"]`)
+      if (!heroRef.current) return
+      const el = heroRef.current.querySelector<HTMLElement>(`[data-slug="${logo.slug}"]`)
       if (!el) return
       const dy = -(18 + Math.random() * 44)
       const dx = (Math.random() - 0.5) * 28
-      animateHero(el, { y: [0, dy, 0], x: [0, dx, 0] }, {
+      animate(el, { y: [0, dy, 0], x: [0, dx, 0] }, {
         duration: 0.5 + Math.random() * 0.35,
         ease: [0.34, 1.56, 0.64, 1],
         delay: Math.random() * 0.1,
@@ -271,7 +271,7 @@ export default function LoginScreen() {
             /* ── Slide 0: Perezoso logo + floating service logos ── */
             <motion.div
               key="hero-0"
-              ref={heroScope}
+              ref={heroRef}
               className="absolute inset-0"
               variants={{
                 enter: {},
