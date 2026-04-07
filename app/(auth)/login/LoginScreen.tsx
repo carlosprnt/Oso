@@ -103,9 +103,10 @@ export default function LoginScreen() {
   const measureRef = useRef<HTMLDivElement>(null)
   const [textHeight, setTextHeight] = useState<number | undefined>(undefined)
 
-  // Scroll-up gesture on image: scales to 0.98 at max travel
+  // Scroll-up gesture on image: scales to 0.98 at max travel (150px)
   const panY = useMotionValue(0)
-  const imgScale = useTransform(panY, [-50, 0], [0.98, 1])
+  const imgScale = useTransform(panY, [-150, 0], [0.98, 1])
+  const imgY    = useTransform(panY, [-150, 0], [-150, 0])
 
   useLayoutEffect(() => {
     if (!measureRef.current) return
@@ -174,12 +175,15 @@ export default function LoginScreen() {
       {/* ── Image / logo – absolute, sits behind the fixed bottom panel ── */}
       <motion.div
         className="absolute top-[80px] left-5 right-5 h-[600px] z-0"
-        style={{ scale: imgScale }}
+        style={{ scale: imgScale, y: imgY }}
         onPan={(_, info) => {
           if (info.delta.y < 0 || panY.get() < 0)
-            panY.set(Math.max(-50, Math.min(0, panY.get() + info.delta.y)))
+            panY.set(Math.max(-150, Math.min(0, panY.get() + info.delta.y)))
         }}
         onPanEnd={() => animate(panY, 0, { type: 'spring', stiffness: 320, damping: 30 })}
+        onTap={() => animate(panY, -40, { duration: 0.12, ease: 'easeOut' }).then(
+          () => animate(panY, 0, { type: 'spring', stiffness: 320, damping: 30 })
+        )}
       >
         <AnimatePresence mode="wait" custom={direction}>
           {slide < SLIDES.length ? (
@@ -235,7 +239,7 @@ export default function LoginScreen() {
 
           {/* Text block — fixed height for slides 0-3, auto for login */}
           <div
-            className={slide < SLIDES.length ? 'relative overflow-hidden' : ''}
+            className={slide < SLIDES.length ? 'relative' : ''}
             style={slide < SLIDES.length && textHeight ? { height: textHeight } : undefined}
           >
             <AnimatePresence mode="wait">
@@ -246,7 +250,7 @@ export default function LoginScreen() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute inset-0"
+                  className="absolute top-0 left-0 right-0"
                 >
                   <h1 className="text-[28px] font-extrabold text-[#121212] leading-tight mb-3">
                     {SLIDES[slide].title}
