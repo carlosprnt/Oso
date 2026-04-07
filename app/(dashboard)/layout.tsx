@@ -34,7 +34,11 @@ export default async function DashboardLayout({
 
   return (
     <LocaleProvider locale={detectedLocale}>
-      <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#121212]">
+      {/* pt-[env(safe-area-inset-top)]: with black-translucent status bar the
+          system background is removed and web content fills the whole screen.
+          This padding reserves the notch/Dynamic Island height so app content
+          starts below the status bar icons. */}
+      <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#121212] pt-[env(safe-area-inset-top)]">
         <Sidebar profile={profile as Profile | null} />
 
         {/* Main content — offset by sidebar width on desktop */}

@@ -55,7 +55,17 @@ export default async function RootLayout({
         />
         {/* iOS PWA splash screen */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        {/*
+          black-translucent: removes the iOS system UIVisualEffectView that
+          renders a white/blur bar above the WKWebView. With "default", that
+          system bar sits above every CSS z-index — no web overlay can cover it.
+          black-translucent makes the status bar purely transparent so web
+          content (including dark backdrops) renders all the way to the top.
+          Companion changes: dashboard outer wrapper gets pt-[env(safe-area-inset-top)]
+          and the sticky hero uses top-[env(safe-area-inset-top)] so content
+          doesn't collide with the transparent status bar icons.
+        */}
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <link rel="apple-touch-startup-image" href="/Splash.png" />
       </head>
       <body><ThemeProvider><AnalyticsProvider>{children}</AnalyticsProvider></ThemeProvider></body>
