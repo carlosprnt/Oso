@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useLayoutEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import { ChevronRight, X } from 'lucide-react'
@@ -99,7 +99,17 @@ function AuthButtons({
 // ─── Main screen ─────────────────────────────────────────────────────────────
 export default function LoginScreen() {
   const [slide, setSlide] = useState(0)
-  const [direction, setDirection] = useState<1 | -1>(1) // 1 = forward, -1 = back
+  const [direction, setDirection] = useState<1 | -1>(1)
+  const measureRef = useRef<HTMLDivElement>(null)
+  const [textHeight, setTextHeight] = useState<number | undefined>(undefined)
+
+  useLayoutEffect(() => {
+    if (!measureRef.current) return
+    const els = measureRef.current.querySelectorAll<HTMLDivElement>('[data-measure]')
+    let max = 0
+    els.forEach(el => { max = Math.max(max, el.offsetHeight) })
+    setTextHeight(max)
+  }, []) // 1 = forward, -1 = back
   const [sheetOpen, setSheetOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -209,40 +219,56 @@ export default function LoginScreen() {
         style={{ paddingBottom: 'max(32px, env(safe-area-inset-bottom))' }}
       >
         <div className="w-full max-w-sm mx-auto">
-          {/* Text block */}
-          <AnimatePresence mode="wait">
-            {slide < SLIDES.length ? (
-              <motion.div
-                key={`text-${slide}`}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-              >
-                <h1 className="text-[28px] font-extrabold text-[#121212] leading-tight mb-3">
-                  {SLIDES[slide].title}
-                </h1>
-                <p className="text-[15px] text-[#424242] leading-relaxed mb-5">
-                  {SLIDES[slide].body}
-                </p>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="text-login"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-              >
-                <h1 className="text-[28px] font-extrabold text-[#121212] leading-tight mb-3">
-                  Empieza ahora
-                </h1>
-                <p className="text-[15px] text-[#424242] leading-relaxed mb-5">
-                  Inicia sesión y vuelca todas tus suscripciones en un solo sitio.
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Hidden measurement: render all 4 slide texts to find tallest */}
+          <div ref={measureRef} className="absolute invisible pointer-events-none w-full max-w-sm" aria-hidden>
+            {SLIDES.map((s, i) => (
+              <div key={i} data-measure>
+                <h1 className="text-[28px] font-extrabold text-[#121212] leading-tight mb-3">{s.title}</h1>
+                <p className="text-[15px] text-[#424242] leading-relaxed mb-5">{s.body}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Text block — fixed height for slides 0-3, auto for login */}
+          <div
+            className={slide < SLIDES.length ? 'relative overflow-hidden' : ''}
+            style={slide < SLIDES.length && textHeight ? { height: textHeight } : undefined}
+          >
+            <AnimatePresence mode="wait">
+              {slide < SLIDES.length ? (
+                <motion.div
+                  key={`text-${slide}`}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute inset-0"
+                >
+                  <h1 className="text-[28px] font-extrabold text-[#121212] leading-tight mb-3">
+                    {SLIDES[slide].title}
+                  </h1>
+                  <p className="text-[15px] text-[#424242] leading-relaxed mb-5">
+                    {SLIDES[slide].body}
+                  </p>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="text-login"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <h1 className="text-[28px] font-extrabold text-[#121212] leading-tight mb-3">
+                    Empieza ahora
+                  </h1>
+                  <p className="text-[15px] text-[#424242] leading-relaxed mb-5">
+                    Inicia sesión y vuelca todas tus suscripciones en un solo sitio.
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           {/* Dots */}
           <div className="flex items-center gap-1.5 mb-4">
