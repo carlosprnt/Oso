@@ -100,6 +100,11 @@ function AuthButtons({
 export default function LoginScreen() {
   const [slide, setSlide] = useState(0)
   const [direction, setDirection] = useState<1 | -1>(1)
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const totalSlides = SLIDES.length + 1
+
   const measureRef = useRef<HTMLDivElement>(null)
   const [textHeight, setTextHeight] = useState<number | undefined>(undefined)
 
@@ -125,10 +130,6 @@ export default function LoginScreen() {
     meta.content = sheetOpen ? '#1a1a1a' : original
     return () => { meta.content = original }
   }, [sheetOpen])
-  const [sheetOpen, setSheetOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const totalSlides = SLIDES.length + 1 // +1 for the final login slide
 
   function go(to: number) {
     if (to === slide || to < 0 || to >= totalSlides) return
