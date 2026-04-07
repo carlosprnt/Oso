@@ -20,7 +20,7 @@ const SLIDES: Slide[] = [
   {
     image: '/onboarding/01.png',
     title: 'Todas tus suscripciones en un solo sitio',
-    body: 'Perezoso te muestra cuánto pagas al mes, qué se renueva esta semana y dónde puedes ahorrar.',
+    body: 'Cuánto pagas al mes, qué se renueva esta semana y dónde puedes ahorrar.',
   },
   {
     image: '/onboarding/02.png',
