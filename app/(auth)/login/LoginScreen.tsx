@@ -199,14 +199,14 @@ export default function LoginScreen() {
               alt=""
               custom={direction}
               variants={{
-                enter: (dir: number) => ({ opacity: 0, x: `${dir * 100}%` }),
-                center: { opacity: 1, x: 0 },
-                exit: (dir: number) => ({ opacity: 0, x: `${dir * -100}%` }),
+                enter: (dir: number) => ({ opacity: 0, x: `${dir * 100}%`, filter: 'blur(12px)' }),
+                center: { opacity: 1, x: 0, filter: 'blur(0px)' },
+                exit: (dir: number) => ({ opacity: 0, x: `${dir * -100}%`, filter: 'blur(12px)' }),
               }}
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: 0.28, ease: [0.42, 0, 0.58, 1] }}
+              transition={{ duration: 0.4, ease: [0.42, 0, 0.58, 1] }}
               className="absolute inset-0 w-full h-full object-cover object-top pointer-events-none"
               onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden' }}
             />
@@ -321,7 +321,7 @@ export default function LoginScreen() {
                 Continuar
                 <motion.span
                   animate={slide === 0 ? { x: [0, 5, 0] } : { x: 0 }}
-                  transition={slide === 0 ? { duration: 1.2, repeat: Infinity, ease: 'easeInOut' } : {}}
+                  transition={slide === 0 ? { duration: 2.8, repeat: Infinity, ease: 'easeInOut' } : {}}
                 >
                   <ArrowRight size={16} strokeWidth={2.5} />
                 </motion.span>
