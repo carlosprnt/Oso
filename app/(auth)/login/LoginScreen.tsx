@@ -159,15 +159,21 @@ export default function LoginScreen() {
     >
       {/* ── Image / logo – absolute, sits behind the fixed bottom panel ── */}
       <div className="absolute top-[80px] left-5 right-5 h-[600px] z-0 pointer-events-none">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" custom={direction}>
           {slide < SLIDES.length ? (
             <motion.img
               key={`img-${slide}`}
               src={SLIDES[slide].image}
               alt=""
-              initial={{ opacity: 0, x: direction * 100 + '%' }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: direction * -100 + '%' }}
+              custom={direction}
+              variants={{
+                enter: (dir: number) => ({ opacity: 0, x: `${dir * 100}%` }),
+                center: { opacity: 1, x: 0 },
+                exit: (dir: number) => ({ opacity: 0, x: `${dir * -100}%` }),
+              }}
+              initial="enter"
+              animate="center"
+              exit="exit"
               transition={{ duration: 0.28, ease: [0.42, 0, 0.58, 1] }}
               className="absolute inset-0 w-full h-full object-cover object-top"
               onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden' }}
