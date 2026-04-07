@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { Check } from 'lucide-react'
 import { subscriptionToastBus } from '@/lib/subscriptionToastBus'
 import type { SubscriptionToastKind } from '@/lib/subscriptionToastBus'
@@ -49,15 +50,20 @@ function Toast({ kind, locale, onDone }: {
 
 /**
  * Mounted once in (dashboard)/layout.tsx. Listens to subscriptionToastBus
- * and renders the toast. Lives outside the SubscriptionForm component tree
- * so it survives sheet close / form unmount.
+ * and renders the toast via createPortal to document.body — same pattern as
+ * ReminderToast — so it renders above every stacking context.
  */
 export default function SubscriptionToastHost() {
   const locale = useLocale()
   const [kind, setKind] = useState<SubscriptionToastKind | null>(null)
+  const [mounted, setMounted] = useState(false)
 
+  useEffect(() => { setMounted(true) }, [])
   useEffect(() => subscriptionToastBus.on(setKind), [])
 
-  if (!kind) return null
-  return <Toast kind={kind} locale={locale} onDone={() => setKind(null)} />
+  if (!mounted || !kind) return null
+  return createPortal(
+    <Toast kind={kind} locale={locale} onDone={() => setKind(null)} />,
+    document.body,
+  )
 }
