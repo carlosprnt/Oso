@@ -53,33 +53,10 @@ export default async function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
-        {/* iOS PWA splash screens */}
+        {/* iOS PWA splash screen */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        {/* iPhone SE (2nd/3rd) */}
-        <link rel="apple-touch-startup-image" href="/splash/750x1334" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
-        {/* iPhone 8 Plus / 7 Plus */}
-        <link rel="apple-touch-startup-image" href="/splash/1242x2208" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
-        {/* iPhone X / XS / 11 Pro / 12 mini / 13 mini */}
-        <link rel="apple-touch-startup-image" href="/splash/1125x2436" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
-        {/* iPhone XR / 11 */}
-        <link rel="apple-touch-startup-image" href="/splash/828x1792" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
-        {/* iPhone XS Max / 11 Pro Max */}
-        <link rel="apple-touch-startup-image" href="/splash/1242x2688" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
-        {/* iPhone 12 / 12 Pro / 13 / 13 Pro / 14 */}
-        <link rel="apple-touch-startup-image" href="/splash/1170x2532" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
-        {/* iPhone 12 Pro Max / 13 Pro Max / 14 Plus */}
-        <link rel="apple-touch-startup-image" href="/splash/1284x2778" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
-        {/* iPhone 14 Pro / 15 / 15 Pro / 16 */}
-        <link rel="apple-touch-startup-image" href="/splash/1179x2556" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
-        {/* iPhone 14 Pro Max / 15 Plus / 15 Pro Max */}
-        <link rel="apple-touch-startup-image" href="/splash/1290x2796" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
-        {/* iPhone 16 Pro */}
-        <link rel="apple-touch-startup-image" href="/splash/1206x2622" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
-        {/* iPhone 16 Plus */}
-        <link rel="apple-touch-startup-image" href="/splash/1320x2868" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
-        {/* iPhone 16 Pro Max */}
-        <link rel="apple-touch-startup-image" href="/splash/1440x3120" media="(device-width: 480px) and (device-height: 1040px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+        <link rel="apple-touch-startup-image" href="/Splash.png" />
       </head>
       <body><ThemeProvider><AnalyticsProvider>{children}</AnalyticsProvider></ThemeProvider></body>
     </html>
