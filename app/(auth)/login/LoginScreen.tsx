@@ -3,7 +3,7 @@
 import { useState, useRef, useLayoutEffect } from 'react'
 import { motion, AnimatePresence, useMotionValue, useTransform, animate } from 'framer-motion'
 import Image from 'next/image'
-import { ChevronRight, X } from 'lucide-react'
+import { ArrowRight, X } from 'lucide-react'
 import { getOAuthRedirectUrl } from '@/lib/platform'
 import { createClient } from '@/lib/supabase/client'
 import haptics from '@/lib/haptics'
@@ -319,7 +319,12 @@ export default function LoginScreen() {
                 className="flex-1 h-12 rounded-full bg-[#3D3BF3] text-white text-[15px] font-semibold active:bg-[#3230D0] transition-colors flex items-center justify-center gap-1.5"
               >
                 Continuar
-                <ChevronRight size={16} strokeWidth={2.5} />
+                <motion.span
+                  animate={slide === 0 ? { x: [0, 5, 0] } : { x: 0 }}
+                  transition={slide === 0 ? { duration: 1.2, repeat: Infinity, ease: 'easeInOut' } : {}}
+                >
+                  <ArrowRight size={16} strokeWidth={2.5} />
+                </motion.span>
               </button>
             </div>
           ) : (
