@@ -29,8 +29,8 @@ const SLIDES: Slide[] = [
   },
   {
     image: '/onboarding/03.png',
-    title: 'Detección automática desde tu Gmail',
-    body: 'Conecta tu correo y Perezoso encontrará por ti las suscripciones que ya estás pagando.',
+    title: 'Anticípate a cada renovación',
+    body: 'Consulta tus próximos cobros y recibe avisos antes de que se renueven.',
   },
   {
     image: '/onboarding/04.png',
