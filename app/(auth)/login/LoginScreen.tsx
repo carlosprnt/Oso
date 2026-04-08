@@ -18,14 +18,14 @@ interface FloatingLogo {
 }
 
 const FLOATING_LOGOS: FloatingLogo[] = [
-  // ── above Perezoso (top < 30%) ──
+  // ── above Oso (top < 30%) ──
   { slug: 'netflix',    name: 'Netflix',    left: '4%',  top: '8%',  size: 52, floatIdx: 0, floatDur: 2.6, floatDelay: 0.0, exitX: -90,  exitScale: 0.35 },
   { slug: 'figma',      name: 'Figma',      left: '36%', top: '2%',  size: 42, floatIdx: 7, floatDur: 3.2, floatDelay: 0.6, exitX: -95,  exitScale: 0.35 },
   { slug: 'spotify',    name: 'Spotify',    left: '66%', top: '5%',  size: 46, floatIdx: 3, floatDur: 3.1, floatDelay: 0.5, exitX: -115, exitScale: 0.50 },
   { slug: 'revolut',    name: 'Revolut',    left: '52%', top: '13%', size: 40, floatIdx: 6, floatDur: 3.4, floatDelay: 0.1, exitX: -70,  exitScale: 0.50 },
   { slug: 'duolingo',   name: 'Duolingo',   left: '5%',  top: '22%', size: 44, floatIdx: 3, floatDur: 2.7, floatDelay: 0.9, exitX: -105, exitScale: 0.45 },
   { slug: 'youtube',    name: 'YouTube',    left: '74%', top: '20%', size: 50, floatIdx: 1, floatDur: 2.8, floatDelay: 0.3, exitX: -75,  exitScale: 0.40 },
-  // ── below Perezoso (top > 30%) ──
+  // ── below Oso (top > 30%) ──
   { slug: 'notion',     name: 'Notion',     left: '3%',  top: '50%', size: 44, floatIdx: 5, floatDur: 3.3, floatDelay: 0.8, exitX: -100, exitScale: 0.45 },
   { slug: 'twitch',     name: 'Twitch',     left: '68%', top: '52%', size: 52, floatIdx: 2, floatDur: 2.5, floatDelay: 0.2, exitX: -85,  exitScale: 0.30 },
   { slug: 'github',     name: 'GitHub',     left: '52%', top: '63%', size: 46, floatIdx: 6, floatDur: 2.9, floatDelay: 0.4, exitX: -80,  exitScale: 0.40 },
@@ -269,7 +269,7 @@ export default function LoginScreen() {
       >
         <AnimatePresence mode="wait" custom={direction}>
           {slide === 0 ? (
-            /* ── Slide 0: Perezoso logo + floating service logos ── */
+            /* ── Slide 0: Oso logo + floating service logos ── */
             <motion.div
               key="hero-0"
               ref={heroRef}
@@ -330,7 +330,7 @@ export default function LoginScreen() {
               className="absolute inset-0 flex items-center justify-center pointer-events-none"
             >
               <div className="w-24 h-24 rounded-[26px] overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
-                <Image src="/logo.png" alt="Perezoso" width={96} height={96} className="w-full h-full object-cover" />
+                <Image src="/logo.png" alt="Oso" width={96} height={96} className="w-full h-full object-cover" />
               </div>
             </motion.div>
           )}
@@ -360,7 +360,7 @@ export default function LoginScreen() {
             exit={{ opacity: 0, scale: 0.8, filter: 'blur(6px)', transition: { duration: 0.22 } }}
           >
             <div className="w-[88px] h-[88px] rounded-[24px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.18)]">
-              <Image src="/logo.png" alt="Perezoso" width={88} height={88} className="w-full h-full object-cover" />
+              <Image src="/logo.png" alt="Oso" width={88} height={88} className="w-full h-full object-cover" />
             </div>
           </motion.div>
         )}

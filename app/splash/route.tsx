@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
           width={logoSize}
           height={logoSize}
           style={{ borderRadius: logoSize * 0.22 }}
-          alt="Perezoso"
+          alt="Oso"
         />
       </div>
     ),

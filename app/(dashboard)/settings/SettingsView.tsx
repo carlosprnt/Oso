@@ -151,10 +151,10 @@ export default function SettingsView({ preferences }: Props) {
   }
 
   async function handleShare() {
-    const text = 'Check out Perezoso — the simplest way to track your subscriptions 🦥'
+    const text = 'Check out Oso — the simplest way to track your subscriptions 🦥'
     const url = typeof window !== 'undefined' ? window.location.origin : ''
     if (typeof navigator !== 'undefined' && navigator.share) {
-      await navigator.share({ title: 'Perezoso', text, url }).catch(() => {})
+      await navigator.share({ title: 'Oso', text, url }).catch(() => {})
     } else {
       try { await navigator.clipboard.writeText(`${text} ${url}`) } catch { /* ignore */ }
     }
@@ -184,15 +184,15 @@ export default function SettingsView({ preferences }: Props) {
       </div>
       <div className="px-5">
 
-      {/* ── Perezoso Plus ──────────────────────────────────────────────── */}
+      {/* ── Oso Plus ──────────────────────────────────────────────── */}
       <Group>
         <div className="flex items-center gap-3 px-4 py-3">
           <div className="w-11 h-11 rounded-[10px] overflow-hidden flex-shrink-0 bg-white">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="Perezoso" className="w-full h-full object-cover" />
+            <img src="/logo.png" alt="Oso" className="w-full h-full object-cover" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[15px] font-semibold text-[#121212] dark:text-[#F2F2F7] leading-tight">Perezoso Plus</p>
+            <p className="text-[15px] font-semibold text-[#121212] dark:text-[#F2F2F7] leading-tight">Oso Plus</p>
             <p className="text-[13px] text-[#737373] dark:text-[#8E8E93] mt-0.5">Próximamente features únicas</p>
           </div>
           <button

@@ -97,9 +97,9 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
 
   async function handleShare() {
     setOpen(false)
-    const text = shareText ?? 'Check my subscription overview tracked with Perezoso 🦥'
+    const text = shareText ?? 'Check my subscription overview tracked with Oso 🦥'
     if (navigator.share) {
-      await navigator.share({ title: 'Perezoso — My Subscriptions', text }).catch(() => {})
+      await navigator.share({ title: 'Oso — My Subscriptions', text }).catch(() => {})
     } else {
       try {
         await navigator.clipboard.writeText(text)
@@ -295,11 +295,11 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
             )}
           </div>
 
-          {/* Face B — Perezoso logo */}
+          {/* Face B — Oso logo */}
           <div style={{ ...faceStyle, transform: 'rotateY(180deg)' }}>
             <Image
               src="/logo.png"
-              alt="Perezoso"
+              alt="Oso"
               width={40}
               height={40}
               className="w-full h-full object-cover"

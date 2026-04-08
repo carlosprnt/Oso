@@ -35,7 +35,7 @@ export const PAYWALL_COPY: Record<PaywallTrigger, PaywallTriggerMeta> = {
   },
   renewal_reminders: {
     headline:    'Los avisos llegan antes que el cargo',
-    subheadline: 'Actívalos con Perezoso Pro',
+    subheadline: 'Actívalos con Oso Pro',
     highlightBenefit: 'reminders',
   },
   custom_categories: {

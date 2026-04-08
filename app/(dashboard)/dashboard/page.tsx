@@ -53,7 +53,7 @@ export default async function DashboardPage() {
     .map(s => resolveSubscriptionLogoUrl(s.name, s.logo_url))
     .filter((u): u is string => !!u)
 
-  const shareText = `My monthly subscriptions: ${formatCurrency(stats.total_monthly_cost, 'EUR')} across ${subs.length} subscriptions — tracked with Perezoso 🦥`
+  const shareText = `My monthly subscriptions: ${formatCurrency(stats.total_monthly_cost, 'EUR')} across ${subs.length} subscriptions — tracked with Oso 🦥`
 
   const categoryRows = topCategories.map(({ category, monthly_cost }) => ({
     category,

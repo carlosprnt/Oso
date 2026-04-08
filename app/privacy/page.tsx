@@ -18,7 +18,7 @@ export default function PrivacyPage() {
 
       <div className="space-y-6 text-[15px] leading-relaxed text-[#424242] dark:text-[#AEAEB2]">
         <p>
-          Perezoso (&ldquo;we&rdquo;, &ldquo;us&rdquo;) is a subscription tracking tool that helps you keep a tidy
+          Oso (&ldquo;we&rdquo;, &ldquo;us&rdquo;) is a subscription tracking tool that helps you keep a tidy
           overview of the recurring services you pay for. This policy explains what we store,
           why, and what you can do about it.
         </p>
@@ -36,7 +36,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-[17px] font-bold text-[#121212] dark:text-[#F2F2F7] mb-2">2. Gmail access (optional)</h2>
           <p>
-            If you choose to connect Gmail for subscription detection, Perezoso requests the
+            If you choose to connect Gmail for subscription detection, Oso requests the
             <code className="mx-1 px-1.5 py-0.5 rounded bg-[#F0F0F0] dark:bg-[#2C2C2E] text-[13px]">gmail.readonly</code>
             scope to scan a limited window of your inbox for subscription receipts.
           </p>
@@ -44,7 +44,7 @@ export default function PrivacyPage() {
             <li>We never store the body of your emails.</li>
             <li>We only extract structured metadata (sender, detected service name, amount, currency) that you explicitly confirm before saving.</li>
             <li>You can revoke access at any time from your Google account settings.</li>
-            <li>Perezoso&rsquo;s use and transfer of information received from Google APIs adheres to the <a className="text-[#3D3BF3] underline" href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">Google API Services User Data Policy</a>, including the Limited Use requirements.</li>
+            <li>Oso&rsquo;s use and transfer of information received from Google APIs adheres to the <a className="text-[#3D3BF3] underline" href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">Google API Services User Data Policy</a>, including the Limited Use requirements.</li>
           </ul>
         </section>
 
@@ -54,7 +54,7 @@ export default function PrivacyPage() {
             <li>Display your subscriptions and renewal dates inside the app.</li>
             <li>Calculate totals and insights shown on your dashboard.</li>
             <li>Remember your preferences across sessions.</li>
-            <li>Understand aggregated product usage to improve Perezoso.</li>
+            <li>Understand aggregated product usage to improve Oso.</li>
           </ul>
           <p className="mt-2">We do <strong>not</strong> sell, rent or share your data with advertisers.</p>
         </section>

@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
   appId: 'com.perezoso.app',
-  appName: 'Perezoso',
+  appName: 'Oso',
   webDir: 'out',
 
   // In production, load the hosted web app so SSR/API routes keep working.

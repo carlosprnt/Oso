@@ -18,14 +18,14 @@ export default function TermsPage() {
 
       <div className="space-y-6 text-[15px] leading-relaxed text-[#424242] dark:text-[#AEAEB2]">
         <p>
-          By creating an account or using Perezoso, you agree to these terms. If you do not
+          By creating an account or using Oso, you agree to these terms. If you do not
           agree, please do not use the service.
         </p>
 
         <section>
           <h2 className="text-[17px] font-bold text-[#121212] dark:text-[#F2F2F7] mb-2">1. The service</h2>
           <p>
-            Perezoso is a personal subscription tracker. It is provided &ldquo;as is&rdquo; and
+            Oso is a personal subscription tracker. It is provided &ldquo;as is&rdquo; and
             is currently in active development. Features may change, be added or removed.
           </p>
         </section>
@@ -44,7 +44,7 @@ export default function TermsPage() {
           <p>Don&rsquo;t:</p>
           <ul className="list-disc pl-5 space-y-1.5 mt-2">
             <li>Attempt to break, probe or overload the service.</li>
-            <li>Use Perezoso to store unlawful or abusive content.</li>
+            <li>Use Oso to store unlawful or abusive content.</li>
             <li>Attempt to access other people&rsquo;s data.</li>
             <li>Scrape, resell or mirror the service without permission.</li>
           </ul>
@@ -53,7 +53,7 @@ export default function TermsPage() {
         <section>
           <h2 className="text-[17px] font-bold text-[#121212] dark:text-[#F2F2F7] mb-2">4. Gmail integration</h2>
           <p>
-            If you connect Gmail, you grant Perezoso read-only access to your inbox solely to
+            If you connect Gmail, you grant Oso read-only access to your inbox solely to
             detect subscription receipts. You can revoke access at any time. See our{' '}
             <Link href="/privacy" className="text-[#3D3BF3] underline">Privacy Policy</Link> for details.
           </p>
@@ -62,7 +62,7 @@ export default function TermsPage() {
         <section>
           <h2 className="text-[17px] font-bold text-[#121212] dark:text-[#F2F2F7] mb-2">5. No financial advice</h2>
           <p>
-            Perezoso shows totals, insights and savings suggestions for your convenience.
+            Oso shows totals, insights and savings suggestions for your convenience.
             Nothing in the app is financial, legal or tax advice. Double-check your own
             records before making decisions.
           </p>
@@ -79,7 +79,7 @@ export default function TermsPage() {
         <section>
           <h2 className="text-[17px] font-bold text-[#121212] dark:text-[#F2F2F7] mb-2">7. Liability</h2>
           <p>
-            To the extent permitted by law, Perezoso is provided without warranty and we
+            To the extent permitted by law, Oso is provided without warranty and we
             are not liable for indirect or consequential damages arising from your use of
             the service.
           </p>

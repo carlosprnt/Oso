@@ -41,12 +41,12 @@ export default function Sidebar({ profile }: SidebarProps) {
       <div className="flex items-center gap-2.5 px-3 mb-8">
         <Image
           src="/logo.png"
-          alt="Perezoso"
+          alt="Oso"
           width={32}
           height={32}
           className="rounded-xl flex-shrink-0"
         />
-        <span className="font-bold text-[#121212] dark:text-[#F2F2F7] text-base tracking-tight">Perezoso</span>
+        <span className="font-bold text-[#121212] dark:text-[#F2F2F7] text-base tracking-tight">Oso</span>
       </div>
 
       {/* Navigation */}

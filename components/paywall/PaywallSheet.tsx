@@ -102,10 +102,10 @@ export default function PaywallSheet({ trigger, onClose, onPurchaseSuccess }: Pr
           {/* Logo + trigger header */}
           <div className="flex items-center gap-3 mb-5">
             <div className="w-12 h-12 rounded-[14px] overflow-hidden shadow-sm flex-shrink-0">
-              <Image src="/logo.png" alt="Perezoso" width={48} height={48} className="w-full h-full object-cover" />
+              <Image src="/logo.png" alt="Oso" width={48} height={48} className="w-full h-full object-cover" />
             </div>
             <div>
-              <p className="text-[13px] text-[#616161] font-medium">Perezoso Pro</p>
+              <p className="text-[13px] text-[#616161] font-medium">Oso Pro</p>
               <h2 className="text-[17px] font-bold text-[#121212] leading-tight">{copy.headline}</h2>
               <p className="text-[13px] text-[#616161] leading-snug">{copy.subheadline}</p>
             </div>

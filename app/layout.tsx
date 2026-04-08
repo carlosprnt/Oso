@@ -6,8 +6,8 @@ import AnalyticsProvider from '@/lib/analytics/AnalyticsProvider'
 
 export const metadata: Metadata = {
   title: {
-    default: 'Perezoso — Subscription Manager',
-    template: '%s · Perezoso',
+    default: 'Oso — Subscription Manager',
+    template: '%s · Oso',
   },
   description: 'Track and manage all your subscriptions in one clean place.',
   icons: {
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   },
   manifest: '/manifest.json',
   openGraph: {
-    title: 'Perezoso — Subscription Manager',
+    title: 'Oso — Subscription Manager',
     description: 'Track and manage all your subscriptions in one clean place.',
     images: [{ url: '/logo.png', width: 1024, height: 1024 }],
   },

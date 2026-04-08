@@ -275,7 +275,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
           >
             <img
               src="/1C67E800-A121-400E-BC6B-8AE7BE1BD9FE.jpeg"
-              alt="Perezoso mailman"
+              alt="Oso mailman"
               className="w-44 h-44 object-contain"
               onError={e => { (e.target as HTMLImageElement).src = '/logo.png' }}
             />
@@ -405,7 +405,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
           >
             <img
               src="/1C67E800-A121-400E-BC6B-8AE7BE1BD9FE.jpeg"
-              alt="Perezoso mailman"
+              alt="Oso mailman"
               className="w-40 h-40 object-contain"
               onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
             />

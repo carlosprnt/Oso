@@ -125,7 +125,7 @@ export default function StyleAuditClient() {
         </div>
         <h1 className="text-[28px] font-bold text-[#121212] dark:text-[#F2F2F7] leading-tight">Style Audit</h1>
         <p className="text-[15px] text-[#737373] dark:text-[#8E8E93] mt-1">
-          Análisis del sistema de diseño de Perezoso — basado en el código fuente real.
+          Análisis del sistema de diseño de Oso — basado en el código fuente real.
         </p>
         <div className="flex gap-4 mt-4 flex-wrap">
           {[
@@ -224,7 +224,7 @@ export default function StyleAuditClient() {
           {FONT_SIZES.map((f, i) => (
             <div key={f.size} className={`flex items-baseline gap-4 px-5 py-3 ${i < FONT_SIZES.length - 1 ? 'border-b border-[#F0F0F0] dark:border-[#2C2C2E]' : ''}`}>
               <span style={{ fontSize: f.size }} className="font-medium text-[#121212] dark:text-[#F2F2F7] w-40 flex-shrink-0 leading-snug">
-                Perezoso
+                Oso
               </span>
               <code className="text-[11px] text-[#999] dark:text-[#8E8E93] w-40 flex-shrink-0">{f.cls}</code>
               <span className="text-[11px] text-[#737373] dark:text-[#8E8E93] flex-1">{f.role}</span>
@@ -242,7 +242,7 @@ export default function StyleAuditClient() {
             { w: 'font-extrabold', label: '800 Extrabold', uses: 4 },
           ].map((fw, i, arr) => (
             <div key={fw.w} className={`flex items-center gap-4 px-5 py-3 ${i < arr.length - 1 ? 'border-b border-[#F0F0F0] dark:border-[#2C2C2E]' : ''}`}>
-              <span className={`${fw.w} text-[17px] text-[#121212] dark:text-[#F2F2F7] w-40 flex-shrink-0`}>Perezoso</span>
+              <span className={`${fw.w} text-[17px] text-[#121212] dark:text-[#F2F2F7] w-40 flex-shrink-0`}>Oso</span>
               <code className="text-[11px] text-[#999] dark:text-[#8E8E93] w-32 flex-shrink-0">{fw.w}</code>
               <span className="text-[11px] text-[#737373] dark:text-[#8E8E93] flex-1">{fw.label}</span>
               <span className="text-[11px] text-[#bbb] dark:text-[#8E8E93]">{fw.uses}×</span>
