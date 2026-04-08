@@ -55,7 +55,7 @@ export async function purchasePackage(packageIdentifier: string) {
   const Purchases = await getPurchases()
   const offering = await getCurrentOffering()
   const pkg = offering?.availablePackages.find(
-    p => p.identifier === packageIdentifier
+    (p: { identifier: string }) => p.identifier === packageIdentifier
   )
   if (!pkg) throw new Error(`Package ${packageIdentifier} not found`)
   return Purchases.purchasePackage({ aPackage: pkg })
