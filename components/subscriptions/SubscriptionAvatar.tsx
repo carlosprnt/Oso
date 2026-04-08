@@ -14,13 +14,17 @@ interface SubscriptionAvatarProps {
   corner?: string
 }
 
+/* Uniform 40x40 container for every logo regardless of the `size`
+   prop — kept as a type union so existing callers keep type-checking
+   without needing to be touched. */
+const UNIFIED = { cls: 'w-10 h-10', text: 'text-xs font-semibold', px: 40 }
 const SIZE = {
-  sm:   { cls: 'w-9 h-9',            text: 'text-xs font-semibold',  px: 36  },
-  sm40: { cls: 'w-10 h-10',          text: 'text-xs font-semibold',  px: 40  },
-  md:   { cls: 'w-11 h-11',          text: 'text-sm font-semibold',  px: 44  },
-  md48: { cls: 'w-12 h-12',          text: 'text-sm font-semibold',  px: 48  },
-  lg:   { cls: 'w-14 h-14',          text: 'text-base font-bold',    px: 56  },
-  xl:   { cls: 'w-[72px] h-[72px]',  text: 'text-xl font-bold',      px: 72  },
+  sm:   UNIFIED,
+  sm40: UNIFIED,
+  md:   UNIFIED,
+  md48: UNIFIED,
+  lg:   UNIFIED,
+  xl:   UNIFIED,
 }
 
 const SIMPLE_ICONS_CDN = 'https://cdn.simpleicons.org'
@@ -62,7 +66,7 @@ export default function SubscriptionAvatar({
           alt={name}
           width={SIZE[size].px}
           height={SIZE[size].px}
-          className="w-[82%] h-[82%] object-contain grayscale"
+          className="w-[82%] h-[82%] object-contain"
           onError={() => setImgError(true)}
           loading="lazy"
         />

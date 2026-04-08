@@ -77,18 +77,6 @@ a {
   text-decoration-color: currentColor;
 }
 
-/* Force every brand / platform logo to render in black & white, no
-   matter which component happens to draw it. Catches logos pulled
-   from the CDNs we use so even future/uploaded logos land in B&W. */
-img[src*="simpleicons.org"],
-img[src*="svgl.app"],
-img[src*="wikimedia.org"],
-img[src*="clearbit.com"],
-img[src*="logo.clearbit.com"] {
-  filter: grayscale(1);
-  -webkit-filter: grayscale(1);
-}
-
 .tabular-nums {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";

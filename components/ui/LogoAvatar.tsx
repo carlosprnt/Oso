@@ -8,10 +8,13 @@ interface LogoAvatarProps {
   className?: string
 }
 
+/* Uniform 40x40 container for every logo regardless of the `size`
+   prop — kept as a type union so existing callers keep working. */
+const UNIFIED = { container: 'w-10 h-10', text: 'text-sm', px: 40, py: 40 }
 const SIZE_MAP = {
-  sm: { container: 'w-8 h-8',   text: 'text-xs',  px: 32,  py: 32  },
-  md: { container: 'w-10 h-10', text: 'text-sm',  px: 40,  py: 40  },
-  lg: { container: 'w-12 h-12', text: 'text-base', px: 48, py: 48  },
+  sm: UNIFIED,
+  md: UNIFIED,
+  lg: UNIFIED,
 }
 
 export default function LogoAvatar({
@@ -35,7 +38,7 @@ export default function LogoAvatar({
           alt={`${name} logo`}
           width={px}
           height={py}
-          className="w-full h-full object-cover grayscale"
+          className="w-full h-full object-cover"
           unoptimized // logos are external, skip optimization
         />
       </div>

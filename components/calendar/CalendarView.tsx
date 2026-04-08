@@ -88,7 +88,7 @@ function CellLogo({ name, logoUrl, size }: { name: string; logoUrl: string | nul
           alt={name}
           width={size}
           height={size}
-          className="w-[84%] h-[84%] object-contain grayscale"
+          className="w-[84%] h-[84%] object-contain"
           loading="lazy"
           onError={() => setImgError(true)}
         />
