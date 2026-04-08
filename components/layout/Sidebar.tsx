@@ -9,8 +9,8 @@ import Image from 'next/image'
 import type { Profile } from '@/types'
 
 const NAV_ITEMS = [
-  { href: '/dashboard',     icon: LayoutDashboard, label: 'Dashboard' },
   { href: '/subscriptions', icon: CreditCard,      label: 'Subscriptions' },
+  { href: '/dashboard',     icon: LayoutDashboard, label: 'Dashboard' },
   { href: '/calendar',      icon: CalendarDays,    label: 'Calendar' },
 ]
 

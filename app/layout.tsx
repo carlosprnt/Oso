@@ -27,7 +27,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,      // Prevent pinch-zoom in native app context
-  themeColor: '#4318D1',
+  themeColor: '#121212',
   viewportFit: 'cover', // Draw under notch / Dynamic Island / home indicator
 }
 
@@ -46,12 +46,6 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `try{var p=localStorage.getItem('perezoso_theme');var d=p==='dark'||(p==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark')}catch(e){}`
           }}
-        />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-          rel="stylesheet"
         />
         {/* iOS PWA splash screen */}
         <meta name="apple-mobile-web-app-capable" content="yes" />

@@ -3,8 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import {
   motion, AnimatePresence, LayoutGroup, useAnimationControls,
-  useScroll, useVelocity, useSpring, useTransform, useMotionTemplate,
-  type MotionValue,
+  useTransform, useMotionTemplate,
 } from 'framer-motion'
 import { useRouter, usePathname } from 'next/navigation'
 import { useEffectiveScrollY } from '@/lib/hooks/useEffectiveScrollY'
@@ -12,58 +11,21 @@ import SubscriptionDetailOverlay from './SubscriptionDetailOverlay'
 import { SlidersHorizontal, CalendarDays, Check, ChevronsUpDown, X } from 'lucide-react'
 import BottomSheet from '@/components/ui/BottomSheet'
 import CalendarView from '@/components/calendar/CalendarView'
-import SubscriptionAvatar from '@/components/subscriptions/SubscriptionAvatar'
 import QuickAddPlatforms from '@/components/dashboard/QuickAddPlatforms'
 import { AnalyticsEvents } from '@/lib/analytics'
 import haptics from '@/lib/haptics'
-import { resolveSubscriptionLogoUrl } from '@/lib/constants/platforms'
 import { formatCurrency } from '@/lib/utils/currency'
 import { CATEGORIES } from '@/lib/constants/categories'
-import { useElasticPullDown } from '@/lib/hooks/useElasticPullDown'
-import { useT, useLocale } from '@/lib/i18n/LocaleProvider'
+import { useT } from '@/lib/i18n/LocaleProvider'
 import type { SubscriptionWithCosts, SubscriptionStatus, Category, DashboardStats } from '@/types'
 
-// ─── Billing helpers ──────────────────────────────────────────────────────────
-function billingPeriodDays(period: string, intervalCount: number): number {
-  const base: Record<string, number> = { weekly: 7, monthly: 30, quarterly: 91, yearly: 365 }
-  return (base[period] ?? 30) * intervalCount
-}
-
-function billingProgress(nextBillingDate: string | null, period: string, intervalCount: number): number {
-  if (!nextBillingDate) return 0
-  const today = new Date(); today.setHours(0, 0, 0, 0)
-  const next = new Date(nextBillingDate); next.setHours(0, 0, 0, 0)
-  const totalDays = billingPeriodDays(period, intervalCount)
-  const daysLeft = Math.max(0, Math.round((next.getTime() - today.getTime()) / 86_400_000))
-  return Math.min(1, Math.max(0, (totalDays - daysLeft) / totalDays))
-}
-
-function daysUntilBilling(nextBillingDate: string | null): number {
-  if (!nextBillingDate) return 0
-  const today = new Date(); today.setHours(0, 0, 0, 0)
-  const next = new Date(nextBillingDate); next.setHours(0, 0, 0, 0)
-  return Math.max(0, Math.round((next.getTime() - today.getTime()) / 86_400_000))
-}
-
-function formatShortDate(dateStr: string | null, locale: string): string {
-  if (!dateStr) return ''
-  return new Date(dateStr).toLocaleDateString(locale === 'es' ? 'es-ES' : 'en-US', {
-    day: 'numeric', month: 'short', year: 'numeric',
-  })
-}
-
+// ─── Status ───────────────────────────────────────────────────────────────────
 const STATUS_COLOR: Record<string, string> = {
   active: '#16A34A', trial: '#D97706', paused: '#E07B1A', cancelled: '#EF4444',
 }
 
-function StatusLabel({ status }: { status: string }) {
-  const t = useT()
-  const key = `status.${status}` as Parameters<typeof t>[0]
-  return <>{t(key)}</>
-}
-
-// ─── Sorting ───────────────────────────────────────────────────────────────
-type SortMode = 'alphabetical' | 'recently_added' | 'recently_updated' | 'price_high' | 'price_low' | 'by_category'
+// ─── Sorting ──────────────────────────────────────────────────────────────────
+type SortMode = 'alphabetical' | 'recently_added' | 'recently_updated' | 'price_high' | 'price_low'
 
 function sortSubscriptions(subs: SubscriptionWithCosts[], mode: SortMode): SubscriptionWithCosts[] {
   const s = [...subs]
@@ -78,285 +40,65 @@ function sortSubscriptions(subs: SubscriptionWithCosts[], mode: SortMode): Subsc
       return s.sort((a, b) => b.my_monthly_cost - a.my_monthly_cost)
     case 'price_low':
       return s.sort((a, b) => a.my_monthly_cost - b.my_monthly_cost)
-    case 'by_category':
-      return s.sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name))
   }
 }
 
-// ─── Stack geometry ────────────────────────────────────────────────────────
-// Cards have content-driven height. Each card peeks ~92px from behind the next.
-// STACK_MARGIN = -(avg_card_height - peek) ≈ -(180 - 92) = -88px, +12px gap
-const STACK_MARGIN_PX = -76
-
-const CARD_SPRING = { type: 'spring' as const, stiffness: 340, damping: 32, mass: 0.85 }
-
-// ─── Single wallet card ────────────────────────────────────────────────────
-interface WalletCardProps {
+// ─── Minimal subscription row ─────────────────────────────────────────────────
+interface SubscriptionRowProps {
   sub: SubscriptionWithCosts
-  isNew?: boolean
-  index: number
-  velocityMv: MotionValue<number>
   isSelected: boolean
   onOpen: (sub: SubscriptionWithCosts) => void
   viewMode: 'monthly' | 'yearly'
   numSkeleton: boolean
 }
 
-function WalletCard({ sub, isNew, index, velocityMv, isSelected, onOpen, viewMode, numSkeleton }: WalletCardProps) {
+function SubscriptionRow({ sub, isSelected, onOpen, viewMode, numSkeleton }: SubscriptionRowProps) {
   const t = useT()
-  const locale = useLocale()
-  const [shimmer, setShimmer] = useState(isNew ?? false)
-
-  // Billing
-  const progress = billingProgress(sub.next_billing_date, sub.billing_period, sub.billing_interval_count)
-  const daysLeft = daysUntilBilling(sub.next_billing_date)
-  const nextDateFormatted = formatShortDate(sub.next_billing_date, locale)
-
-  useEffect(() => {
-    if (!isNew) return
-    const t = setTimeout(() => setShimmer(false), 3000)
-    return () => clearTimeout(t)
-  }, [isNew])
-
-  // Organic parallax: each card shifts slightly based on scroll velocity.
-  // Higher-index cards (deeper in stack) shift more — creates a depth feel.
-  const maxShift = (index + 1) * 2.5 // px; very subtle
-  const yOffset = useTransform(velocityMv, [-2500, 0, 2500], [maxShift, 0, -maxShift])
-
-  // Scale down as card exits viewport from the top
-  const cardRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ target: cardRef, offset: ['start 0.35', 'end start'] })
-  const exitScale = useTransform(scrollYProgress, [0, 1], [1, 0.85])
-  const exitRotation = useTransform(scrollYProgress, [0.5, 1], [0, 20])
-
   return (
-    // Parallax wrapper — must NOT have layoutId, otherwise the transform
-    // interferes with Framer Motion's position measurement during expansion.
-    <motion.div
-      ref={cardRef}
-      style={{ y: yOffset, scale: exitScale, rotate: exitRotation, transformOrigin: 'center bottom', visibility: isSelected ? 'hidden' : undefined }}
-    >
+    <div style={{ visibility: isSelected ? 'hidden' : undefined }}>
       <motion.div
         layoutId={`card-${sub.id}`}
         onClick={() => onOpen(sub)}
-        className="w-full bg-white dark:bg-[#1C1C1E] px-5 pt-5 pb-5 flex flex-col relative overflow-hidden cursor-pointer"
-        style={{
-          borderRadius: 28,
-          boxShadow: '0 -1px 2px rgba(0,0,0,0.04)',
-        }}
-        whileTap={{ scale: 0.985 }}
-        animate={shimmer ? {
-          boxShadow: [
-            '0 0 0px 0px rgba(61,59,243,0)',
-            '0 0 0px 3px rgba(61,59,243,0.5)',
-            '0 0 24px 6px rgba(61,59,243,0.22)',
-            '0 0 0px 3px rgba(61,59,243,0.5)',
-            '0 0 0px 0px rgba(61,59,243,0)',
-          ],
-        } : { boxShadow: '0 -1px 2px rgba(0,0,0,0.04)' }}
-        transition={shimmer ? {
-          layout: CARD_SPRING,
-          duration: 2.8, ease: 'easeInOut', times: [0, 0.2, 0.5, 0.8, 1],
-        } : {
-          layout: CARD_SPRING,
-          duration: 0,
-        }}
+        className="flex items-center justify-between py-4 cursor-pointer active:opacity-60 transition-opacity"
+        whileTap={{ opacity: 0.6 }}
       >
-        {/* Sweep reflection on new card */}
-        {isNew && (
-          <motion.div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: 'linear-gradient(110deg, transparent 20%, rgba(255,255,255,0.72) 50%, transparent 80%)',
-              borderRadius: 28,
-              zIndex: 10,
-            }}
-            initial={{ x: '-160%' }}
-            animate={{ x: '260%' }}
-            transition={{ duration: 1.1, ease: [0.4, 0, 0.2, 1], delay: 0.15 }}
-          />
-        )}
-
-        {/* Top row */}
-        <div className="flex items-start gap-5">
-          <SubscriptionAvatar
-            name={sub.name}
-            logoUrl={resolveSubscriptionLogoUrl(sub.name, sub.logo_url)}
-            size="md48"
-            corner="rounded-2xl"
-          />
-
-          <div className="flex-1 min-w-0">
-            <p className="text-[16px] font-bold text-[#121212] dark:text-[#F2F2F7] leading-snug truncate">{sub.name}</p>
-            <p className="text-[14px] text-[#737373] dark:text-[#8E8E93] mt-1 leading-snug">
-              {t(`categories.${sub.category}` as Parameters<typeof t>[0])}
-            </p>
-          </div>
-
-          <div className="text-right flex-shrink-0">
-            {numSkeleton ? (
-              <div className="flex flex-col items-end gap-1.5">
-                <div className="h-5 w-20 rounded-lg bg-[#F0F0F0] dark:bg-[#3A3A3C] animate-pulse" />
-                <div className="h-4 w-12 rounded-md bg-[#F0F0F0] dark:bg-[#3A3A3C] animate-pulse" />
-              </div>
-            ) : (
-              <>
-                <p className="text-[16px] font-bold text-[#121212] dark:text-[#F2F2F7] tabular-nums leading-snug">
-                  {viewMode === 'monthly'
-                    ? formatCurrency(sub.my_monthly_cost, sub.currency)
-                    : formatCurrency(sub.my_annual_cost, sub.currency)}
-                  <span className="text-[13px] font-normal text-[#737373] dark:text-[#8E8E93] ml-0.5">
-                    {viewMode === 'monthly' ? t('subscriptions.perMonth') : t('subscriptions.perYear')}
-                  </span>
-                </p>
-                {sub.status !== 'active' && (
-                  <p className="text-[14px] font-semibold mt-1 leading-snug"
-                    style={{ color: STATUS_COLOR[sub.status] ?? '#9CA3AF' }}>
-                    {t(`status.${sub.status}` as Parameters<typeof t>[0])}
-                  </p>
-                )}
-              </>
-            )}
-          </div>
+        {/* Name + optional status for non-active */}
+        <div className="flex-1 min-w-0 flex items-baseline gap-2">
+          <span className="text-[16px] font-medium text-[#121212] dark:text-[#F2F2F7] truncate">
+            {sub.name}
+          </span>
+          {sub.status !== 'active' && (
+            <span
+              className="text-[12px] font-medium flex-shrink-0"
+              style={{ color: STATUS_COLOR[sub.status] ?? '#9CA3AF' }}
+            >
+              {t(`status.${sub.status}` as Parameters<typeof t>[0])}
+            </span>
+          )}
         </div>
 
-        {/* Billing progress */}
-        {sub.next_billing_date && (
-          <div className="mt-5">
-            <p className="text-[12px] text-[#737373] dark:text-[#8E8E93] mb-2">
-              {t('detail.nextBillingSection')}
-            </p>
-            <div className="w-full rounded-full overflow-hidden" style={{ height: 4, background: 'rgba(0,0,0,0.07)' }}>
-              <div className="h-full rounded-full" style={{ width: `${Math.round(progress * 100)}%`, background: '#22C55E' }} />
-            </div>
-            <div className="flex justify-between items-center mt-1.5">
-              <span className="text-[12px] text-[#737373] dark:text-[#8E8E93]">
-                {daysLeft === 0
-                  ? t('dashboard.dueToday')
-                  : daysLeft === 1
-                  ? t('dashboard.tomorrow')
-                  : t('dashboard.inDays').replace('{days}', String(daysLeft))}
+        {/* Price */}
+        <div className="flex-shrink-0 ml-6">
+          {numSkeleton ? (
+            <div className="h-5 w-16 rounded bg-[#F0F0F0] dark:bg-[#3A3A3C] animate-pulse" />
+          ) : (
+            <span className="text-[16px] font-medium text-[#121212] dark:text-[#F2F2F7] tabular-nums">
+              {viewMode === 'monthly'
+                ? formatCurrency(sub.my_monthly_cost, sub.currency)
+                : formatCurrency(sub.my_annual_cost, sub.currency)}
+              <span className="text-[13px] font-normal text-[#737373] dark:text-[#8E8E93] ml-0.5">
+                {viewMode === 'monthly' ? t('subscriptions.perMonth') : t('subscriptions.perYear')}
               </span>
-              <span className="text-[12px] text-[#737373] dark:text-[#8E8E93]">{nextDateFormatted}</span>
-            </div>
-          </div>
-        )}
+            </span>
+          )}
+        </div>
       </motion.div>
-    </motion.div>
-  )
-}
-
-// ─── Stacked card list with scroll physics ────────────────────────────────
-function CardStack({
-  subscriptions,
-  newSubscriptionId,
-  selectedSubId,
-  onOpen,
-  viewMode,
-  numSkeleton,
-}: {
-  subscriptions: SubscriptionWithCosts[]
-  newSubscriptionId?: string
-  selectedSubId: string | null
-  onOpen: (sub: SubscriptionWithCosts) => void
-  viewMode: 'monthly' | 'yearly'
-  numSkeleton: boolean
-}) {
-  // Organic scroll: spring-smoothed velocity drives per-card parallax
-  const { scrollY } = useScroll()
-  const rawVelocity = useVelocity(scrollY)
-  const springVelocity = useSpring(rawVelocity, { stiffness: 180, damping: 28 })
-
-  // Pull-down elastic: drives both the stack Y translation and card gap expansion
-  const elasticY = useElasticPullDown()
-  const gapExtra = useTransform(elasticY, [0, 65], [0, 24])
-  const dynamicMargin = useTransform(gapExtra, v => `${STACK_MARGIN_PX + v}px`)
-
-  return (
-    <motion.div className="relative" style={{ y: elasticY }}>
-      {subscriptions.map((sub, i) => (
-        <motion.div
-          key={sub.id}
-          style={{
-            marginTop: i === 0 ? 0 : dynamicMargin,
-            zIndex: i + 1,
-            position: 'relative',
-          }}
-        >
-          <WalletCard
-            sub={sub}
-            isNew={sub.id === newSubscriptionId}
-            index={i}
-            velocityMv={springVelocity}
-            isSelected={sub.id === selectedSubId}
-            onOpen={onOpen}
-            viewMode={viewMode}
-            numSkeleton={numSkeleton}
-          />
-        </motion.div>
-      ))}
-    </motion.div>
-  )
-}
-
-// ─── Full-width row for inactive subscriptions ───────────────────────────────
-function InactiveCard({
-  sub,
-  onOpen,
-}: {
-  sub: SubscriptionWithCosts
-  onOpen: (sub: SubscriptionWithCosts) => void
-}) {
-  return (
-    <motion.div
-      layoutId={`card-${sub.id}`}
-      onClick={() => onOpen(sub)}
-      className="w-full bg-white dark:bg-[#1C1C1E] rounded-[20px] px-4 py-3 flex items-center gap-3 cursor-pointer"
-      style={{ boxShadow: '0 -1px 2px rgba(0,0,0,0.04)' }}
-      whileTap={{ scale: 0.97 }}
-    >
-      <SubscriptionAvatar
-        name={sub.name}
-        logoUrl={resolveSubscriptionLogoUrl(sub.name, sub.logo_url)}
-        size="md"
-        corner="rounded-xl"
-      />
-      <p className="text-[14px] font-bold text-[#121212] dark:text-[#F2F2F7] truncate flex-1 leading-snug">{sub.name}</p>
-      <p
-        className="text-[12px] font-medium flex-shrink-0"
-        style={{ color: STATUS_COLOR[sub.status] ?? '#9CA3AF' }}
-      >
-        <StatusLabel status={sub.status} />
-      </p>
-    </motion.div>
-  )
-}
-
-function InactiveCardsRow({
-  subscriptions,
-  onOpen,
-}: {
-  subscriptions: SubscriptionWithCosts[]
-  onOpen: (sub: SubscriptionWithCosts) => void
-}) {
-  const t = useT()
-  if (subscriptions.length === 0) return null
-  return (
-    <div className="mt-8">
-      <p className="text-[13px] font-semibold text-[#737373] dark:text-[#8E8E93] mb-3 px-1">
-        {t('subscriptions.inactive')}
-      </p>
-      <div className="flex flex-col gap-2">
-        {subscriptions.map(sub => (
-          <InactiveCard key={sub.id} sub={sub} onOpen={onOpen} />
-        ))}
-      </div>
+      <div className="border-b border-[#E8E8E8] dark:border-[#2C2C2E]" />
     </div>
   )
 }
 
-// ─── Filter bottom sheet ───────────────────────────────────────────────────
-
+// ─── Filter bottom sheet ───────────────────────────────────────────────────────
 interface FilterSheetProps {
   isOpen: boolean
   currentStatus: string
@@ -391,15 +133,13 @@ function FilterSheet({ isOpen, currentStatus, currentCategory, onClose }: Filter
   }
 
   const footer = (
-    <div
-      className="flex gap-3 px-5 py-4 border-t border-[#F0F0F0] dark:border-[#2C2C2E]"
-    >
+    <div className="flex gap-3 px-5 py-4 border-t border-[#F0F0F0] dark:border-[#2C2C2E]">
       <button onClick={reset}
         className="flex-1 h-12 rounded-full text-sm font-semibold text-[#444444] dark:text-[#AEAEB2] bg-[#F5F5F5] dark:bg-[#2C2C2E] transition-colors active:bg-[#ECECEC] dark:active:bg-[#3A3A3C]">
         {t('subscriptions.reset')}
       </button>
       <button onClick={apply}
-        className="flex-1 h-12 rounded-full text-sm font-semibold text-white bg-[#3D3BF3] hover:bg-[#3230D0] transition-colors active:bg-[#2B29B8]">
+        className="flex-1 h-12 rounded-full text-sm font-semibold text-white bg-[#121212] hover:bg-[#333333] transition-colors active:bg-[#444444]">
         {t('subscriptions.apply')}
       </button>
     </div>
@@ -418,7 +158,7 @@ function FilterSheet({ isOpen, currentStatus, currentCategory, onClose }: Filter
               { value: 'cancelled' as const, label: t('status.cancelled') },
             ] as Array<{ value: SubscriptionStatus | 'all'; label: string }>).map(opt => (
               <button key={opt.value} onClick={() => setStatus(s => s === opt.value ? 'all' : opt.value)}
-                className={`flex-shrink-0 flex items-center gap-1.5 px-4 h-12 rounded-full text-sm font-medium border transition-colors duration-150 ${status === opt.value ? 'bg-[#3D3BF3] text-white border-[#3D3BF3]' : 'bg-white dark:bg-[#2A2A2C] text-[#444444] dark:text-[#AEAEB2] border-[#E8E8E8] dark:border-[#3A3A3C]'}`}>
+                className={`flex-shrink-0 flex items-center gap-1.5 px-4 h-12 rounded-full text-sm font-medium border transition-colors duration-150 ${status === opt.value ? 'bg-[#121212] text-white border-[#121212]' : 'bg-white dark:bg-[#2A2A2C] text-[#444444] dark:text-[#AEAEB2] border-[#E8E8E8] dark:border-[#3A3A3C]'}`}>
                 {status === opt.value && <Check size={12} strokeWidth={3} />}
                 {opt.label}
               </button>
@@ -433,7 +173,7 @@ function FilterSheet({ isOpen, currentStatus, currentCategory, onClose }: Filter
               const active = category === cat.value
               return (
                 <button key={cat.value} onClick={() => setCategory(c => c === cat.value ? 'all' : cat.value)}
-                  className={`flex items-center gap-2 px-3 h-12 rounded-full text-sm font-medium border transition-colors duration-150 ${active ? 'bg-[#3D3BF3] text-white border-[#3D3BF3]' : 'bg-white dark:bg-[#2A2A2C] text-[#444444] dark:text-[#AEAEB2] border-[#E8E8E8] dark:border-[#3A3A3C]'}`}>
+                  className={`flex items-center gap-2 px-3 h-12 rounded-full text-sm font-medium border transition-colors duration-150 ${active ? 'bg-[#121212] text-white border-[#121212]' : 'bg-white dark:bg-[#2A2A2C] text-[#444444] dark:text-[#AEAEB2] border-[#E8E8E8] dark:border-[#3A3A3C]'}`}>
                   <Icon size={13} strokeWidth={2} />
                   {t(`categories.${cat.value}` as Parameters<typeof t>[0])}
                 </button>
@@ -446,7 +186,7 @@ function FilterSheet({ isOpen, currentStatus, currentCategory, onClose }: Filter
   )
 }
 
-// ─── Sort dropdown ─────────────────────────────────────────────────────────
+// ─── Sort dropdown ─────────────────────────────────────────────────────────────
 function SortDropdown({
   current,
   onSelect,
@@ -468,7 +208,6 @@ function SortDropdown({
 
   const currentLabel = options.find(o => o.mode === current)?.label ?? ''
 
-  // Close on outside click or scroll
   useEffect(() => {
     function onMouseDown(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -488,7 +227,6 @@ function SortDropdown({
 
   return (
     <div className="relative" ref={containerRef}>
-      {/* Trigger */}
       <button
         onClick={() => setOpen(o => !o)}
         className="flex items-center gap-1 active:opacity-60 transition-opacity"
@@ -498,9 +236,8 @@ function SortDropdown({
         <ChevronsUpDown size={11} className="text-[#BBBBBB] dark:text-[#8E8E93] ml-0.5" />
       </button>
 
-      {/* Dropdown */}
       {open && (
-        <div className="absolute top-full left-0 mt-2 w-44 bg-white dark:bg-[#1C1C1E] rounded-2xl border border-[#E8E8E8] dark:border-[#2C2C2E] shadow-[0_4px_24px_rgba(0,0,0,0.12)] z-50 animate-fade-in-scale">
+        <div className="absolute top-full left-0 mt-2 w-44 bg-white dark:bg-[#1C1C1E] rounded-2xl border border-[#E8E8E8] dark:border-[#2C2C2E] z-50 animate-fade-in-scale">
           <div className="p-2">
             {options.map(({ mode, label }) => {
               const active = current === mode
@@ -508,10 +245,10 @@ function SortDropdown({
                 <button
                   key={mode}
                   onClick={() => { onSelect(mode); setOpen(false) }}
-                  className={`w-full flex items-center justify-between gap-4 px-3 py-2 text-sm transition-colors text-left rounded-[8px] ${active ? 'text-[#3D3BF3] bg-[#F0F0FF] dark:bg-[#2A2A4A]' : 'text-[#424242] dark:text-[#AEAEB2] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E]'}`}
+                  className={`w-full flex items-center justify-between gap-4 px-3 py-2 text-sm transition-colors text-left rounded-[8px] ${active ? 'text-[#121212] bg-[#F0F0F0] dark:bg-[#2C2C2E]' : 'text-[#424242] dark:text-[#AEAEB2] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E]'}`}
                 >
                   {label}
-                  {active && <Check size={13} strokeWidth={2.5} className="text-[#3D3BF3] flex-shrink-0" />}
+                  {active && <Check size={13} strokeWidth={2.5} className="text-[#121212] dark:text-[#F2F2F7] flex-shrink-0" />}
                 </button>
               )
             })}
@@ -522,7 +259,7 @@ function SortDropdown({
   )
 }
 
-// ─── Main view ─────────────────────────────────────────────────────────────
+// ─── Main view ─────────────────────────────────────────────────────────────────
 interface SubscriptionsViewProps {
   subscriptions: SubscriptionWithCosts[]
   allCount: number
@@ -553,8 +290,6 @@ export default function SubscriptionsView({
   function clearFilter(key: 'status' | 'category') {
     setRemovingChip(key)
     haptics.tap()
-    // Wait for the exit animation to finish before navigating so the chip
-    // plays its destruction animation instead of vanishing instantly.
     setTimeout(() => {
       const p = new URLSearchParams()
       if (key !== 'status' && currentStatus && currentStatus !== 'all') p.set('status', currentStatus)
@@ -576,25 +311,22 @@ export default function SubscriptionsView({
     setFilterOpen(true)
   }
 
-  // Broadcast count so FloatingNav can emphasize the "+" CTA without
-  // re-querying Supabase from the layout.
   useEffect(() => {
     window.dispatchEvent(
       new CustomEvent('perezoso:subs-count', { detail: allCount }),
     )
   }, [allCount])
 
-  // ── Header scroll-fade: content scrolls OVER the header ──────────────────
   const scrollY = useEffectiveScrollY()
-  const headerOpacity      = useTransform(scrollY, [0, 130], [1, 0])
-  const headerBlurPx       = useTransform(scrollY, [0, 130], [0, 8])
-  const headerFilter       = useMotionTemplate`blur(${headerBlurPx}px)`
+  const headerOpacity       = useTransform(scrollY, [0, 130], [1, 0])
+  const headerBlurPx        = useTransform(scrollY, [0, 130], [0, 8])
+  const headerFilter        = useMotionTemplate`blur(${headerBlurPx}px)`
   const headerPointerEvents = useTransform(headerOpacity, (v) => v < 0.05 ? 'none' : 'auto')
+
   const [selectedSub, setSelectedSub] = useState<SubscriptionWithCosts | null>(null)
   const [overlayVisible, setOverlayVisible] = useState(false)
   const [closingSubId, setClosingSubId] = useState<string | null>(null)
 
-  // Monthly ↔ Yearly toggle with skeleton transition
   const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly')
   const [numSkeleton, setNumSkeleton] = useState(false)
   const skeletonTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -619,30 +351,27 @@ export default function SubscriptionsView({
   }
 
   function closeSub() {
-    setClosingSubId(selectedSub?.id ?? null) // break layoutId before exit
+    setClosingSubId(selectedSub?.id ?? null)
     setOverlayVisible(false)
   }
 
   const hasActiveFilters = (currentStatus && currentStatus !== 'all') || (currentCategory && currentCategory !== 'all')
-
   const sortedSubscriptions = sortSubscriptions(subscriptions, sortMode)
-  const activeSubs   = sortedSubscriptions.filter(s => s.status === 'active' || s.status === 'trial')
-  const inactiveSubs = sortedSubscriptions.filter(s => s.status !== 'active' && s.status !== 'trial')
 
   return (
     <LayoutGroup>
-      {/* ── Sticky header zone — sits BEHIND cards (low z-index)
-              fades + blurs as cards scroll over it ─────────────── */}
+      {/* ── Sticky header ─────────────────────────────────────────────────── */}
       <motion.div
-        className="sticky top-0 z-[20] px-1 pb-4"
+        className="sticky top-0 z-[20] pb-4 bg-white dark:bg-[#121212]"
         style={{ opacity: headerOpacity, filter: headerFilter, pointerEvents: headerPointerEvents }}
       >
-        {/* Title row */}
         <div className="flex items-start justify-between pt-2">
           <div>
-            <h1 className="text-[28px] font-bold text-[#121212] dark:text-[#F2F2F7] tracking-tight">{t('subscriptions.title')}</h1>
+            <h1 className="text-[28px] font-bold text-[#121212] dark:text-[#F2F2F7] tracking-tight">
+              {t('subscriptions.title')}
+            </h1>
             {allCount > 0 && (
-              <p className="text-[18px] font-bold text-black dark:text-[#F2F2F7] mt-1 leading-snug">
+              <p className="text-[18px] font-bold text-[#121212] dark:text-[#F2F2F7] mt-1 leading-snug">
                 Pagas{' '}
                 <button
                   onClick={toggleViewMode}
@@ -650,11 +379,11 @@ export default function SubscriptionsView({
                 >
                   {numSkeleton ? (
                     <span
-                      className="inline-block align-middle rounded-md bg-[#3D3BF3]/20 dark:bg-[#8B89FF]/20 animate-pulse"
+                      className="inline-block align-middle rounded-md bg-[#E0E0E0] dark:bg-[#3A3A3C] animate-pulse"
                       style={{ width: '7ch', height: '1em', verticalAlign: 'baseline' }}
                     />
                   ) : (
-                    <span className="text-[#3D3BF3] dark:text-[#8B89FF]">
+                    <span className="underline underline-offset-2">
                       {viewMode === 'monthly'
                         ? formatCurrency(stats.total_monthly_cost, 'EUR')
                         : formatCurrency(stats.total_annual_cost, 'EUR')}
@@ -662,9 +391,7 @@ export default function SubscriptionsView({
                   )}
                 </button>
                 {' '}{viewMode === 'monthly' ? 'al mes' : 'al año'} en{' '}
-                <span className="text-[#3D3BF3] dark:text-[#8B89FF]">
-                  {allCount === 1 ? '1 suscripción activa' : `${allCount} suscripciones activas`}
-                </span>.
+                {allCount === 1 ? '1 suscripción activa' : `${allCount} suscripciones activas`}.
               </p>
             )}
           </div>
@@ -682,25 +409,25 @@ export default function SubscriptionsView({
             >
               <SlidersHorizontal size={17} strokeWidth={2} className="text-[#333333] dark:text-[#F2F2F7]" />
               {hasActiveFilters && (
-                <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#3D3BF3] border-2 border-white" />
+                <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#121212] dark:bg-[#F2F2F7] border-2 border-white dark:border-[#121212]" />
               )}
             </motion.button>
           </div>
         </div>
       </motion.div>
 
-      {/* Sort control — just above cards. Hidden when there are no subs. */}
+      {/* Sort control */}
       {allCount > 0 && (
-        <div className="relative z-[30] px-1 mt-2 mb-[9px]">
+        <div className="relative z-[30] mt-2 mb-2">
           <SortDropdown current={sortMode} onSelect={(mode) => { setSortMode(mode); AnalyticsEvents.sortChanged(mode) }} />
         </div>
       )}
 
-      {/* ── Cards — higher z-index, scroll over the header ────── */}
-      <div className="-mx-1 relative z-[1] space-y-5">
+      {/* ── List ──────────────────────────────────────────────────────────── */}
+      <div className="relative z-[1]">
         {/* Active filter chips */}
         {hasActiveFilters && (
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap mb-4">
             <AnimatePresence>
               {currentStatus && currentStatus !== 'all' && removingChip !== 'status' && (
                 <motion.button
@@ -738,7 +465,11 @@ export default function SubscriptionsView({
           </div>
         )}
 
-        {/* Wallet stacked card list — active only */}
+        {/* Top separator */}
+        {sortedSubscriptions.length > 0 && (
+          <div className="border-t border-[#E8E8E8] dark:border-[#2C2C2E]" />
+        )}
+
         {sortedSubscriptions.length === 0 ? (
           allCount === 0 ? (
             <div className="pt-6">
@@ -765,30 +496,27 @@ export default function SubscriptionsView({
               <button
                 type="button"
                 onClick={() => router.push(pathname, { scroll: false })}
-                className="mt-3 text-[13px] font-semibold text-[#3D3BF3] dark:text-[#8B89FF] active:opacity-60 transition-opacity"
+                className="mt-3 text-[13px] font-semibold text-[#121212] dark:text-[#F2F2F7] underline underline-offset-2 active:opacity-60 transition-opacity"
               >
                 {t('subscriptions.clearFilters')}
               </button>
             </div>
           )
         ) : (
-          <>
-            {activeSubs.length > 0 && (
-              <CardStack
-                subscriptions={activeSubs}
-                newSubscriptionId={newSubscriptionId}
-                selectedSubId={selectedSub?.id ?? null}
-                onOpen={openSub}
-                viewMode={viewMode}
-                numSkeleton={numSkeleton}
-              />
-            )}
-            <InactiveCardsRow subscriptions={inactiveSubs} onOpen={openSub} />
-          </>
+          sortedSubscriptions.map(sub => (
+            <SubscriptionRow
+              key={sub.id}
+              sub={sub}
+              isSelected={sub.id === (selectedSub?.id ?? null) && !!closingSubId === false}
+              onOpen={openSub}
+              viewMode={viewMode}
+              numSkeleton={numSkeleton}
+            />
+          ))
         )}
       </div>
 
-      {/* ── Card expansion overlay ────────────────────────────── */}
+      {/* ── Card expansion overlay ─────────────────────────────────────────── */}
       <AnimatePresence onExitComplete={() => { setSelectedSub(null); setClosingSubId(null) }}>
         {overlayVisible && selectedSub && (
           <SubscriptionDetailOverlay
@@ -799,7 +527,7 @@ export default function SubscriptionsView({
         )}
       </AnimatePresence>
 
-      {/* ── Filter bottom sheet ───────────────────────────────── */}
+      {/* ── Filter bottom sheet ───────────────────────────────────────────── */}
       <FilterSheet
         isOpen={filterOpen}
         currentStatus={currentStatus}
@@ -807,13 +535,12 @@ export default function SubscriptionsView({
         onClose={() => setFilterOpen(false)}
       />
 
-      {/* ── Calendar bottom sheet ─────────────────────────────── */}
+      {/* ── Calendar bottom sheet ─────────────────────────────────────────── */}
       <BottomSheet isOpen={calendarOpen} onClose={() => setCalendarOpen(false)} height="full">
         <div className="px-5 pt-3 pb-5">
           <CalendarView subscriptions={subscriptions} />
         </div>
       </BottomSheet>
-
     </LayoutGroup>
   )
 }

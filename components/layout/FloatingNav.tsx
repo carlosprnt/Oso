@@ -77,8 +77,8 @@ export default function FloatingNav() {
 
   const emphasizeAdd = isSubs && hasNoSubs
 
-  // x offset of the sliding bg: Dashboard=0, Subscriptions=1
-  const bgX = isSubs ? BTN_W + GAP : 0
+  // x offset of the sliding bg: Subscriptions=0, Dashboard=1
+  const bgX = isDash ? BTN_W + GAP : 0
 
   // Icon colors depend on dark mode
   const activeIconColor = isDarkMode ? '#121212' : '#ffffff'
@@ -127,6 +127,15 @@ export default function FloatingNav() {
               transition={{ type: 'spring', stiffness: 420, damping: 32, mass: 0.8 }}
             />
 
+            {/* Subscriptions button */}
+            <Link href="/subscriptions" aria-label={t('nav.subscriptions')}>
+              <div className="relative flex items-center justify-center rounded-full"
+                style={{ width: BTN_W, height: BTN_H, zIndex: 2, color: isSubs ? activeIconColor : inactiveIconColor }}
+              >
+                <TagHeartIcon active={false} />
+              </div>
+            </Link>
+
             {/* Dashboard button */}
             <Link href="/dashboard" aria-label={t('nav.dashboard')}>
               <div className="relative flex items-center justify-center rounded-full"
@@ -134,15 +143,6 @@ export default function FloatingNav() {
               >
                 <LayoutGrid size={20} strokeWidth={2}
                   color={isDash ? activeIconColor : inactiveIconColor} />
-              </div>
-            </Link>
-
-            {/* Subscriptions button */}
-            <Link href="/subscriptions" aria-label={t('nav.subscriptions')}>
-              <div className="relative flex items-center justify-center rounded-full"
-                style={{ width: BTN_W, height: BTN_H, zIndex: 2, color: isSubs ? activeIconColor : inactiveIconColor }}
-              >
-                <TagHeartIcon active={false} />
               </div>
             </Link>
 
@@ -155,14 +155,13 @@ export default function FloatingNav() {
         <motion.button
           onClick={() => { haptics.tap('medium'); setStep('pick') }}
           aria-label="Add subscription"
-          className="absolute right-4 pointer-events-auto flex items-center justify-center rounded-full bg-[#3D3BF3]"
+          className="absolute right-4 pointer-events-auto flex items-center justify-center rounded-full bg-[#121212]"
           style={{
             width: 56,
             height: 56,
             originX: 1,
             originY: 1,
             bottom: `calc(${bottomOffset} + 4px)`,
-            boxShadow: '0 4px 16px rgba(61,59,243,0.40)',
           }}
           animate={emphasizeAdd ? { scale: [1, 1.25, 1] } : { scale: 1 }}
           transition={
@@ -189,13 +188,13 @@ export default function FloatingNav() {
           >
             <button
               onClick={() => setStep('gmail')}
-              className="flex-1 h-12 rounded-full text-sm font-semibold text-[#3D3BF3] dark:text-[#8B89FF] border border-[#3D3BF3] dark:border-[#8B89FF] bg-transparent flex items-center justify-center active:bg-[#F0F0FF] dark:active:bg-[#1E1D3A] transition-colors"
+              className="flex-1 h-12 rounded-full text-sm font-semibold text-[#121212] dark:text-[#F2F2F7] border border-[#121212] dark:border-[#F2F2F7] bg-transparent flex items-center justify-center active:bg-[#F0F0F0] dark:active:bg-[#2C2C2E] transition-colors"
             >
               {t('picker.searchGmail')}
             </button>
             <button
               onClick={() => handleSelect(null)}
-              className="flex-1 h-12 rounded-full text-sm font-semibold text-white bg-[#3D3BF3] flex items-center justify-center active:bg-[#3230D0] transition-colors"
+              className="flex-1 h-12 rounded-full text-sm font-semibold text-white bg-[#121212] flex items-center justify-center active:bg-[#333333] transition-colors"
             >
               {t('picker.enterManually')}
             </button>
