@@ -123,7 +123,7 @@ function AuthButtons({
         className="w-full h-12 flex items-center justify-center gap-3 rounded-full border border-[#E8E8E8] bg-white text-[15px] font-medium text-[#121212] active:bg-[#F2F2F7] transition-colors disabled:opacity-60"
       >
         {isLoading
-          ? <span className="w-5 h-5 border-2 border-[#E8E8E8] border-t-[#3D3BF3] rounded-full animate-spin" />
+          ? <span className="w-5 h-5 border-2 border-[#E8E8E8] border-t-[#121212] rounded-full animate-spin" />
           : <GoogleIcon />}
         {isLoading ? 'Iniciando sesión…' : 'Continuar con Google'}
       </button>
@@ -244,7 +244,7 @@ export default function LoginScreen() {
   return (
     <>
     <div
-      className="fixed inset-0 overflow-hidden bg-[#F7F8FA]"
+      className="fixed inset-0 overflow-hidden bg-white"
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
@@ -438,7 +438,7 @@ export default function LoginScreen() {
                 style={{
                   width: i === slide ? 24 : 4,
                   height: 4,
-                  backgroundColor: i === slide ? '#3D3BF3' : '#E8E8E8',
+                  backgroundColor: i === slide ? '#121212' : '#E8E8E8',
                 }}
               />
             ))}
@@ -455,7 +455,7 @@ export default function LoginScreen() {
               </button>
               <button
                 onClick={next}
-                className="flex-1 h-12 rounded-full bg-[#3D3BF3] text-white text-[15px] font-semibold active:bg-[#3230D0] transition-colors flex items-center justify-center gap-1.5"
+                className="flex-1 h-12 rounded-full bg-[#121212] text-white text-[15px] font-semibold active:bg-[#333333] transition-colors flex items-center justify-center gap-1.5"
               >
                 Continuar
                 <motion.span
