@@ -31,10 +31,10 @@ function PlatformRow({
   const initials = getInitials(platform.name)
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-[#F2F2F7] dark:bg-[#1C1C1E]">
+    <div className="flex items-center gap-3 px-1 py-3">
       <div className="w-10 h-10 rounded-[10px] overflow-hidden flex items-center justify-center flex-shrink-0 bg-white dark:bg-[#2C2C2E]">
         {logoUrl ? (
-          <Image src={logoUrl} alt={platform.name} width={40} height={40} className="w-full h-full object-contain" unoptimized />
+          <Image src={logoUrl} alt={platform.name} width={40} height={40} className="w-full h-full object-contain grayscale" unoptimized />
         ) : (
           <span className="text-[15px] font-bold" style={{ color: fg }}>{initials}</span>
         )}
@@ -68,15 +68,15 @@ export default function QuickAddPlatforms() {
         <p className="text-[13px] font-semibold text-[#737373] dark:text-[#8E8E93] mb-3">
           Añade tu primera suscripción
         </p>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col divide-y divide-[#E8E8E8] dark:divide-[#2C2C2E]">
           {QUICK_ADD_PLATFORMS.map(platform => (
             <PlatformRow key={platform.id} platform={platform} onAdd={setSelected} />
           ))}
 
-          {/* Custom / manual — whole card is clickable */}
+          {/* Custom / manual — whole row is clickable */}
           <button
             onClick={() => setSelected(null)}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl bg-[#F2F2F7] dark:bg-[#1C1C1E] text-left active:opacity-60 transition-opacity"
+            className="w-full flex items-center gap-3 px-1 py-3 text-left active:opacity-60 transition-opacity"
           >
             <div className="w-10 h-10 rounded-[10px] flex items-center justify-center flex-shrink-0 bg-white dark:bg-[#2C2C2E]">
               <Plus size={18} strokeWidth={2} className="text-[#8E8E93]" />

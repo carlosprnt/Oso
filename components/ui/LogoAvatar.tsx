@@ -35,7 +35,7 @@ export default function LogoAvatar({
           alt={`${name} logo`}
           width={px}
           height={py}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover grayscale"
           unoptimized // logos are external, skip optimization
         />
       </div>

@@ -12,12 +12,12 @@ export default function PlatformPicker({ onSelect }: PlatformPickerProps) {
     <div className="flex flex-col h-full">
       {/* Scrollable platform list */}
       <div className="flex-1 overflow-y-auto pb-4">
-        <div className="space-y-0.5">
+        <div className="divide-y divide-[#E8E8E8] dark:divide-[#2C2C2E]">
           {PLATFORMS.map(platform => (
             <button
               key={platform.id}
               onClick={() => onSelect(platform)}
-              className="w-full flex items-center gap-3 px-5 py-2.5 rounded-xl active:bg-white dark:active:bg-[#2C2C2E] transition-colors text-left"
+              className="w-full flex items-center gap-3 px-5 py-3 active:bg-white dark:active:bg-[#2C2C2E] transition-colors text-left"
             >
               <SubscriptionAvatar
                 name={platform.name}

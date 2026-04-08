@@ -31,11 +31,7 @@ export default function GmailSubscriptionResultItem({ candidate, selected, onTog
   return (
     <button
       onClick={onToggle}
-      className="w-full flex items-center gap-3 px-5 py-3 rounded-2xl transition-colors duration-100 text-left"
-      style={{
-        background: selected ? 'rgba(61,59,243,0.08)' : 'transparent',
-        border: `1.5px solid ${selected ? '#121212' : 'var(--border-result-item)'}`,
-      }}
+      className="w-full flex items-center gap-3 px-1 py-3 transition-colors duration-100 text-left"
     >
       {/* Avatar */}
       <div className="flex-shrink-0">

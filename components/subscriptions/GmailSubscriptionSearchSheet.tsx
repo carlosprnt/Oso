@@ -313,7 +313,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
                 {t('gmail.foundHint')}
               </p>
             </div>
-            <div className="flex-1 overflow-y-auto px-5 pb-4 space-y-2">
+            <div className="flex-1 overflow-y-auto px-5 pb-4 divide-y divide-[#E8E8E8] dark:divide-[#2C2C2E]">
               {sheetState.candidates.map(candidate => (
                 <GmailSubscriptionResultItem
                   key={candidate.id}
