@@ -36,8 +36,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
             bg-white dark:bg-[#2C2C2E] border rounded-xl
             placeholder:text-[#9E9E9E] dark:placeholder:text-[#636366]
             transition-colors duration-150
-            focus:outline-none focus:ring-2 focus:ring-[#3D3BF3]/30 dark:focus:ring-white/5 focus:border-[#3D3BF3] dark:focus:border-[#636366]
-            disabled:bg-[#F5F5F5] dark:disabled:bg-[#1C1C1E] disabled:text-[#9E9E9E] dark:disabled:text-[#636366] disabled:cursor-not-allowed
+            focus:outline-none focus:ring-2 focus:ring-[#121212]/30 dark:focus:ring-white/5 focus:border-[#121212] dark:focus:border-[#636366]
+            disabled:bg-white dark:disabled:bg-[#1C1C1E] disabled:text-[#9E9E9E] dark:disabled:text-[#636366] disabled:cursor-not-allowed
             ${error ? 'border-[#991B1B] focus:ring-[#991B1B]/30' : 'border-[#D4D4D4] dark:border-[#3A3A3C] hover:border-[#A3A3A3] dark:hover:border-[#636366]'}
             ${prefix ? 'pl-7' : ''}
             ${suffix ? 'pr-10' : ''}
@@ -89,8 +89,8 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
           w-full px-3 py-2.5 text-sm text-[#121212] dark:text-[#F2F2F7]
           bg-white dark:bg-[#2C2C2E] border rounded-xl appearance-none
           transition-colors duration-150
-          focus:outline-none focus:ring-2 focus:ring-[#3D3BF3]/30 dark:focus:ring-white/5 focus:border-[#3D3BF3] dark:focus:border-[#636366]
-          disabled:bg-[#F5F5F5] dark:disabled:bg-[#1C1C1E] disabled:text-[#9E9E9E] dark:disabled:text-[#636366] disabled:cursor-not-allowed
+          focus:outline-none focus:ring-2 focus:ring-[#121212]/30 dark:focus:ring-white/5 focus:border-[#121212] dark:focus:border-[#636366]
+          disabled:bg-white dark:disabled:bg-[#1C1C1E] disabled:text-[#9E9E9E] dark:disabled:text-[#636366] disabled:cursor-not-allowed
           ${error ? 'border-[#991B1B]' : 'border-[#D4D4D4] dark:border-[#3A3A3C] hover:border-[#A3A3A3] dark:hover:border-[#636366]'}
           ${className}
         `}
@@ -132,7 +132,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             bg-white dark:bg-[#2C2C2E] border rounded-xl resize-none
             placeholder:text-[#9E9E9E] dark:placeholder:text-[#636366]
             transition-colors duration-150
-            focus:outline-none focus:ring-2 focus:ring-[#3D3BF3]/30 dark:focus:ring-white/5 focus:border-[#3D3BF3] dark:focus:border-[#636366]
+            focus:outline-none focus:ring-2 focus:ring-[#121212]/30 dark:focus:ring-white/5 focus:border-[#121212] dark:focus:border-[#636366]
             ${error ? 'border-[#991B1B]' : 'border-[#D4D4D4] dark:border-[#3A3A3C] hover:border-[#A3A3A3] dark:hover:border-[#636366]'}
             ${className}
           `}

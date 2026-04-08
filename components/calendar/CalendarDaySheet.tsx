@@ -107,7 +107,7 @@ export default function CalendarDaySheet({
               {dateLabel}
             </h2>
             <div className="flex items-center gap-2 mt-2">
-              <span className="text-[13px] font-semibold text-[#3D3BF3] tabular-nums">
+              <span className="text-[13px] font-semibold text-[#121212] tabular-nums">
                 {formatCurrency(dayTotal, currency)}
               </span>
               <span className="text-[13px] text-[#737373] dark:text-[#8E8E93]">{t('calendar.total').toLowerCase()}</span>
@@ -117,7 +117,7 @@ export default function CalendarDaySheet({
           </div>
           <button
             onClick={onClose}
-            className="w-11 h-11 rounded-full bg-[#F5F5F5] dark:bg-[#2C2C2E] flex items-center justify-center text-[#616161] dark:text-[#AEAEB2] active:bg-[#EBEBEB] dark:active:bg-[#3A3A3C] transition-colors"
+            className="w-11 h-11 rounded-full bg-white dark:bg-[#2C2C2E] flex items-center justify-center text-[#616161] dark:text-[#AEAEB2] active:bg-[#EBEBEB] dark:active:bg-[#3A3A3C] transition-colors"
           >
             <X size={16} strokeWidth={2.5} />
           </button>
@@ -172,7 +172,7 @@ function SubscriptionRow({
       : t('dashboard.inDays').replace('{days}', String(daysLeft))
 
   return (
-    <div className="flex items-center gap-3 bg-[#F7F8FA] dark:bg-[#232325] rounded-2xl px-3.5 py-3 border border-[#F0F0F0] dark:border-[#2C2C2E]">
+    <div className="flex items-center gap-3 bg-white dark:bg-[#232325] rounded-2xl px-3.5 py-3 border border-[#F0F0F0] dark:border-[#2C2C2E]">
       <SubscriptionAvatar
         name={sub.name}
         logoUrl={resolveSubscriptionLogoUrl(sub.name, sub.logo_url)}

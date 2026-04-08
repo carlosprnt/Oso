@@ -163,7 +163,7 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
           <div className="px-4 py-3 border-b border-[#F0F0F0] dark:border-[#2C2C2E] flex items-center gap-2">
             <button
               onClick={() => setDemoOpen(false)}
-              className="text-[#3D3BF3] flex items-center gap-1 text-sm font-medium"
+              className="text-[#121212] flex items-center gap-1 text-sm font-medium"
             >
               <ChevronLeft size={15} />
               Demo
@@ -175,7 +175,7 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
                 key={count}
                 onClick={() => handleDemoMode(count)}
                 disabled={isPending}
-                className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-[#424242] dark:text-[#AEAEB2] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors text-left disabled:opacity-50"
+                className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-[#424242] dark:text-[#AEAEB2] hover:bg-white dark:hover:bg-[#2C2C2E] transition-colors text-left disabled:opacity-50"
               >
                 {label}
                 {isPending ? <Loader2 size={13} className="animate-spin text-[#8E8E93]" /> : null}
@@ -185,7 +185,7 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
             <button
               onClick={handleRestoreProduction}
               disabled={isPending}
-              className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-[#3D3BF3] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors text-left disabled:opacity-50"
+              className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-[#121212] hover:bg-white dark:hover:bg-[#2C2C2E] transition-colors text-left disabled:opacity-50"
             >
               <span className="flex items-center gap-3">
                 <RotateCcw size={15} />
@@ -204,14 +204,14 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
           <div className="py-1.5">
             <button
               onClick={() => { setOpen(false); router.push('/settings') }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#424242] dark:text-[#AEAEB2] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors text-left"
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#424242] dark:text-[#AEAEB2] hover:bg-white dark:hover:bg-[#2C2C2E] transition-colors text-left"
             >
               <Settings size={15} className="text-[#616161] dark:text-[#8E8E93]" />
               Ajustes
             </button>
             <button
               onClick={handleShare}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#424242] dark:text-[#AEAEB2] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors text-left"
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#424242] dark:text-[#AEAEB2] hover:bg-white dark:hover:bg-[#2C2C2E] transition-colors text-left"
             >
               <Share2 size={15} className="text-[#616161] dark:text-[#8E8E93]" />
               {t('nav.shareData')}
@@ -221,14 +221,14 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
                 <div className="h-px bg-[#F0F0F0] dark:bg-[#2C2C2E] mx-2 my-1" />
                 <button
                   onClick={() => { setOpen(false); router.push('/admin/style-audit') }}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#3D3BF3] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors text-left"
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#121212] hover:bg-white dark:hover:bg-[#2C2C2E] transition-colors text-left"
                 >
                   <ShieldCheck size={15} />
                   Admin
                 </button>
                 <button
                   onClick={() => setDemoOpen(true)}
-                  className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-[#3D3BF3] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors text-left"
+                  className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-[#121212] hover:bg-white dark:hover:bg-[#2C2C2E] transition-colors text-left"
                 >
                   <span className="flex items-center gap-3">
                     <ChevronRight size={15} />

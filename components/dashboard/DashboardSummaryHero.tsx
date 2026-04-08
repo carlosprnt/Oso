@@ -121,7 +121,7 @@ function spawnLogoConfetti(originX: number, originY: number, logoUrls: string[])
         } else {
           // Fallback: accent-colored square
           roundRect(ctx, -half, -half, p.size, p.size, r)
-          ctx.fillStyle = '#3D3BF3'; ctx.fill()
+          ctx.fillStyle = '#121212'; ctx.fill()
         }
         ctx.restore()
       }
@@ -205,7 +205,7 @@ export default function DashboardSummaryHero({
   return (
     <div
       ref={ref}
-      className="sticky pb-5 bg-[#F7F8FA] dark:bg-[#121212]"
+      className="sticky pb-5 bg-white dark:bg-[#121212]"
       style={{ top: 'env(safe-area-inset-top)' }}
     >
       {/* Greeting + avatar */}
@@ -220,11 +220,11 @@ export default function DashboardSummaryHero({
       <p className="text-[40px] font-extrabold text-[#121212] dark:text-[#F2F2F7] leading-[1.15] tracking-tight mb-3" style={{ maxWidth: '100%' }}>
         {t('dashboard.spendStatement')}<br />
         <button onClick={handleAmountTap} className="inline align-baseline cursor-pointer select-none active:scale-95 transition-transform">
-          <span className="text-[#3D3BF3] dark:text-[#8B89FF]">{monthly}</span>
+          <span className="text-[#121212] dark:text-[#F2F2F7]">{monthly}</span>
         </button>.<br />
         {t('dashboard.annualStatement')}<br />
         <button onClick={handleAmountTap} className="inline align-baseline cursor-pointer select-none active:scale-95 transition-transform">
-          <span className="text-[#3D3BF3] dark:text-[#8B89FF]">{annual}</span>
+          <span className="text-[#121212] dark:text-[#F2F2F7]">{annual}</span>
         </button>.
       </p>
 
@@ -232,14 +232,14 @@ export default function DashboardSummaryHero({
       <p className="text-[18px] font-bold text-black dark:text-[#F2F2F7] leading-relaxed" style={{ maxWidth: '100%' }}>
         {t('dashboard.youHave')}{' '}
         <button onClick={handleSubsTap} className="inline align-baseline cursor-pointer select-none active:scale-95 transition-transform">
-          <span className="text-[#3D3BF3] dark:text-[#8B89FF]">
+          <span className="text-[#121212] dark:text-[#F2F2F7]">
             {total} {total === 1 ? t('dashboard.activeSubscription') : t('dashboard.activeSubscriptions')}
           </span>
         </button>.
         {hasSave && (
           <>
             {' '}{t('dashboard.youShare')}{' '}
-            <span className="text-[#3D3BF3] dark:text-[#8B89FF] whitespace-nowrap">
+            <span className="text-[#121212] dark:text-[#F2F2F7] whitespace-nowrap">
               {sharedCount}&nbsp;{sharedCount === 1 ? t('dashboard.subscriptionWord') : t('dashboard.subscriptionsWord')}
             </span>
             {' '}{t('dashboard.andSave')}{' '}
@@ -250,11 +250,11 @@ export default function DashboardSummaryHero({
             >
               {showSkeleton ? (
                 <span
-                  className="inline-block align-middle rounded-md bg-[#3D3BF3]/20 dark:bg-[#8B89FF]/20 animate-pulse"
+                  className="inline-block align-middle rounded-md bg-[#121212]/20 dark:bg-[#F2F2F7]/20 animate-pulse"
                   style={{ width: '7ch', height: '1em', verticalAlign: 'baseline' }}
                 />
               ) : (
-                <span className="text-[#3D3BF3] dark:text-[#8B89FF]">
+                <span className="text-[#121212] dark:text-[#F2F2F7]">
                   {savingsLabel}
                 </span>
               )}

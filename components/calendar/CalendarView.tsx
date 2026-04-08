@@ -131,16 +131,16 @@ function DayCell({ day, isToday, subscriptions, onClick }: DayCellProps) {
       onClick={hasSubs ? onClick : undefined}
       className={`
         w-full flex flex-col items-start p-2 rounded-[12px] min-h-[80px]
-        transition-all duration-100 select-none bg-[#F5F5F5] dark:bg-[#2C2C2E]
+        transition-all duration-100 select-none bg-white dark:bg-[#2C2C2E]
         ${hasSubs ? 'active:scale-[0.96] cursor-pointer' : 'cursor-default'}
       `}
-      style={isToday ? { border: '1.5px solid #3D3BF3' } : { border: '1.5px solid transparent' }}
+      style={isToday ? { border: '1.5px solid #121212' } : { border: '1.5px solid transparent' }}
     >
       {/* Day number — plain, no circle */}
       <span
         className={`
           text-[13px] font-medium leading-none flex-shrink-0
-          ${isToday ? 'text-[#3D3BF3] font-semibold' : hasSubs ? 'text-[#121212] dark:text-[#F2F2F7]' : 'text-[#A0A0A0] dark:text-[#8E8E93]'}
+          ${isToday ? 'text-[#121212] font-semibold' : hasSubs ? 'text-[#121212] dark:text-[#F2F2F7]' : 'text-[#A0A0A0] dark:text-[#8E8E93]'}
         `}
       >
         {day}
@@ -366,7 +366,7 @@ export default function CalendarView({ subscriptions }: Props) {
             return (
               <div
                 key={i}
-                className="rounded-[12px] bg-[#F7F8FA] dark:bg-[#252527]"
+                className="rounded-[12px] bg-white dark:bg-[#252527]"
                 style={{ minHeight: 80, border: '1.5px solid transparent' }}
               />
             )

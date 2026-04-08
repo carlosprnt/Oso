@@ -55,7 +55,7 @@ export default function TermsPage() {
           <p>
             If you connect Gmail, you grant Oso read-only access to your inbox solely to
             detect subscription receipts. You can revoke access at any time. See our{' '}
-            <Link href="/privacy" className="text-[#3D3BF3] underline">Privacy Policy</Link> for details.
+            <Link href="/privacy" className="text-[#121212] underline">Privacy Policy</Link> for details.
           </p>
         </section>
 
@@ -97,7 +97,7 @@ export default function TermsPage() {
           <h2 className="text-[17px] font-bold text-[#121212] dark:text-[#F2F2F7] mb-2">9. Contact</h2>
           <p>
             Questions? Write to{' '}
-            <a className="text-[#3D3BF3] underline" href="mailto:hello@carlospariente.com">hello@carlospariente.com</a>.
+            <a className="text-[#121212] underline" href="mailto:hello@carlospariente.com">hello@carlospariente.com</a>.
           </p>
         </section>
       </div>

@@ -20,15 +20,15 @@ const PASTEL_PAIRS: Array<{ bg: string; fg: string }> = [
   { bg: '#FDE8E8', fg: '#9B1C1C' }, // rose
   { bg: '#FEF3C7', fg: '#92400E' }, // amber
   { bg: '#D1FAE5', fg: '#065F46' }, // emerald
-  { bg: '#DBEAFE', fg: '#1E3A8A' }, // blue
+  { bg: '#F5F5F4', fg: '#1C1917' }, // stone (was blue)
   { bg: '#EDE9FE', fg: '#4C1D95' }, // violet
   { bg: '#FCE7F3', fg: '#831843' }, // pink
-  { bg: '#E0F2FE', fg: '#0C4A6E' }, // sky
+  { bg: '#CCFBF1', fg: '#134E4A' }, // teal (was sky)
   { bg: '#FEF9C3', fg: '#713F12' }, // yellow
   { bg: '#DCFCE7', fg: '#14532D' }, // green
   { bg: '#F3E8FF', fg: '#581C87' }, // purple
   { bg: '#FFE4E6', fg: '#9F1239' }, // red
-  { bg: '#E0E7FF', fg: '#3730A3' }, // indigo
+  { bg: '#ECFCCB', fg: '#365314' }, // lime (was indigo)
 ]
 
 export function getAvatarPastel(name: string): { bg: string; fg: string } {

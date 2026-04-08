@@ -31,7 +31,7 @@ const BORDER_COLORS = [
 ]
 
 const ACCENT_COLORS = [
-  { hex: '#3D3BF3', uses: 65, role: 'Primary action — brand indigo', issue: null },
+  { hex: '#121212', uses: 65, role: 'Primary action — brand indigo', issue: null },
   { hex: '#991B1B', uses: 10, role: 'Danger / error', issue: null },
   { hex: '#16A34A', uses: 9, role: 'Success', issue: null },
   { hex: '#92400E', uses: 3, role: 'Warning', issue: null },
@@ -63,7 +63,7 @@ const RADIUS_VALUES = [
 
 const FINDINGS = [
   { severity: 'low', title: '#111111 merged into #121212 ✓', detail: '131 uses under a single value. #111111 no longer appears anywhere in the codebase.' },
-  { severity: 'low', title: 'Accent token aligned ✓', detail: '#5B21B6 fully removed. --color-accent is indigo #3D3BF3 (65 uses), matching real product usage.' },
+  { severity: 'low', title: 'Accent token aligned ✓', detail: '#5B21B6 fully removed. --color-accent is indigo #121212 (65 uses), matching real product usage.' },
   { severity: 'low', title: 'Grey text values collapsed ✓', detail: '#888888, #999999, #666666 removed. All muted-grey text is now #737373 (67) + #616161 (22) for slightly darker labels.' },
   { severity: 'low', title: 'Light borders consolidated ✓', detail: '#E5E5E5, #E0E0E0, #EDEDED, #EFEFEF all merged. Only #E8E8E8 (40, subtle border) and #F0F0F0 (72, divider) remain.' },
   { severity: 'low', title: 'Light surface backgrounds consolidated ✓', detail: '#FAFAFA merged into #F7F8FA (27). Page bg now uses one value; #F5F5F5 (36) stays as the input/hover surface.' },
@@ -84,7 +84,7 @@ const PROPOSED_TOKENS = [
   { token: 'color.surface.subtle', light: '#F0F0F0', dark: '#3A3A3C', replaces: '#F5F5F5, #F0F0F0 / #3A3A3C' },
   { token: 'color.border.subtle', light: '#E8E8E8', dark: '#2C2C2E', replaces: '#E8E8E8 (consolidated from 4 values)' },
   { token: 'color.border.default', light: '#D4D4D4', dark: '#3A3A3C', replaces: '#D4D4D4' },
-  { token: 'color.accent', light: '#3D3BF3', dark: '#3D3BF3', replaces: '#3D3BF3 (brand indigo — already in tokens)' },
+  { token: 'color.accent', light: '#121212', dark: '#121212', replaces: '#121212 (brand indigo — already in tokens)' },
   { token: 'color.danger', light: '#991B1B', dark: '#F87171', replaces: '#991B1B' },
   { token: 'color.success', light: '#16A34A', dark: '#4ADE80', replaces: '#16A34A' },
 ]
@@ -132,7 +132,7 @@ export default function StyleAuditClient() {
             ['6', 'Fixes aplicados ✓'],
             ['2', 'Border values light'],
             ['11', 'Font sizes distintos'],
-            ['65', '#3D3BF3 hardcoded'],
+            ['65', '#121212 hardcoded'],
           ].map(([n, label]) => (
             <div key={label} className="bg-white dark:bg-[#1C1C1E] border border-[#E8E8E8] dark:border-[#2C2C2E] rounded-xl px-4 py-2">
               <p className="text-[22px] font-bold text-[#121212] dark:text-[#F2F2F7] leading-none">{n}</p>
@@ -143,7 +143,7 @@ export default function StyleAuditClient() {
       </div>
 
       {/* Sticky nav */}
-      <div className="sticky top-0 z-10 bg-[#F7F8FA] dark:bg-[#121212] py-3 mb-6 flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+      <div className="sticky top-0 z-10 bg-white dark:bg-[#121212] py-3 mb-6 flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden">
         {SECTIONS.map(s => (
           <a key={s} href={`#${s.toLowerCase()}`}
             className="flex-shrink-0 px-4 py-1.5 rounded-full text-[13px] font-medium bg-white dark:bg-[#2C2C2E] border border-[#E8E8E8] dark:border-[#3A3A3C] text-[#424242] dark:text-[#AEAEB2] hover:bg-[#F0F0F0] dark:hover:bg-[#3A3A3C] transition-colors">
@@ -263,7 +263,7 @@ export default function StyleAuditClient() {
         <div className="flex flex-wrap gap-3 mb-6">
           {[4,8,10,12,16,20,24,28,32].map(px => (
             <div key={px} className="flex flex-col items-center gap-1.5">
-              <div className="bg-[#3D3BF3]/20 border border-[#3D3BF3]/30 rounded" style={{ width: px, height: px }} />
+              <div className="bg-[#121212]/20 border border-[#121212]/30 rounded" style={{ width: px, height: px }} />
               <span className="text-[10px] text-[#999] dark:text-[#8E8E93]">{px}</span>
             </div>
           ))}
@@ -273,7 +273,7 @@ export default function StyleAuditClient() {
         <div className="space-y-2 mb-4">
           {RADIUS_VALUES.map(r => (
             <div key={r.cls} className="flex items-center gap-3 bg-white dark:bg-[#1C1C1E] border border-[#E8E8E8] dark:border-[#2C2C2E] rounded-xl px-4 py-2.5">
-              <div className="w-8 h-8 bg-[#3D3BF3]/15 border-2 border-[#3D3BF3]/30 flex-shrink-0" style={{ borderRadius: r.px.replace(' top', '') }} />
+              <div className="w-8 h-8 bg-[#121212]/15 border-2 border-[#121212]/30 flex-shrink-0" style={{ borderRadius: r.px.replace(' top', '') }} />
               <code className="text-[13px] font-mono text-[#424242] dark:text-[#AEAEB2] w-36 flex-shrink-0">{r.cls}</code>
               <span className="text-[12px] text-[#999] dark:text-[#8E8E93] w-14 flex-shrink-0">{r.px}</span>
               <span className="text-[13px] text-[#737373] dark:text-[#8E8E93] flex-1">{r.role}</span>
@@ -316,7 +316,7 @@ export default function StyleAuditClient() {
                 <span className="w-5 h-5 rounded-md border border-black/10" style={{ backgroundColor: t.light }} />
                 <span className="w-5 h-5 rounded-md border border-white/10" style={{ backgroundColor: t.dark }} />
               </div>
-              <code className="text-[12px] font-mono text-[#3D3BF3] dark:text-[#8B89FF] w-44 flex-shrink-0">{t.token}</code>
+              <code className="text-[12px] font-mono text-[#121212] dark:text-[#F2F2F7] w-44 flex-shrink-0">{t.token}</code>
               <span className="text-[12px] text-[#737373] dark:text-[#8E8E93] flex-1 leading-tight">Reemplaza: <span className="text-[#424242] dark:text-[#AEAEB2]">{t.replaces}</span></span>
             </div>
           ))}
@@ -328,11 +328,11 @@ export default function StyleAuditClient() {
             {
               phase: 'Fase 1 — Quick wins ✓ completada',
               color: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800/40 text-green-800 dark:text-green-300',
-              items: ['✓ Unificado #111111 → #121212', '✓ #5B21B6 eliminado; --color-accent ya es #3D3BF3', '✓ Grises #888888/#999999/#666666 → #737373', '✓ Borders #E5E5E5/#E0E0E0/#EDEDED/#EFEFEF → #E8E8E8/#F0F0F0', '✓ #FAFAFA → #F7F8FA', '✓ rounded-[16px] → rounded-2xl'],
+              items: ['✓ Unificado #111111 → #121212', '✓ #5B21B6 eliminado; --color-accent ya es #121212', '✓ Grises #888888/#999999/#666666 → #737373', '✓ Borders #E5E5E5/#E0E0E0/#EDEDED/#EFEFEF → #E8E8E8/#F0F0F0', '✓ #FAFAFA → #F7F8FA', '✓ rounded-[16px] → rounded-2xl'],
             },
             {
               phase: 'Fase 2 — Normalización media',
-              color: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800/40 text-blue-800 dark:text-blue-300',
+              color: 'bg-neutral-50 dark:bg-neutral-900/20 border-neutral-200 dark:border-neutral-800/40 text-neutral-800 dark:text-neutral-300',
               items: ['✓ Borders consolidados a 2 valores (#E8E8E8, #F0F0F0)', '✓ Superficies consolidadas (2 valores: #F7F8FA, #F5F5F5)', 'Adoptar escala tipográfica de 6 tamaños nombrados', 'Añadir token para #2C2C2E bg vs border en dark'],
             },
             {

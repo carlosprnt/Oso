@@ -35,6 +35,14 @@
   /* ── Typography ──────────────────────────── */
   --font-sans: "Google Sans", "HelveticaNeue", Helvetica, Arial, sans-serif;
 
+  /* Heavier weight scale — bumps every "bold-ish" utility so headings
+     and emphasised copy feel noticeably thicker. Regular/medium stay
+     the same so body text keeps its current rhythm. */
+  --font-weight-semibold:  700;
+  --font-weight-bold:      800;
+  --font-weight-extrabold: 900;
+  --font-weight-black:     900;
+
   /* ── Shape ───────────────────────────────── */
   --radius-sm:  6px;
   --radius-md:  10px;
@@ -57,6 +65,16 @@ body {
   background-color: var(--color-background);
   color: var(--color-text-primary);
   font-family: var(--font-sans);
+  /* Let the browser synthesize heavier weights when Google Sans does
+     not ship the requested weight (it only has up to 700). */
+  font-synthesis: weight;
+}
+
+/* All links inherit the surrounding text colour (black in light mode,
+   near-white in dark mode) so nothing renders as a blue hyperlink. */
+a {
+  color: inherit;
+  text-decoration-color: currentColor;
 }
 
 .tabular-nums {

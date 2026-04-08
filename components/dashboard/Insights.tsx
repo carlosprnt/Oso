@@ -98,7 +98,7 @@ export default function Insights({ subscriptions, stats }: InsightsProps) {
         {/* ① Highest cost */}
         <InsightCell
           icon={<TrendingUp size={20} />}
-          iconCls="bg-[#F5F5F5] text-[#424242]"
+          iconCls="bg-white text-[#424242]"
           label={t('dashboard.highestCost')}
           value={highest?.name ?? '—'}
           sub={
@@ -112,7 +112,7 @@ export default function Insights({ subscriptions, stats }: InsightsProps) {
         {/* ② Top category */}
         <InsightCell
           icon={CatIcon ? <CatIcon size={20} /> : null}
-          iconCls={catMeta ? `${catMeta.color} ${catMeta.textColor}` : 'bg-[#F5F5F5] text-[#424242]'}
+          iconCls={catMeta ? `${catMeta.color} ${catMeta.textColor}` : 'bg-white text-[#424242]'}
           label={t('dashboard.topCategory')}
           value={topCat ? t(`categories.${topCat.category}` as Parameters<typeof t>[0]) : '—'}
           sub={
@@ -126,7 +126,7 @@ export default function Insights({ subscriptions, stats }: InsightsProps) {
         {/* ③ Shared plans */}
         <InsightCell
           icon={<Users size={20} />}
-          iconCls="bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
+          iconCls="bg-neutral-100 text-neutral-700 dark:bg-neutral-900/40 dark:text-neutral-300"
           label={t('dashboard.sharedPlans')}
           value={
             sharedSubs.length > 0

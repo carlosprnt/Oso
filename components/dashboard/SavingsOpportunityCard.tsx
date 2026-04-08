@@ -30,7 +30,7 @@ function RingingBell() {
       style={{ background: 'linear-gradient(135deg,#E8E6FF,#D4CFFF)' }}
     >
       <Bell
-        size={20} strokeWidth={2} className="text-[#3D3BF3]"
+        size={20} strokeWidth={2} className="text-[#121212]"
         style={{ transformOrigin: 'top center', animation: ringing ? 'bell-ring 0.9s ease-in-out forwards' : 'none' }}
       />
     </div>

@@ -9,7 +9,7 @@ import { getCategoryMeta } from '@/lib/constants/categories'
 const COLORS: Record<string, string> = {
   streaming:    '#F87171',
   music:        '#4ADE80',
-  productivity: '#60A5FA',
+  productivity: '#121212',
   cloud:        '#38BDF8',
   ai:           '#A78BFA',
   health:       '#34D399',

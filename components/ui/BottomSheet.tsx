@@ -207,7 +207,7 @@ export default function BottomSheet({
             <h2 className="text-[17px] font-semibold text-[#121212] dark:text-[#F2F2F7]">{title}</h2>
             <button
               onClick={onClose}
-              className="w-11 h-11 rounded-full bg-[#F5F5F5] dark:bg-[#2C2C2E] flex items-center justify-center text-[#616161] dark:text-[#AEAEB2] transition-colors active:bg-[#EBEBEB] dark:active:bg-[#3A3A3C]"
+              className="w-11 h-11 rounded-full bg-white dark:bg-[#2C2C2E] flex items-center justify-center text-[#616161] dark:text-[#AEAEB2] transition-colors active:bg-[#EBEBEB] dark:active:bg-[#3A3A3C]"
             >
               <X size={16} strokeWidth={2.5} />
             </button>

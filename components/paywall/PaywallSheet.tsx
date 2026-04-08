@@ -115,7 +115,7 @@ export default function PaywallSheet({ trigger, onClose, onPurchaseSuccess }: Pr
           <div className="space-y-2.5 mb-6">
             {PAYWALL_BENEFITS.map(b => (
               <div key={b.id} className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-[#3D3BF3] flex items-center justify-center flex-shrink-0">
+                <div className="w-5 h-5 rounded-full bg-[#121212] flex items-center justify-center flex-shrink-0">
                   <Check size={11} strokeWidth={3} className="text-white" />
                 </div>
                 <span className="text-[15px] text-[#121212]">{b.text}</span>
@@ -152,7 +152,7 @@ export default function PaywallSheet({ trigger, onClose, onPurchaseSuccess }: Pr
           <button
             onClick={handlePurchase}
             disabled={loading}
-            className="w-full h-[52px] rounded-full bg-[#3D3BF3] text-white text-[16px] font-semibold flex items-center justify-center gap-2 disabled:opacity-60 active:bg-[#3230D0] transition-colors mb-3"
+            className="w-full h-[52px] rounded-full bg-[#121212] text-white text-[16px] font-semibold flex items-center justify-center gap-2 disabled:opacity-60 active:bg-[#000000] transition-colors mb-3"
           >
             {loading
               ? <Loader2 size={18} className="animate-spin" />
@@ -164,7 +164,7 @@ export default function PaywallSheet({ trigger, onClose, onPurchaseSuccess }: Pr
             <button
               onClick={handleRestore}
               disabled={restoring}
-              className="w-full h-10 text-[13px] text-[#3D3BF3] font-medium disabled:opacity-50"
+              className="w-full h-10 text-[13px] text-[#121212] font-medium disabled:opacity-50"
             >
               {restoring ? 'Restaurando…' : 'Restaurar compra'}
             </button>
@@ -194,11 +194,11 @@ function PlanCard({
     <button
       onClick={onClick}
       className={`flex-1 rounded-2xl border-2 p-3 text-left transition-all ${
-        selected ? 'border-[#3D3BF3] bg-[#F0F0FF]' : 'border-[#E8E8E8] bg-white'
+        selected ? 'border-[#121212] bg-[#FFFFFF]' : 'border-[#E8E8E8] bg-white'
       }`}
     >
       {badge && (
-        <span className="text-[10px] font-semibold text-[#3D3BF3] bg-[#E8E8FF] rounded-full px-2 py-0.5 mb-1.5 inline-block">
+        <span className="text-[10px] font-semibold text-[#121212] bg-[#FFFFFF] rounded-full px-2 py-0.5 mb-1.5 inline-block">
           {badge}
         </span>
       )}

@@ -258,8 +258,8 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
           <motion.div key="searching" {...fadeSlide}
             className="flex flex-col items-center justify-center py-16 px-6 text-center gap-4"
           >
-            <div className="w-14 h-14 rounded-2xl bg-[#F0F0FF] dark:bg-[#2C2C2E] flex items-center justify-center">
-              <Loader2 size={24} className="text-[#3D3BF3] animate-spin" />
+            <div className="w-14 h-14 rounded-2xl bg-[#FFFFFF] dark:bg-[#2C2C2E] flex items-center justify-center">
+              <Loader2 size={24} className="text-[#121212] animate-spin" />
             </div>
             <div>
               <p className="text-[15px] font-semibold text-[#121212] dark:text-[#F2F2F7]">{t('gmail.searching')}</p>
@@ -288,7 +288,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
             <div className="w-full space-y-2.5">
               <button
                 onClick={connectGmail}
-                className="w-full h-12 rounded-2xl bg-[#3D3BF3] text-white text-sm font-medium hover:bg-[#3230D0] active:bg-[#2B29B8] transition-colors flex items-center justify-center gap-2"
+                className="w-full h-12 rounded-2xl bg-[#121212] text-white text-sm font-medium hover:bg-[#000000] active:bg-[#000000] transition-colors flex items-center justify-center gap-2"
               >
                 <Mail size={16} />
                 {t('gmail.connectButton')}
@@ -329,7 +329,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
               <div className="flex items-center justify-between">
                 <button
                   onClick={toggleAll}
-                  className="text-[13px] font-medium text-[#3D3BF3] hover:text-[#3230D0]"
+                  className="text-[13px] font-medium text-[#121212] hover:text-[#000000]"
                 >
                   {selected.size === sheetState.candidates.length ? t('gmail.deselectAll') : t('gmail.selectAll')}
                 </button>
@@ -340,7 +340,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
                 disabled={selectedCount === 0}
                 className="w-full h-12 rounded-2xl text-sm font-medium transition-colors"
                 style={{
-                  background: selectedCount > 0 ? '#3D3BF3' : '#F0F0F0',
+                  background: selectedCount > 0 ? '#121212' : '#F0F0F0',
                   color: selectedCount > 0 ? '#ffffff' : '#AAAAAA',
                   cursor: selectedCount > 0 ? 'pointer' : 'default',
                 }}
@@ -360,8 +360,8 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
           <motion.div key="adding" {...fadeSlide}
             className="flex flex-col items-center justify-center py-16 px-6 text-center gap-4"
           >
-            <div className="w-14 h-14 rounded-2xl bg-[#F0F0FF] dark:bg-[#2C2C2E] flex items-center justify-center">
-              <Loader2 size={24} className="text-[#3D3BF3] animate-spin" />
+            <div className="w-14 h-14 rounded-2xl bg-[#FFFFFF] dark:bg-[#2C2C2E] flex items-center justify-center">
+              <Loader2 size={24} className="text-[#121212] animate-spin" />
             </div>
             <p className="text-[15px] font-semibold text-[#121212] dark:text-[#F2F2F7]">
               {sheetState.total === 1
@@ -391,7 +391,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
             </div>
             <button
               onClick={onClose}
-              className="w-full h-12 rounded-2xl bg-[#3D3BF3] text-white text-sm font-medium hover:bg-[#3230D0] transition-colors"
+              className="w-full h-12 rounded-2xl bg-[#121212] text-white text-sm font-medium hover:bg-[#000000] transition-colors"
             >
               {t('gmail.doneButton')}
             </button>
@@ -418,13 +418,13 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
             <div className="w-full space-y-2">
               <button
                 onClick={onClose}
-                className="w-full h-12 rounded-2xl bg-[#3D3BF3] text-white text-sm font-medium hover:bg-[#3230D0] transition-colors"
+                className="w-full h-12 rounded-2xl bg-[#121212] text-white text-sm font-medium hover:bg-[#000000] transition-colors"
               >
                 {t('gmail.addManually')}
               </button>
               <button
                 onClick={() => doSearch(tokenRef.current ?? undefined)}
-                className="w-full h-12 rounded-2xl border border-[#E8E8E8] dark:border-[#3A3A3C] text-[#444444] dark:text-[#AEAEB2] text-sm font-medium hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E] transition-colors flex items-center justify-center gap-1.5"
+                className="w-full h-12 rounded-2xl border border-[#E8E8E8] dark:border-[#3A3A3C] text-[#444444] dark:text-[#AEAEB2] text-sm font-medium hover:bg-white dark:hover:bg-[#2C2C2E] transition-colors flex items-center justify-center gap-1.5"
               >
                 <RefreshCw size={14} />
                 {t('gmail.tryAgain')}
@@ -447,7 +447,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
             </div>
             <button
               onClick={() => doSearch(tokenRef.current ?? undefined)}
-              className="w-full h-12 rounded-2xl bg-[#3D3BF3] text-white text-sm font-medium hover:bg-[#3230D0] transition-colors flex items-center justify-center gap-1.5"
+              className="w-full h-12 rounded-2xl bg-[#121212] text-white text-sm font-medium hover:bg-[#000000] transition-colors flex items-center justify-center gap-1.5"
             >
               <RefreshCw size={14} />
               {t('gmail.tryAgain')}

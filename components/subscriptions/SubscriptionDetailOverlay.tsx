@@ -63,7 +63,7 @@ const STATUS_CONFIG: Record<string, { color: string; bg: string; darkColor: stri
 
 function PlainCard({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-[#F7F8FA] dark:bg-[#232325] rounded-2xl border border-[#F0F0F0] dark:border-[#2C2C2E] overflow-hidden">
+    <div className="bg-white dark:bg-[#232325] rounded-2xl border border-[#F0F0F0] dark:border-[#2C2C2E] overflow-hidden">
       {children}
     </div>
   )
@@ -232,7 +232,7 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
           {/* Cards */}
           <div className="px-4 space-y-3 pb-10">
             {/* Cost */}
-            <div className="bg-[#F7F8FA] dark:bg-[#232325] rounded-2xl border border-[#F0F0F0] dark:border-[#2C2C2E] p-4">
+            <div className="bg-white dark:bg-[#232325] rounded-2xl border border-[#F0F0F0] dark:border-[#2C2C2E] p-4">
               <div className="flex items-end justify-between">
                 <div>
                   <p className="text-3xl font-bold text-[#121212] dark:text-[#F2F2F7] tabular-nums leading-none">
@@ -275,7 +275,7 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
 
             {/* Progress block — only shown when next billing date is known */}
             {sub.next_billing_date && (
-              <div className="bg-[#F7F8FA] dark:bg-[#232325] rounded-2xl border border-[#F0F0F0] dark:border-[#2C2C2E] px-4 py-4">
+              <div className="bg-white dark:bg-[#232325] rounded-2xl border border-[#F0F0F0] dark:border-[#2C2C2E] px-4 py-4">
                 <p className="text-[11px] font-semibold text-[#A0A0A0] dark:text-[#8E8E93] uppercase tracking-wider mb-3">
                   {t('detail.timeUntilNext')}
                 </p>
@@ -326,7 +326,7 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
 
             {/* Notes */}
             {sub.notes && (
-              <div className="bg-[#F7F8FA] dark:bg-[#232325] rounded-2xl border border-[#F0F0F0] dark:border-[#2C2C2E] overflow-hidden">
+              <div className="bg-white dark:bg-[#232325] rounded-2xl border border-[#F0F0F0] dark:border-[#2C2C2E] overflow-hidden">
                 <div className="px-4 pt-3.5 pb-2.5">
                   <p className="text-[11px] font-semibold text-[#A0A0A0] dark:text-[#8E8E93] uppercase tracking-wider">{t('detail.notes')}</p>
                 </div>
@@ -340,7 +340,7 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
             <div className="pb-4">
               <button
                 onClick={() => setEditOpen(true)}
-                className="w-full h-12 rounded-full bg-[#3D3BF3] text-white text-sm font-semibold active:opacity-80 transition-opacity"
+                className="w-full h-12 rounded-full bg-[#121212] text-white text-sm font-semibold active:opacity-80 transition-opacity"
               >
                 {t('detail.edit')}
               </button>

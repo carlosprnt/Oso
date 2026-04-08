@@ -3,7 +3,7 @@ import Image from 'next/image'
 
 export default function NotFound() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-[#F7F8FA] dark:bg-[#000000] px-6">
+    <main className="min-h-screen flex items-center justify-center bg-white dark:bg-[#000000] px-6">
       <div className="flex flex-col items-center text-center">
         <Image
           src="/image-error.png"
@@ -19,7 +19,7 @@ export default function NotFound() {
         </p>
         <Link
           href="/dashboard"
-          className="text-sm font-semibold text-[#3D3BF3] dark:text-[#8B89FF]"
+          className="text-sm font-semibold text-[#121212] dark:text-[#F2F2F7]"
         >
           Ir al inicio →
         </Link>

@@ -62,7 +62,7 @@ export default function Sidebar({ profile }: SidebarProps) {
                 transition-all duration-150
                 ${isActive
                   ? 'bg-[#121212] text-white dark:bg-[#F2F2F7] dark:text-[#121212]'
-                  : 'text-[#424242] hover:bg-[#F5F5F5] hover:text-[#121212] dark:text-[#AEAEB2] dark:hover:bg-[#2C2C2E] dark:hover:text-[#F2F2F7]'
+                  : 'text-[#424242] hover:bg-white hover:text-[#121212] dark:text-[#AEAEB2] dark:hover:bg-[#2C2C2E] dark:hover:text-[#F2F2F7]'
                 }
               `}
             >

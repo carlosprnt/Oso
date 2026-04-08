@@ -162,7 +162,7 @@ function Toggle({
       <div
         className="
           w-11 h-6 rounded-full bg-[#DADADA] dark:bg-[#3A3A3C]
-          peer-checked:bg-[#3D3BF3]
+          peer-checked:bg-[#121212]
           after:content-[''] after:absolute after:top-[2px] after:left-[2px]
           after:bg-white after:rounded-full after:h-5 after:w-5
           after:transition-all peer-checked:after:translate-x-5
@@ -455,7 +455,7 @@ export default function SubscriptionForm({
         <button
           type="button"
           onClick={requestClose}
-          className="w-11 h-11 rounded-full bg-[#F5F5F5] dark:bg-[#2C2C2E] flex items-center justify-center text-[#616161] dark:text-[#AEAEB2] transition-colors active:bg-[#EBEBEB] dark:active:bg-[#3A3A3C]"
+          className="w-11 h-11 rounded-full bg-white dark:bg-[#2C2C2E] flex items-center justify-center text-[#616161] dark:text-[#AEAEB2] transition-colors active:bg-[#EBEBEB] dark:active:bg-[#3A3A3C]"
         >
           <X size={16} strokeWidth={2.5} />
         </button>
@@ -476,7 +476,7 @@ export default function SubscriptionForm({
         )}
 
         {/* ── Hero card: name + price (no avatar) ─────────────────────── */}
-        <div className="mx-5 mb-3 bg-[#F5F5F5] dark:bg-[#1C1C1E] rounded-2xl px-4 py-4 border border-[#F0F0F0] dark:border-[#2C2C2E]">
+        <div className="mx-5 mb-3 bg-white dark:bg-[#1C1C1E] rounded-2xl px-4 py-4 border border-[#F0F0F0] dark:border-[#2C2C2E]">
           <input
             type="text"
             value={name}
@@ -741,7 +741,7 @@ export default function SubscriptionForm({
               aria-checked={reminderOn}
               onClick={() => setReminderOn(v => !v)}
               className="relative flex-shrink-0 transition-colors duration-200"
-              style={{ width: 44, height: 26, borderRadius: 13, background: reminderOn ? '#3D3BF3' : '#D1D1D6' }}
+              style={{ width: 44, height: 26, borderRadius: 13, background: reminderOn ? '#121212' : '#D1D1D6' }}
             >
               <motion.div
                 layout
@@ -775,7 +775,7 @@ export default function SubscriptionForm({
                         onClick={() => setReminderDays(d)}
                         className="flex-1 h-10 rounded-full text-[13px] font-semibold transition-colors"
                         style={{
-                          background: reminderDays === d ? '#3D3BF3' : isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
+                          background: reminderDays === d ? '#121212' : isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
                           color: reminderDays === d ? 'white' : isDark ? '#AEAEB2' : '#424242',
                         }}
                       >
@@ -795,7 +795,7 @@ export default function SubscriptionForm({
             <button
               type="button"
               onClick={() => setShowDeleteConfirm(true)}
-              className="w-full h-12 rounded-2xl bg-[#F5F5F5] dark:bg-[#1C1C1E] text-red-500 dark:text-red-500 text-sm font-medium active:bg-[#EBEBEB] dark:active:bg-[#2C2C2E] transition-colors"
+              className="w-full h-12 rounded-2xl bg-white dark:bg-[#1C1C1E] text-red-500 dark:text-red-500 text-sm font-medium active:bg-[#EBEBEB] dark:active:bg-[#2C2C2E] transition-colors"
             >
               {t('form.delete')}
             </button>
@@ -812,14 +812,14 @@ export default function SubscriptionForm({
           <button
             type="button"
             onClick={requestClose}
-            className="h-12 px-5 rounded-full border border-[#E8E8E8] dark:border-[#3A3A3C] text-[15px] font-medium text-[#444444] dark:text-[#AEAEB2] active:bg-[#F5F5F5] dark:active:bg-[#2C2C2E] transition-colors flex-shrink-0"
+            className="h-12 px-5 rounded-full border border-[#E8E8E8] dark:border-[#3A3A3C] text-[15px] font-medium text-[#444444] dark:text-[#AEAEB2] active:bg-white dark:active:bg-[#2C2C2E] transition-colors flex-shrink-0"
           >
             {t('form.cancel')}
           </button>
           <button
             type="submit"
             disabled={isPending}
-            className="flex-1 h-12 rounded-full bg-[#3D3BF3] text-white text-[15px] font-semibold disabled:opacity-40 active:bg-[#3230D0] transition-colors"
+            className="flex-1 h-12 rounded-full bg-[#121212] text-white text-[15px] font-semibold disabled:opacity-40 active:bg-[#000000] transition-colors"
           >
             {isPending ? (
               <span className="inline-flex items-center justify-center gap-1" aria-label="Loading">
@@ -861,7 +861,7 @@ export default function SubscriptionForm({
               <button
                 type="button"
                 onClick={() => setShowDeleteConfirm(false)}
-                className="w-full h-12 rounded-full bg-[#F5F5F5] dark:bg-[#2C2C2E] text-[#121212] dark:text-[#F2F2F7] text-[15px] font-medium active:opacity-80 transition-opacity"
+                className="w-full h-12 rounded-full bg-white dark:bg-[#2C2C2E] text-[#121212] dark:text-[#F2F2F7] text-[15px] font-medium active:opacity-80 transition-opacity"
               >
                 {t('form.keepIt')}
               </button>
@@ -898,7 +898,7 @@ export default function SubscriptionForm({
               <button
                 type="button"
                 onClick={() => setShowCancelConfirm(false)}
-                className="w-full h-12 rounded-full bg-[#F5F5F5] dark:bg-[#2C2C2E] text-[#121212] dark:text-[#F2F2F7] text-[15px] font-medium active:opacity-80 transition-opacity"
+                className="w-full h-12 rounded-full bg-white dark:bg-[#2C2C2E] text-[#121212] dark:text-[#F2F2F7] text-[15px] font-medium active:opacity-80 transition-opacity"
               >
                 {t('form.keepEditing')}
               </button>

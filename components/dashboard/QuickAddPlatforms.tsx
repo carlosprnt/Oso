@@ -44,7 +44,7 @@ function PlatformRow({
       </p>
       <button
         onClick={() => onAdd(platform)}
-        className="text-[13px] font-semibold text-[#3D3BF3] dark:text-[#8B89FF] flex-shrink-0 active:opacity-60 transition-opacity"
+        className="text-[13px] font-semibold text-[#121212] dark:text-[#F2F2F7] flex-shrink-0 active:opacity-60 transition-opacity"
       >
         Añadir
       </button>

@@ -120,11 +120,11 @@ export default function SubscriptionDetail({ subscription: sub }: SubscriptionDe
 
   return (
     <>
-      <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#121212] -mx-4 sm:-mx-6 px-4 sm:px-6 pb-28">
+      <div className="min-h-screen bg-white dark:bg-[#121212] -mx-4 sm:-mx-6 px-4 sm:px-6 pb-28">
 
         {/* Back button */}
         <div
-          className="flex items-center pb-4 bg-[#F7F8FA] dark:bg-[#121212]"
+          className="flex items-center pb-4 bg-white dark:bg-[#121212]"
           style={{ paddingTop: 'max(16px, env(safe-area-inset-top))' }}
         >
           <button
@@ -287,7 +287,7 @@ export default function SubscriptionDetail({ subscription: sub }: SubscriptionDe
       >
         <button
           onClick={() => setEditOpen(true)}
-          className="w-full h-12 rounded-full bg-[#3D3BF3] text-white text-sm font-semibold hover:bg-[#3230D0] active:bg-[#2B29B8] transition-colors"
+          className="w-full h-12 rounded-full bg-[#121212] text-white text-sm font-semibold hover:bg-[#000000] active:bg-[#000000] transition-colors"
         >
           {t('detail.edit')}
         </button>

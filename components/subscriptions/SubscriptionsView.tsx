@@ -135,7 +135,7 @@ function FilterSheet({ isOpen, currentStatus, currentCategory, onClose }: Filter
   const footer = (
     <div className="flex gap-3 px-5 py-4 border-t border-[#F0F0F0] dark:border-[#2C2C2E]">
       <button onClick={reset}
-        className="flex-1 h-12 rounded-full text-sm font-semibold text-[#444444] dark:text-[#AEAEB2] bg-[#F5F5F5] dark:bg-[#2C2C2E] transition-colors active:bg-[#ECECEC] dark:active:bg-[#3A3A3C]">
+        className="flex-1 h-12 rounded-full text-sm font-semibold text-[#444444] dark:text-[#AEAEB2] bg-white dark:bg-[#2C2C2E] transition-colors active:bg-[#ECECEC] dark:active:bg-[#3A3A3C]">
         {t('subscriptions.reset')}
       </button>
       <button onClick={apply}
@@ -245,7 +245,7 @@ function SortDropdown({
                 <button
                   key={mode}
                   onClick={() => { onSelect(mode); setOpen(false) }}
-                  className={`w-full flex items-center justify-between gap-4 px-3 py-2 text-sm transition-colors text-left rounded-[8px] ${active ? 'text-[#121212] bg-[#F0F0F0] dark:bg-[#2C2C2E]' : 'text-[#424242] dark:text-[#AEAEB2] hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2E]'}`}
+                  className={`w-full flex items-center justify-between gap-4 px-3 py-2 text-sm transition-colors text-left rounded-[8px] ${active ? 'text-[#121212] bg-[#F0F0F0] dark:bg-[#2C2C2E]' : 'text-[#424242] dark:text-[#AEAEB2] hover:bg-white dark:hover:bg-[#2C2C2E]'}`}
                 >
                   {label}
                   {active && <Check size={13} strokeWidth={2.5} className="text-[#121212] dark:text-[#F2F2F7] flex-shrink-0" />}

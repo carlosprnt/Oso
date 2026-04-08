@@ -44,7 +44,7 @@ export default function PrivacyPage() {
             <li>We never store the body of your emails.</li>
             <li>We only extract structured metadata (sender, detected service name, amount, currency) that you explicitly confirm before saving.</li>
             <li>You can revoke access at any time from your Google account settings.</li>
-            <li>Oso&rsquo;s use and transfer of information received from Google APIs adheres to the <a className="text-[#3D3BF3] underline" href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">Google API Services User Data Policy</a>, including the Limited Use requirements.</li>
+            <li>Oso&rsquo;s use and transfer of information received from Google APIs adheres to the <a className="text-[#121212] underline" href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">Google API Services User Data Policy</a>, including the Limited Use requirements.</li>
           </ul>
         </section>
 
@@ -83,7 +83,7 @@ export default function PrivacyPage() {
           <h2 className="text-[17px] font-bold text-[#121212] dark:text-[#F2F2F7] mb-2">6. Contact</h2>
           <p>
             For anything privacy-related, write to{' '}
-            <a className="text-[#3D3BF3] underline" href="mailto:hello@carlospariente.com">hello@carlospariente.com</a>.
+            <a className="text-[#121212] underline" href="mailto:hello@carlospariente.com">hello@carlospariente.com</a>.
           </p>
         </section>
       </div>

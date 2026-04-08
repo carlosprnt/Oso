@@ -170,7 +170,7 @@ export default function SettingsView({ preferences }: Props) {
     <div className="min-h-screen -mx-4 sm:-mx-6 -my-6 lg:-my-8 pb-4">
       {/* Sticky header */}
       <div
-        className="sticky top-0 z-10 flex items-center gap-3 px-5 pb-3 bg-[#F7F8FA] dark:bg-[#121212]"
+        className="sticky top-0 z-10 flex items-center gap-3 px-5 pb-3 bg-white dark:bg-[#121212]"
         style={{ paddingTop: 'max(12px, env(safe-area-inset-top))' }}
       >
         <button
@@ -197,7 +197,7 @@ export default function SettingsView({ preferences }: Props) {
           </div>
           <button
             disabled
-            className="h-8 px-4 rounded-full bg-[#3D3BF3] text-white text-[13px] font-semibold opacity-40 cursor-not-allowed flex-shrink-0"
+            className="h-8 px-4 rounded-full bg-[#121212] text-white text-[13px] font-semibold opacity-40 cursor-not-allowed flex-shrink-0"
           >
             Mejorar
           </button>
@@ -297,7 +297,7 @@ export default function SettingsView({ preferences }: Props) {
           <button
             onClick={handleAddCategory}
             disabled={!newCategory.trim()}
-            className="text-[15px] font-semibold text-[#3D3BF3] disabled:opacity-30"
+            className="text-[15px] font-semibold text-[#121212] disabled:opacity-30"
           >
             Añadir
           </button>
@@ -313,7 +313,7 @@ export default function SettingsView({ preferences }: Props) {
           onClick={() => { if (typeof window !== 'undefined') window.open('https://perezoso.app', '_blank') }}
         />
         <Row
-          icon={<IconTile bg="#3D3BF3"><Share2 size={15} /></IconTile>}
+          icon={<IconTile bg="#121212"><Share2 size={15} /></IconTile>}
           label="Compartir con un amigo"
           right={<ChevronRight size={15} className="text-[#C7C7CC]" />}
           onClick={handleShare}
@@ -330,7 +330,7 @@ export default function SettingsView({ preferences }: Props) {
           href="https://twitter.com/carlosprnt"
         />
         <Row
-          icon={<IconTile bg="#3D3BF3"><Mail size={15} /></IconTile>}
+          icon={<IconTile bg="#121212"><Mail size={15} /></IconTile>}
           label="hello@carlospariente.com"
           right={<ChevronRight size={15} className="text-[#C7C7CC]" />}
           href="mailto:hello@carlospariente.com"

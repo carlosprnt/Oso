@@ -268,7 +268,7 @@ export default function SavingsDetailSheet({ opportunity, onClose }: Props) {
 
         <button
           onClick={onClose}
-          className="mt-2 w-full h-12 rounded-full bg-[#3D3BF3] text-white text-[15px] font-semibold active:bg-[#3230D0] transition-colors"
+          className="mt-2 w-full h-12 rounded-full bg-[#121212] text-white text-[15px] font-semibold active:bg-[#000000] transition-colors"
         >
           {t('savings.dismiss')}
         </button>

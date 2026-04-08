@@ -19,7 +19,7 @@ export default function DashboardHeader({ title, subtitle, shareText }: Props) {
 
   return (
     <motion.div
-      className="sticky top-0 z-[20] pb-3 pt-1 bg-[#F7F8FA] dark:bg-[#121212]"
+      className="sticky top-0 z-[20] pb-3 pt-1 bg-white dark:bg-[#121212]"
       style={{ opacity, filter, pointerEvents }}
     >
       <div className="flex items-center justify-between py-2">
