@@ -14,8 +14,9 @@ import { isCapacitor, isIOS } from '@/lib/platform'
 // this path is never reached on web.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function getPurchases(): Promise<any> {
-  // @ts-expect-error — @revenuecat/purchases-capacitor is a native-only dep
-  const { Purchases } = await import('@revenuecat/purchases-capacitor')
+    // webpackIgnore: true tells the bundler not to resolve this native-only package.
+  // @ts-expect-error — not in package.json, native Capacitor build only
+  const { Purchases } = await import(/* webpackIgnore: true */ '@revenuecat/purchases-capacitor')
   return Purchases
 }
 
