@@ -274,7 +274,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
             className="flex flex-col items-center px-5 pt-2 pb-6 text-center gap-4"
           >
             <img
-              src="/1C67E800-A121-400E-BC6B-8AE7BE1BD9FE.jpeg"
+              src="/logo.png"
               alt="Oso mailman"
               className="w-44 h-44 object-contain"
               onError={e => { (e.target as HTMLImageElement).src = '/logo.png' }}
@@ -404,7 +404,7 @@ export default function GmailSubscriptionSearchSheet({ isOpen, onClose }: Props)
             className="flex flex-col items-center justify-center pt-4 pb-8 px-6 text-center gap-4"
           >
             <img
-              src="/1C67E800-A121-400E-BC6B-8AE7BE1BD9FE.jpeg"
+              src="/logo.png"
               alt="Oso mailman"
               className="w-40 h-40 object-contain"
               onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
