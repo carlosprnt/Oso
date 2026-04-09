@@ -203,21 +203,24 @@ export default function DashboardSummaryHero({
     : `${savingsYr} ${t('dashboard.perYear')}`
 
   return (
-    <div
-      ref={ref}
-      className="sticky pb-5 bg-white dark:bg-[#121212]"
-      style={{ top: 'env(safe-area-inset-top)' }}
-    >
-      {/* Greeting + avatar */}
-      <div className="flex items-center justify-between mb-3">
+    <>
+      {/* Greeting + avatar — sticky above the global top fade mask
+         (z-40 > .top-fade-mask z-30) so it never picks up the blur,
+         and rendered OUTSIDE the ref'd container so the JS-driven
+         scroll opacity/blur below also leaves it alone. */}
+      <div
+        className="sticky z-40 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 flex items-center justify-between bg-white dark:bg-[#121212]"
+        style={{ top: 'env(safe-area-inset-top)' }}
+      >
         <p className="text-[17px] font-bold text-black dark:text-[#F2F2F7]">
           {t('dashboard.greeting')} {name}.
         </p>
         <UserAvatarMenu shareText={shareText} />
       </div>
 
-      {/* Main statement — tapping figures spawns money confetti */}
-      <p className="text-[40px] font-extrabold text-[#121212] dark:text-[#F2F2F7] leading-[1.15] tracking-tight mb-3" style={{ maxWidth: '100%' }}>
+      <div ref={ref} className="pb-5">
+        {/* Main statement — tapping figures spawns money confetti */}
+        <p className="text-[40px] font-extrabold text-[#121212] dark:text-[#F2F2F7] leading-[1.15] tracking-tight mb-3" style={{ maxWidth: '100%' }}>
         {t('dashboard.spendStatement')}<br />
         <button onClick={handleAmountTap} className="inline align-baseline cursor-pointer select-none active:scale-95 transition-transform">
           <span className="text-[#121212] dark:text-[#F2F2F7]">{monthly}</span>
@@ -262,6 +265,7 @@ export default function DashboardSummaryHero({
           </>
         )}
       </p>
-    </div>
+      </div>
+    </>
   )
 }
