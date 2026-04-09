@@ -138,11 +138,16 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
    */
   const content = (
     <motion.div
-      // Overlay — full-screen fixed container, sheet sits at the
-      // bottom via flex justify-end. Standard iOS PWA pattern.
+      // Overlay — full-screen fixed container that bleeds past the
+      // layout viewport bottom into the home-indicator strip in iOS
+      // standalone (where `bottom: 0` actually anchors at viewport
+      // − env(safe-area-inset-bottom) instead of the physical edge).
       style={{
         position: 'fixed',
-        inset: 0,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 'calc(env(safe-area-inset-bottom) * -1)',
         zIndex: 200,
         display: 'flex',
         flexDirection: 'column',
@@ -155,10 +160,10 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
       transition={{ duration: 0.25 }}
       onClick={onClose}
     >
-      {/* Sheet — flex child at the bottom of the overlay.
-          padding-bottom: env(safe-area-inset-bottom) keeps interactive
-          content above the home indicator while the bg colour fills
-          all the way down to the physical bottom edge. */}
+      {/* Sheet — flex child sitting at the bottom of the bled overlay.
+          paddingBottom: env(safe-area-inset-bottom) keeps interactive
+          content above the home indicator while the sheet's surface
+          itself reaches the physical bottom edge. */}
       <motion.div
         style={{
           width: '100%',

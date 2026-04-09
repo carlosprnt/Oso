@@ -178,18 +178,24 @@ export default function BottomSheet({
         onClick={onClose}
       />
 
-      {/* Sheet — standard iOS PWA pattern: anchor at bottom: 0 and
-          add padding-bottom equal to env(safe-area-inset-bottom) so
-          the bg colour fills all the way to the physical bottom edge
-          (under the home indicator overlay) while interactive content
-          stops above the home indicator. The /debug/safe-area test on
-          iPhone 16 Pro / iOS 18 confirmed bottom: 0 already lands at
-          the physical bottom in standalone mode — no negative-bleed
-          trick needed. */}
+      {/* Sheet — iOS standalone safe-area bleed pattern.
+          In iOS Home Screen standalone webviews, `fixed bottom: 0`
+          actually anchors at (layout-viewport-bottom − env(safe-area-
+          inset-bottom)), NOT at the physical edge of the screen, so a
+          plain bottom: 0 sheet stops 34 px short of the home
+          indicator and the user sees a white strip below it.
+
+          Fix: shift the wrapper's bottom edge into the safe-area
+          strip with bottom: calc(env(safe-area-inset-bottom) * -1)
+          and pad the same amount on the inside so interactive
+          content (footer / sticky CTA) lands at the same y as it
+          would with bottom: 0 + pad: 0 — i.e. exactly at the home
+          indicator top. The sheet's bg fills cleanly under the
+          indicator pill. */}
       <div
         ref={sheetRef}
         className={`
-          fixed bottom-0 left-0 right-0
+          fixed left-0 right-0
           bg-white dark:bg-[#1C1C1E]
           flex flex-col
           ${maxH}
@@ -197,6 +203,7 @@ export default function BottomSheet({
         `}
         style={{
           zIndex: zIndex ?? 60,
+          bottom: 'calc(env(safe-area-inset-bottom) * -1)',
           paddingBottom: 'env(safe-area-inset-bottom)',
           borderRadius: '32px 32px 0 0',
         }}

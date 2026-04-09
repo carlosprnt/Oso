@@ -260,10 +260,36 @@ input, select, textarea {
 }
 .pressable:active { transform: scale(0.98); }
 
+/* ── Bottom safe-area bleed safety net ───────────────────────────────────
+   In iOS Home Screen standalone webviews, `fixed bottom: 0` and the body
+   itself stop at (layout-viewport-bottom − env(safe-area-inset-bottom)),
+   so a 34 px strip between the page background and the physical screen
+   edge is left transparent and shows the webview canvas through.
+
+   This pseudo-element paints var(--color-background) into that strip on
+   every screen — even ones that don't mount a fixed-bottom surface — so
+   the home-indicator zone always matches the page background. It is
+   pointer-events: none and z-index: 0 so every mounted sheet (z ≥ 10)
+   still paints over it. */
+body::after {
+  content: '';
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(env(safe-area-inset-bottom) * -1);
+  height: env(safe-area-inset-bottom);
+  background: var(--color-background);
+  z-index: 0;
+  pointer-events: none;
+}
+
 /* ── Dark mode base ─────────────────────────────────────────────────────── */
 .dark body {
   background-color: #121212;
   color: #F2F2F7;
+}
+.dark body::after {
+  background: #121212;
 }
 .dark ::-webkit-scrollbar-thumb { background: #2C2C2E; }
 

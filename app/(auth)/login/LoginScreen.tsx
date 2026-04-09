@@ -367,12 +367,13 @@ export default function LoginScreen() {
       </AnimatePresence>
 
       {/* ── Fixed bottom panel: title + body + dots + buttons ──
-         Standard iOS PWA pattern: bottom: 0 + padding-bottom carries
-         env(safe-area-inset-bottom) plus the 32 px gap above the
-         home indicator that the panel layout expects. */}
+         iOS standalone safe-area bleed (see BottomSheet comment for
+         the rationale). 32 px sits the buttons that high above the
+         home indicator pill. */}
       <div
-        className="fixed bottom-0 left-0 right-0 bg-white px-6 pt-6 z-10 rounded-t-[40px]"
+        className="fixed left-0 right-0 bg-white px-6 pt-6 z-10 rounded-t-[40px]"
         style={{
+          bottom: 'calc(env(safe-area-inset-bottom) * -1)',
           paddingBottom: 'calc(env(safe-area-inset-bottom) + 32px)',
         }}
       >
@@ -513,8 +514,9 @@ export default function LoginScreen() {
           animate={{ y: 0 }}
           exit={{ y: '100%' }}
           transition={{ type: 'spring', stiffness: 380, damping: 34 }}
-          className="fixed bottom-0 left-0 right-0 z-[201] bg-white rounded-t-[40px] px-5 pt-4"
+          className="fixed left-0 right-0 z-[201] bg-white rounded-t-[40px] px-5 pt-4"
           style={{
+            bottom: 'calc(env(safe-area-inset-bottom) * -1)',
             paddingBottom: 'calc(env(safe-area-inset-bottom) + 24px)',
           }}
           onClick={e => e.stopPropagation()}

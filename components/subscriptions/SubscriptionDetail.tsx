@@ -280,12 +280,14 @@ export default function SubscriptionDetail({ subscription: sub }: SubscriptionDe
         </div>
       </div>
 
-      {/* Fixed edit CTA — standard iOS PWA pattern: bottom: 0 + a
-          padding-bottom that includes env(safe-area-inset-bottom)
-          plus the desired 16 px gap above the home indicator. */}
+      {/* Fixed edit CTA — iOS standalone safe-area bleed: shift the
+          wrapper into the safe-area strip with negative bottom and
+          pad the same amount on the inside, plus 16 px gap above
+          the home indicator. */}
       <div
-        className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1C1C1E] border-t border-[#F0F0F0] dark:border-[#2C2C2E] px-4 pt-3 z-10"
+        className="fixed left-0 right-0 bg-white dark:bg-[#1C1C1E] border-t border-[#F0F0F0] dark:border-[#2C2C2E] px-4 pt-3 z-10"
         style={{
+          bottom: 'calc(env(safe-area-inset-bottom) * -1)',
           paddingBottom: 'calc(env(safe-area-inset-bottom) + 16px)',
         }}
       >
