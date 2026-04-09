@@ -79,13 +79,15 @@ export default function PaywallSheet({ trigger, onClose, onPurchaseSuccess }: Pr
       />
 
       {/* Sheet — iOS standalone safe-area bleed: negative bottom so the
-          white surface bleeds into the home-indicator area, and matching
-          padding-bottom so content never renders under the home bar. */}
+          white surface bleeds into the home-indicator area, and a
+          padding-bottom equal to the inset so content stops at the
+          layout viewport bottom. The CTA has its own mb-3 for the
+          final bit of breathing room above the home indicator. */}
       <motion.div
         className="fixed left-0 right-0 z-[501] bg-white rounded-t-[32px] overflow-hidden"
         style={{
           bottom: 'calc(env(safe-area-inset-bottom) * -1)',
-          paddingBottom: 'calc(env(safe-area-inset-bottom) + 32px)',
+          paddingBottom: 'env(safe-area-inset-bottom)',
         }}
         initial={{ y: '100%' }}
         animate={{ y: 0 }}

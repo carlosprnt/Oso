@@ -805,14 +805,11 @@ export default function SubscriptionForm({
       </div>
 
       {/* ── Save + Cancel buttons — sticky at the bottom ──────────────
-         iOS standalone safe-area bleed: padding-bottom carries the
-         home-indicator inset so the buttons never render under the
-         home bar on standalone pages. Inside a BottomSheet the sheet
-         already handles the bleed so the extra inset just adds a
-         tiny bit of visual breathing room. */}
+         Inside a BottomSheet the sheet itself already handles the
+         safe-area bleed; this just needs pb-4 for the visual gap
+         between the buttons and the sheet edge. */}
       <div
-        className="flex-shrink-0 sticky bottom-0 px-5 pt-3 bg-white dark:bg-[#1C1C1E] border-t border-[#F0F0F0] dark:border-[#2C2C2E]"
-        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 16px)' }}
+        className="flex-shrink-0 sticky bottom-0 px-5 pt-3 pb-4 bg-white dark:bg-[#1C1C1E] border-t border-[#F0F0F0] dark:border-[#2C2C2E]"
       >
         <div className="flex gap-3">
           <button

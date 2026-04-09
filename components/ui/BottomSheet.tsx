@@ -180,9 +180,12 @@ export default function BottomSheet({
 
       {/* Sheet — iOS standalone safe-area bleed pattern:
           negative `bottom` so the white surface bleeds past the
-          layout viewport into the home-indicator area, and matching
-          padding-bottom inside so the actual content never renders
-          underneath the home indicator. */}
+          layout viewport into the home-indicator area, and a
+          padding-bottom equal to the inset so actual content (scroll
+          area + footer) stops at the layout viewport bottom. Any
+          extra breathing room above the home indicator is added by
+          the children (a passed `footer`, a sticky CTA inside the
+          scroll area, etc.) via their own padding. */}
       <div
         ref={sheetRef}
         className={`
@@ -195,7 +198,7 @@ export default function BottomSheet({
         style={{
           zIndex: zIndex ?? 60,
           bottom: 'calc(env(safe-area-inset-bottom) * -1)',
-          paddingBottom: 'calc(env(safe-area-inset-bottom) + 16px)',
+          paddingBottom: 'env(safe-area-inset-bottom)',
           borderRadius: '32px 32px 0 0',
         }}
         onClick={e => e.stopPropagation()}
