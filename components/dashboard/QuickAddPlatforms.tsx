@@ -44,9 +44,10 @@ function PlatformRow({
       </p>
       <button
         onClick={() => onAdd(platform)}
-        className="text-[13px] font-semibold text-[#121212] dark:text-[#F2F2F7] flex-shrink-0 active:opacity-60 transition-opacity"
+        aria-label={`Añadir ${platform.name}`}
+        className="flex-shrink-0 w-8 h-8 flex items-center justify-center text-[#121212] dark:text-[#F2F2F7] active:opacity-60 transition-opacity"
       >
-        Añadir
+        <Plus size={20} strokeWidth={2.25} />
       </button>
     </div>
   )
