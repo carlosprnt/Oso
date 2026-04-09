@@ -65,20 +65,6 @@ export default function FloatingNav() {
   const isSubs = pathname === '/subscriptions' || pathname.startsWith('/subscriptions/')
   const hideNav = pathname === '/settings' || pathname.startsWith('/settings/')
 
-  // SubscriptionsView broadcasts its count via a custom event so we can
-  // emphasize the "+" CTA without a second Supabase roundtrip from here.
-  const [hasNoSubs, setHasNoSubs] = useState(false)
-  useEffect(() => {
-    function onCount(e: Event) {
-      const count = (e as CustomEvent<number>).detail
-      setHasNoSubs(count === 0)
-    }
-    window.addEventListener('perezoso:subs-count', onCount)
-    return () => window.removeEventListener('perezoso:subs-count', onCount)
-  }, [])
-
-  const emphasizeAdd = isSubs && hasNoSubs
-
   // x offset of the sliding bg: Subscriptions=0, Dashboard=1
   const bgX = isDash ? BTN_W + GAP : 0
 
@@ -172,9 +158,7 @@ export default function FloatingNav() {
           </div>
         </div>
 
-        {/* + button — right edge, 16px margin, same bottom as pill.
-            When the user has no subscriptions yet, it scales to 2x to
-            emphasize it as the primary call to action. */}
+        {/* + button — right edge, 16 px margin, same bottom as pill. */}
         <motion.button
           onClick={() => { haptics.tap('medium'); setStep('pick') }}
           aria-label="Add subscription"
@@ -186,12 +170,6 @@ export default function FloatingNav() {
             originY: 1,
             bottom: `calc(${bottomOffset} + 4px)`,
           }}
-          animate={emphasizeAdd ? { scale: [1, 1.25, 1] } : { scale: 1 }}
-          transition={
-            emphasizeAdd
-              ? { duration: 1.6, ease: 'easeInOut', repeat: Infinity }
-              : { type: 'spring', stiffness: 300, damping: 22 }
-          }
           whileTap={{ scale: 0.95 }}
         >
           <Plus size={22} color="#ffffff" strokeWidth={2.5} />

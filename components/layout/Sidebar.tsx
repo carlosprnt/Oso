@@ -69,7 +69,9 @@ export default function Sidebar({ profile }: SidebarProps) {
          share, settings and sign out. */}
       <div className="border-t border-[#E8E8E8] dark:border-[#2C2C2E] pt-4 mt-4">
         <div className="flex items-center gap-2.5 px-1">
-          <UserAvatarMenu />
+          <div className="w-10 h-10 flex-shrink-0">
+            <UserAvatarMenu />
+          </div>
           {profile?.full_name && (
             <p className="text-xs font-medium text-[#121212] dark:text-[#F2F2F7] truncate">
               {profile.full_name}

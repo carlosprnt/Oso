@@ -253,11 +253,11 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
   ) : null
 
   return (
-    <div className="relative">
+    <div className="relative w-full h-full">
       <button
         ref={buttonRef}
         onClick={handleAvatarClick}
-        className="w-10 h-10 flex-shrink-0 focus:outline-none"
+        className="w-full h-full flex-shrink-0 focus:outline-none"
         style={{ perspective: '200px' }}
         aria-label="Account menu"
       >
