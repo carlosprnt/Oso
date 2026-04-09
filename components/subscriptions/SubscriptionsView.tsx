@@ -404,14 +404,14 @@ export default function SubscriptionsView({
           <div className="flex items-center gap-2 ml-4 flex-shrink-0">
             <button
               onClick={() => setCalendarOpen(true)}
-              className="w-10 h-10 rounded-full bg-white dark:bg-[#1C1C1E] flex items-center justify-center transition-colors active:bg-[#F0F0F0] dark:active:bg-[#2C2C2E]"
+              className="w-10 h-10 rounded-full bg-[#F2F2F7] dark:bg-[#1C1C1E] flex items-center justify-center transition-colors active:bg-[#E5E5EA] dark:active:bg-[#2C2C2E]"
             >
               <CalendarDays size={17} strokeWidth={2} className="text-[#333333] dark:text-[#F2F2F7]" />
             </button>
             <motion.button
               onClick={handleFilterTap}
               animate={filterShake}
-              className="relative w-10 h-10 rounded-full bg-white dark:bg-[#1C1C1E] flex items-center justify-center transition-colors active:bg-[#F0F0F0] dark:active:bg-[#2C2C2E]"
+              className="relative w-10 h-10 rounded-full bg-[#F2F2F7] dark:bg-[#1C1C1E] flex items-center justify-center transition-colors active:bg-[#E5E5EA] dark:active:bg-[#2C2C2E]"
             >
               <SlidersHorizontal size={17} strokeWidth={2} className="text-[#333333] dark:text-[#F2F2F7]" />
               {hasActiveFilters && (
