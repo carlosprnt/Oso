@@ -21,7 +21,7 @@ const en = {
     logout: 'Log out',
   },
   dashboard: {
-    title: 'Dashboard',
+    title: 'Your spending',
     subtitle: 'Your subscription overview',
     monthly: 'Monthly',
     yearly: 'Yearly',
@@ -312,7 +312,7 @@ const es: typeof en = {
     logout: 'Cerrar sesión',
   },
   dashboard: {
-    title: 'Panel',
+    title: 'Tus gastos',
     subtitle: 'Resumen de tus suscripciones',
     monthly: 'Mensual',
     yearly: 'Anual',

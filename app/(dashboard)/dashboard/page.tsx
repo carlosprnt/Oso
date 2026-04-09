@@ -1,8 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import ScreenTracker from '@/lib/analytics/ScreenTracker'
 import { enrichSubscriptions, getDashboardStats, getTopSpendCategories, getUpcomingRenewals, getTopExpensiveSubscriptions } from '@/lib/calculations/subscriptions'
-import { formatCurrency } from '@/lib/utils/currency'
-import { resolveSubscriptionLogoUrl } from '@/lib/constants/platforms'
 import type { Subscription } from '@/types'
 import { Card, CardHeader } from '@/components/ui/Card'
 import UpcomingRenewals from '@/components/dashboard/UpcomingRenewals'
@@ -24,9 +22,6 @@ export default async function DashboardPage() {
   const supabase = await createClient()
   const t = await getServerT()
 
-  const { data: { user } } = await supabase.auth.getUser()
-  const firstName = (user?.user_metadata?.full_name ?? user?.email?.split('@')[0] ?? '').split(' ')[0]
-
   const { data: rawSubs } = await supabase
     .from('subscriptions')
     .select('*')
@@ -37,9 +32,6 @@ export default async function DashboardPage() {
   const topCategories = getTopSpendCategories(subs, 99)
   const upcoming = getUpcomingRenewals(subs, 365)
   const top3 = getTopExpensiveSubscriptions(subs, 3)
-  const sharedCount = subs.filter(
-    s => s.is_shared && (s.status === 'active' || s.status === 'trial')
-  ).length
 
   const isEmpty = subs.length === 0
 
@@ -47,13 +39,6 @@ export default async function DashboardPage() {
   const currencyCounts: Record<string, number> = {}
   for (const s of activeSubs) currencyCounts[s.currency] = (currencyCounts[s.currency] ?? 0) + 1
   const dominantCurrency = Object.entries(currencyCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'EUR'
-
-  const activeLogoUrls = subs
-    .filter(s => s.status === 'active' || s.status === 'trial')
-    .map(s => resolveSubscriptionLogoUrl(s.name, s.logo_url))
-    .filter((u): u is string => !!u)
-
-  const shareText = `My monthly subscriptions: ${formatCurrency(stats.total_monthly_cost, 'EUR')} across ${subs.length} subscriptions — tracked with Oso 🦥`
 
   const categoryRows = topCategories.map(({ category, monthly_cost }) => ({
     category,
@@ -65,15 +50,9 @@ export default async function DashboardPage() {
     <div>
       <ScreenTracker kind="dashboard" subscriptionCount={subs.length} />
       {isEmpty ? (
-        <EmptyDashboardHero firstName={firstName} shareText={shareText} />
+        <EmptyDashboardHero />
       ) : (
-        <DashboardSummaryHero
-          firstName={firstName}
-          stats={stats}
-          sharedCount={sharedCount}
-          shareText={shareText}
-          logoUrls={activeLogoUrls}
-        />
+        <DashboardSummaryHero stats={stats} />
       )}
 
       <DashboardCardStack>

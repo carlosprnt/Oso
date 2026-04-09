@@ -2,10 +2,9 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, CreditCard, CalendarDays, LogOut } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
+import { LayoutDashboard, CreditCard, CalendarDays } from 'lucide-react'
 import Image from 'next/image'
+import UserAvatarMenu from '@/components/dashboard/UserAvatarMenu'
 import type { Profile } from '@/types'
 
 const NAV_ITEMS = [
@@ -20,14 +19,6 @@ interface SidebarProps {
 
 export default function Sidebar({ profile }: SidebarProps) {
   const pathname = usePathname()
-  const router = useRouter()
-
-  async function handleLogout() {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    router.push('/login')
-    router.refresh()
-  }
 
   return (
     <aside className="
@@ -73,25 +64,18 @@ export default function Sidebar({ profile }: SidebarProps) {
         })}
       </nav>
 
-      {/* User / logout */}
+      {/* User — avatar menu lives here on desktop, matching the
+         FloatingNav layout on mobile. The menu dropdown exposes
+         share, settings and sign out. */}
       <div className="border-t border-[#E8E8E8] dark:border-[#2C2C2E] pt-4 mt-4">
-        {profile?.full_name && (
-          <div className="px-3 mb-3">
-            <p className="text-xs font-medium text-[#121212] dark:text-[#F2F2F7] truncate">{profile.full_name}</p>
-          </div>
-        )}
-        <button
-          onClick={handleLogout}
-          className="
-            w-full flex items-center gap-2.5 px-3 py-2 rounded-xl
-            text-sm text-[#616161] hover:text-red-700 hover:bg-red-50
-            dark:text-[#8E8E93] dark:hover:text-red-400 dark:hover:bg-red-900/20
-            transition-all duration-150
-          "
-        >
-          <LogOut size={15} />
-          Sign out
-        </button>
+        <div className="flex items-center gap-2.5 px-1">
+          <UserAvatarMenu />
+          {profile?.full_name && (
+            <p className="text-xs font-medium text-[#121212] dark:text-[#F2F2F7] truncate">
+              {profile.full_name}
+            </p>
+          )}
+        </div>
       </div>
     </aside>
   )

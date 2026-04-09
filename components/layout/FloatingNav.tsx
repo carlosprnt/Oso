@@ -9,6 +9,7 @@ import BottomSheet from '@/components/ui/BottomSheet'
 import PlatformPicker from '@/components/subscriptions/PlatformPicker'
 import SubscriptionForm from '@/components/subscriptions/SubscriptionForm'
 import GmailSubscriptionSearchSheet from '@/components/subscriptions/GmailSubscriptionSearchSheet'
+import UserAvatarMenu from '@/components/dashboard/UserAvatarMenu'
 import { useT } from '@/lib/i18n/LocaleProvider'
 import { useTheme } from '@/components/ui/ThemeProvider'
 import haptics from '@/lib/haptics'
@@ -149,30 +150,37 @@ export default function FloatingNav() {
           </div>
         </div>
 
-        {/* + button — right edge, 16px margin, same bottom as pill.
-            When the user has no subscriptions yet, it scales to 2x to
-            emphasize it as the primary call to action. */}
-        <motion.button
-          onClick={() => { haptics.tap('medium'); setStep('pick') }}
-          aria-label="Add subscription"
-          className="absolute right-4 pointer-events-auto flex items-center justify-center rounded-full bg-[#121212]"
-          style={{
-            width: 56,
-            height: 56,
-            originX: 1,
-            originY: 1,
-            bottom: `calc(${bottomOffset} + 4px)`,
-          }}
-          animate={emphasizeAdd ? { scale: [1, 1.25, 1] } : { scale: 1 }}
-          transition={
-            emphasizeAdd
-              ? { duration: 1.6, ease: 'easeInOut', repeat: Infinity }
-              : { type: 'spring', stiffness: 300, damping: 22 }
-          }
-          whileTap={{ scale: 0.95 }}
+        {/* Right cluster: + button, then avatar menu (avatar sits to the
+            right of every other nav item per the app brief). vertically
+            centered so the 40-px avatar lines up with the 56-px + CTA. */}
+        <div
+          className="absolute right-4 pointer-events-auto flex items-center gap-3"
+          style={{ bottom: `calc(${bottomOffset} + 4px)`, height: 56 }}
         >
-          <Plus size={22} color="#ffffff" strokeWidth={2.5} />
-        </motion.button>
+          <motion.button
+            onClick={() => { haptics.tap('medium'); setStep('pick') }}
+            aria-label="Add subscription"
+            className="flex items-center justify-center rounded-full bg-[#121212]"
+            style={{
+              width: 56,
+              height: 56,
+              originX: 1,
+              originY: 1,
+            }}
+            animate={emphasizeAdd ? { scale: [1, 1.25, 1] } : { scale: 1 }}
+            transition={
+              emphasizeAdd
+                ? { duration: 1.6, ease: 'easeInOut', repeat: Infinity }
+                : { type: 'spring', stiffness: 300, damping: 22 }
+            }
+            whileTap={{ scale: 0.95 }}
+          >
+            <Plus size={22} color="#ffffff" strokeWidth={2.5} />
+          </motion.button>
+
+          {/* Account menu — rightmost item, next to the + CTA. */}
+          <UserAvatarMenu />
+        </div>
       </nav>
       )}
 
