@@ -244,10 +244,39 @@ input, select, textarea {
 }
 .pressable:active { transform: scale(0.98); }
 
+/* ── Global bottom safe-area background bleed ───────────────────────────
+   In iOS standalone webviews, `fixed bottom: 0` and even the document
+   body stop at the layout viewport's bottom edge, which is above
+   env(safe-area-inset-bottom). A thin strip of transparent area ends
+   up between the page background and the physical screen edge.
+
+   This pseudo-element paints the body's background color across that
+   strip so every screen — even ones that do not mount their own
+   fixed-bottom surface — bleeds cleanly into the home-indicator
+   area. It is pointer-events: none so it never intercepts taps.
+──────────────────────────────────────────────────────────────────────── */
+body::after {
+  content: '';
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(env(safe-area-inset-bottom) * -1);
+  height: env(safe-area-inset-bottom);
+  background: var(--color-background);
+  /* z-index 0 keeps the strip in front of the webview's default
+     canvas but behind every mounted fixed-bottom surface (which all
+     use z-index ≥ 10). pointer-events: none so it never blocks taps. */
+  z-index: 0;
+  pointer-events: none;
+}
+
 /* ── Dark mode base ─────────────────────────────────────────────────────── */
 .dark body {
   background-color: #121212;
   color: #F2F2F7;
+}
+.dark body::after {
+  background: #121212;
 }
 .dark ::-webkit-scrollbar-thumb { background: #2C2C2E; }
 
