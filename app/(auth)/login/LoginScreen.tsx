@@ -371,7 +371,7 @@ export default function LoginScreen() {
          the rationale). 32 px sits the buttons that high above the
          home indicator pill. */}
       <div
-        className="fixed left-0 right-0 bg-white px-6 pt-6 z-10 rounded-t-[40px]"
+        className="fixed left-0 right-0 bg-white px-6 pt-6 z-10 rounded-t-[32px]"
         style={{
           bottom: 'calc(env(safe-area-inset-bottom) * -1)',
           paddingBottom: 'calc(env(safe-area-inset-bottom) + 32px)',
@@ -514,7 +514,7 @@ export default function LoginScreen() {
           animate={{ y: 0 }}
           exit={{ y: '100%' }}
           transition={{ type: 'spring', stiffness: 380, damping: 34 }}
-          className="fixed left-0 right-0 z-[201] bg-white rounded-t-[40px] px-5 pt-4"
+          className="fixed left-0 right-0 z-[201] bg-white rounded-t-[32px] px-5 pt-4"
           style={{
             bottom: 'calc(env(safe-area-inset-bottom) * -1)',
             paddingBottom: 'calc(env(safe-area-inset-bottom) + 24px)',

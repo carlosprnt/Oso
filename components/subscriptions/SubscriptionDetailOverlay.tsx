@@ -264,7 +264,7 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
         style={{
           y,
           width: '100%',
-          borderRadius: '16px 16px 0 0',
+          borderRadius: '32px 32px 0 0',
           overflow: 'hidden',
           position: 'relative',
           paddingBottom: 'env(safe-area-inset-bottom)',

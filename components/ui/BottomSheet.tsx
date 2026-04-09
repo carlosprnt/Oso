@@ -216,7 +216,7 @@ export default function BottomSheet({
               y,
               bottom: 'calc(env(safe-area-inset-bottom) * -1)',
               paddingBottom: 'env(safe-area-inset-bottom)',
-              borderRadius: '16px 16px 0 0',
+              borderRadius: '32px 32px 0 0',
             }}
             initial={{ y: '100%' }}
             animate={{ y: 0 }}

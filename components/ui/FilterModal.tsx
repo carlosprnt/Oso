@@ -108,7 +108,7 @@ export default function FilterModal({ currentStatus, currentCategory }: FilterMo
             className="
               fixed z-50 bg-white dark:bg-[#1C1C1E]
               bottom-0 left-0 right-0
-              rounded-t-2xl
+              rounded-t-[32px]
               animate-slide-up
               sm:bottom-auto sm:top-1/2 sm:left-1/2
               sm:-translate-x-1/2 sm:-translate-y-1/2
