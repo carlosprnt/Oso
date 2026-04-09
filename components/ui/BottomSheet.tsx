@@ -178,18 +178,18 @@ export default function BottomSheet({
         onClick={onClose}
       />
 
-      {/* Sheet — iOS standalone safe-area bleed pattern:
-          negative `bottom` so the white surface bleeds past the
-          layout viewport into the home-indicator area, and a
-          padding-bottom equal to the inset so actual content (scroll
-          area + footer) stops at the layout viewport bottom. Any
-          extra breathing room above the home indicator is added by
-          the children (a passed `footer`, a sticky CTA inside the
-          scroll area, etc.) via their own padding. */}
+      {/* Sheet — standard iOS PWA pattern: anchor at bottom: 0 and
+          add padding-bottom equal to env(safe-area-inset-bottom) so
+          the bg colour fills all the way to the physical bottom edge
+          (under the home indicator overlay) while interactive content
+          stops above the home indicator. The /debug/safe-area test on
+          iPhone 16 Pro / iOS 18 confirmed bottom: 0 already lands at
+          the physical bottom in standalone mode — no negative-bleed
+          trick needed. */}
       <div
         ref={sheetRef}
         className={`
-          fixed left-0 right-0
+          fixed bottom-0 left-0 right-0
           bg-white dark:bg-[#1C1C1E]
           flex flex-col
           ${maxH}
@@ -197,7 +197,6 @@ export default function BottomSheet({
         `}
         style={{
           zIndex: zIndex ?? 60,
-          bottom: 'calc(env(safe-area-inset-bottom) * -1)',
           paddingBottom: 'env(safe-area-inset-bottom)',
           borderRadius: '32px 32px 0 0',
         }}

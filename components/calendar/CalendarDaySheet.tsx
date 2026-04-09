@@ -89,15 +89,13 @@ export default function CalendarDaySheet({
         onClick={onClose}
       />
 
-      {/* Sheet — iOS standalone safe-area bleed: negative bottom so the
-          white surface bleeds into the home-indicator area, and a
-          padding-bottom equal to the inset so content stops at the
-          layout viewport bottom. */}
+      {/* Sheet — standard iOS PWA pattern: bottom: 0 + padding-bottom
+          env(safe-area-inset-bottom). bg fills past the home indicator,
+          interactive content stays above it. */}
       <div
-        className="fixed left-0 right-0 bg-white dark:bg-[#1C1C1E] flex flex-col max-h-[80dvh] animate-slide-up z-[210]"
+        className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1C1C1E] flex flex-col max-h-[80dvh] animate-slide-up z-[210]"
         style={{
           borderRadius: '32px 32px 0 0',
-          bottom: 'calc(env(safe-area-inset-bottom) * -1)',
           paddingBottom: 'env(safe-area-inset-bottom)',
         }}
         onClick={e => e.stopPropagation()}
