@@ -17,10 +17,11 @@ import type { PlatformPreset } from '@/lib/constants/platforms'
 
 type Step = 'closed' | 'pick' | 'form' | 'gmail'
 
-const BTN_W = 72   // button width
-const BTN_H = 48   // button height
-const PAD  = 8     // pill padding
-const GAP  = 8     // gap between buttons
+const BTN_W    = 72   // nav button width  (Subs / Mis gastos)
+const BTN_H    = 48   // nav button height (Subs / Mis gastos)
+const AVATAR_S = 40   // avatar slot side — matches UserAvatarMenu's 40x40 button
+const PAD      = 8    // pill padding
+const GAP      = 8    // gap between buttons
 
 function TagHeartIcon({ active }: { active: boolean }) {
   return (
@@ -121,7 +122,13 @@ export default function FloatingNav() {
             />
             <div
               className="absolute rounded-full"
-              style={{ width: BTN_W, height: BTN_H, top: PAD, left: PAD + 2 * (BTN_W + GAP), backgroundColor: isDarkMode ? '#2C2C2E' : '#EEEEEE' }}
+              style={{
+                width: AVATAR_S,
+                height: AVATAR_S,
+                top: PAD + (BTN_H - AVATAR_S) / 2,
+                left: PAD + 2 * (BTN_W + GAP),
+                backgroundColor: isDarkMode ? '#2C2C2E' : '#EEEEEE',
+              }}
             />
 
             {/* Sliding indicator — only covers the Subs / Dashboard slots.
@@ -153,10 +160,12 @@ export default function FloatingNav() {
               </div>
             </Link>
 
-            {/* Account menu — third slot, right of Mis gastos */}
+            {/* Account menu — third slot, right of Mis gastos. The slot
+                is sized exactly to the avatar (40×40) and flex centers
+                it vertically within the taller 48 px pill interior. */}
             <div
               className="relative flex items-center justify-center"
-              style={{ width: BTN_W, height: BTN_H, zIndex: 2 }}
+              style={{ width: AVATAR_S, height: AVATAR_S, zIndex: 2 }}
             >
               <UserAvatarMenu />
             </div>
