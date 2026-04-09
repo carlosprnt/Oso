@@ -21,7 +21,7 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
   const [demoOpen, setDemoOpen] = useState(false)
   const [imgError, setImgError] = useState(false)
   const [isPending, startTransition] = useTransition()
-  const [menuPos, setMenuPos] = useState({ top: 0, right: 0 })
+  const [menuPos, setMenuPos] = useState<{ top?: number; bottom?: number; right: number }>({ top: 0, right: 0 })
   const [user, setUser] = useState<{ name: string; avatarUrl: string | null; email: string | null } | null>(null)
   const buttonRef   = useRef<HTMLButtonElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -65,7 +65,19 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
   function handleOpen() {
     if (buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect()
-      setMenuPos({ top: rect.bottom + 8, right: window.innerWidth - rect.right })
+      // Estimate the dropdown's max height (admin user sees the longest
+      // menu). If the trigger sits in the bottom half of the viewport
+      // and the dropdown wouldn't fit below, anchor it to bottom: above
+      // the trigger instead so it never falls off the viewport.
+      const ESTIMATED_DROPDOWN_HEIGHT = 360
+      const spaceBelow = window.innerHeight - rect.bottom
+      const openAbove = spaceBelow < ESTIMATED_DROPDOWN_HEIGHT
+      const right = window.innerWidth - rect.right
+      if (openAbove) {
+        setMenuPos({ bottom: window.innerHeight - rect.top + 8, right })
+      } else {
+        setMenuPos({ top: rect.bottom + 8, right })
+      }
     }
     setOpen(o => { if (o) setDemoOpen(false); return !o })
   }
@@ -154,7 +166,13 @@ export default function UserAvatarMenu({ shareText }: UserAvatarMenuProps) {
   const dropdown = open ? (
     <div
       ref={dropdownRef}
-      style={{ position: 'fixed', top: menuPos.top, right: menuPos.right, zIndex: 9999 }}
+      style={{
+        position: 'fixed',
+        top: menuPos.top,
+        bottom: menuPos.bottom,
+        right: menuPos.right,
+        zIndex: 9999,
+      }}
       className="w-56 bg-white dark:bg-[#1C1C1E] rounded-2xl border border-[#E8E8E8] dark:border-[#2C2C2E] shadow-[0_4px_24px_rgba(0,0,0,0.12)] overflow-hidden animate-fade-in-scale"
     >
       {demoOpen ? (
