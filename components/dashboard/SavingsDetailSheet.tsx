@@ -260,7 +260,7 @@ export default function SavingsDetailSheet({ opportunity, onClose }: Props) {
 
   return (
     <BottomSheet isOpen={!!opportunity} onClose={onClose} title={title} height="tall" zIndex={300}>
-      <div className="px-5 pt-2 pb-8">
+      <div className="px-5 pt-2 pb-4">
         {opportunity?.type === 'switch_to_yearly'   && <SwitchToYearlyDetail  opp={opportunity} locale={locale} />}
         {opportunity?.type === 'duplicate_category' && <DuplicateCategoryDetail opp={opportunity} locale={locale} />}
         {opportunity?.type === 'shared_plan'        && <SharedPlanDetail       opp={opportunity} locale={locale} />}

@@ -185,7 +185,7 @@ export default function FloatingNav() {
         height="tall"
         footer={
           <div
-            className="flex gap-3 px-5 pt-4 pb-8 border-t border-[#F0F0F0] dark:border-[#2C2C2E]"
+            className="flex gap-3 px-5 py-4 border-t border-[#F0F0F0] dark:border-[#2C2C2E]"
           >
             <button
               onClick={() => setStep('gmail')}

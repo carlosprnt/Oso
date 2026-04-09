@@ -806,12 +806,11 @@ export default function SubscriptionForm({
 
       {/* ── Save + Cancel buttons — sticky at the bottom ──────────────
          Inside a BottomSheet the sheet handles the safe-area bleed.
-         pb-8 matches the spacing used by SavingsDetailSheet so the
-         buttons sit at the same visual height (≈ 32 px above the
-         home indicator pill, which is the area marked by the black
-         reference line in /debug/safe-area). */}
+         pb-4 matches the spacing used by SubscriptionDetailOverlay's
+         "Editar suscripción" CTA so every modal button sits at the
+         same visual height (≈ 16 px above the home indicator pill). */}
       <div
-        className="flex-shrink-0 sticky bottom-0 px-5 pt-3 pb-8 bg-white dark:bg-[#1C1C1E] border-t border-[#F0F0F0] dark:border-[#2C2C2E]"
+        className="flex-shrink-0 sticky bottom-0 px-5 pt-3 pb-4 bg-white dark:bg-[#1C1C1E] border-t border-[#F0F0F0] dark:border-[#2C2C2E]"
       >
         <div className="flex gap-3">
           <button
