@@ -67,7 +67,7 @@ export async function updateSession(request: NextRequest) {
   // If authenticated user visits login, send to dashboard
   if (user && pathname.startsWith('/login')) {
     const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
+    url.pathname = '/subscriptions'
     return NextResponse.redirect(url)
   }
 

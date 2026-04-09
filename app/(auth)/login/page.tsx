@@ -8,6 +8,6 @@ export const metadata: Metadata = { title: 'Sign in — Oso' }
 export default async function LoginPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (user) redirect('/dashboard')
+  if (user) redirect('/subscriptions')
   return <LoginScreen />
 }

@@ -318,8 +318,10 @@ export default function SubscriptionsView({
   }, [allCount])
 
   const scrollY = useEffectiveScrollY()
-  const headerOpacity       = useTransform(scrollY, [0, 130], [1, 0])
-  const headerBlurPx        = useTransform(scrollY, [0, 130], [0, 8])
+  // Header stays untouched until the user has actually scrolled past
+  // ~60 px, then the opacity + blur ramp gradually over the next ~140 px.
+  const headerOpacity       = useTransform(scrollY, [60, 200], [1, 0])
+  const headerBlurPx        = useTransform(scrollY, [60, 200], [0, 8])
   const headerFilter        = useMotionTemplate`blur(${headerBlurPx}px)`
   const headerPointerEvents = useTransform(headerOpacity, (v) => v < 0.05 ? 'none' : 'auto')
 
@@ -360,9 +362,13 @@ export default function SubscriptionsView({
 
   return (
     <LayoutGroup>
-      {/* ── Sticky header ─────────────────────────────────────────────────── */}
+      {/* ── Header ────────────────────────────────────────────────────────
+         Scrolls naturally with the page (no longer sticky / fixed) and
+         sits at z-40 — above the global .top-fade-mask (z-30) — so the
+         backdrop blur of the mask never affects it. The opacity / blur
+         transition is driven only by scrollY, kicking in at ~60 px. */}
       <motion.div
-        className="sticky top-0 z-[20] pb-4 bg-white dark:bg-[#121212]"
+        className="relative z-[40] pb-4 bg-white dark:bg-[#121212]"
         style={{ opacity: headerOpacity, filter: headerFilter, pointerEvents: headerPointerEvents }}
       >
         <div className="flex items-start justify-between pt-2">
@@ -473,16 +479,9 @@ export default function SubscriptionsView({
         {sortedSubscriptions.length === 0 ? (
           allCount === 0 ? (
             <div className="pt-6">
-              <motion.div
-                style={{ opacity: headerOpacity, filter: headerFilter, pointerEvents: headerPointerEvents }}
-              >
-                <p className="text-[45px] font-extrabold text-[#121212] dark:text-[#F2F2F7] leading-[1.15] tracking-tight mb-2">
-                  Todavía no has añadido ninguna
-                </p>
-                <p className="text-[17px] font-bold text-[#121212] dark:text-[#F2F2F7] leading-snug mb-6">
-                  {t('subscriptions.getStarted')}
-                </p>
-              </motion.div>
+              <p className="text-[17px] font-bold text-[#121212] dark:text-[#F2F2F7] leading-snug mb-6">
+                {t('subscriptions.getStarted')}
+              </p>
               <QuickAddPlatforms />
             </div>
           ) : (

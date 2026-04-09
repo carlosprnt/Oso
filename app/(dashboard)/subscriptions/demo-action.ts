@@ -48,7 +48,7 @@ export async function loadDemoData() {
   if ((count ?? 0) > 0) {
     revalidatePath('/dashboard')
     revalidatePath('/subscriptions')
-    redirect('/dashboard')
+    redirect('/subscriptions')
   }
 
   const rows = DEMO_SUBSCRIPTIONS.slice(0, 14).map(({ days_offset, ...sub }) => ({
@@ -67,7 +67,7 @@ export async function loadDemoData() {
 
   revalidatePath('/dashboard')
   revalidatePath('/subscriptions')
-  redirect('/dashboard')
+  redirect('/subscriptions')
 }
 
 /**
@@ -130,7 +130,7 @@ export async function setDemoMode(count: number) {
 
   revalidatePath('/dashboard')
   revalidatePath('/subscriptions')
-  redirect('/dashboard')
+  redirect('/subscriptions')
 }
 
 /**
@@ -161,5 +161,5 @@ export async function restoreProductionState() {
 
   revalidatePath('/dashboard')
   revalidatePath('/subscriptions')
-  redirect('/dashboard')
+  redirect('/subscriptions')
 }

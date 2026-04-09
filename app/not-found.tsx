@@ -18,7 +18,7 @@ export default function NotFound() {
           La página que buscas no existe.
         </p>
         <Link
-          href="/dashboard"
+          href="/subscriptions"
           className="text-sm font-semibold text-[#121212] dark:text-[#F2F2F7]"
         >
           Ir al inicio →
