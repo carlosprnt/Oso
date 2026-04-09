@@ -49,6 +49,16 @@ export default async function DashboardLayout({
             </div>
           </main>
 
+          {/*
+            Top fade-out mask: a fixed overlay sitting at the very top
+            of the viewport that backdrop-blurs whatever scrolls under
+            it. The CSS mask-image makes the overlay fully opaque at
+            the top edge and gradually transparent toward the bottom,
+            so blur+opacity ramp up only when content is "almost
+            leaving" the viewport from above.
+          */}
+          <div className="top-fade-mask" aria-hidden="true" />
+
           <FloatingNav />
           <SubscriptionToastHost />
         </div>

@@ -32,7 +32,7 @@ function PlatformRow({
 
   return (
     <div className="flex items-center gap-3 px-1 py-3">
-      <div className="w-10 h-10 rounded-[10px] overflow-hidden flex items-center justify-center flex-shrink-0 bg-white dark:bg-[#2C2C2E]">
+      <div className="w-10 h-10 rounded-[10px] overflow-hidden flex items-center justify-center flex-shrink-0 bg-white dark:bg-[#2C2C2E] border border-[#E8E8E8] dark:border-[#3A3A3C]">
         {logoUrl ? (
           <Image src={logoUrl} alt={platform.name} width={40} height={40} className="w-full h-full object-contain" unoptimized />
         ) : (
@@ -65,9 +65,6 @@ export default function QuickAddPlatforms() {
   return (
     <>
       <div>
-        <p className="text-[13px] font-semibold text-[#737373] dark:text-[#8E8E93] mb-3">
-          Añade tu primera suscripción
-        </p>
         <div className="flex flex-col divide-y divide-[#E8E8E8] dark:divide-[#2C2C2E]">
           {QUICK_ADD_PLATFORMS.map(platform => (
             <PlatformRow key={platform.id} platform={platform} onAdd={setSelected} />
@@ -78,7 +75,7 @@ export default function QuickAddPlatforms() {
             onClick={() => setSelected(null)}
             className="w-full flex items-center gap-3 px-1 py-3 text-left active:opacity-60 transition-opacity"
           >
-            <div className="w-10 h-10 rounded-[10px] flex items-center justify-center flex-shrink-0 bg-white dark:bg-[#2C2C2E]">
+            <div className="w-10 h-10 rounded-[10px] flex items-center justify-center flex-shrink-0 bg-white dark:bg-[#2C2C2E] border border-[#E8E8E8] dark:border-[#3A3A3C]">
               <Plus size={18} strokeWidth={2} className="text-[#8E8E93]" />
             </div>
             <p className="text-[14px] font-semibold text-[#121212] dark:text-[#F2F2F7] flex-1">

@@ -77,6 +77,51 @@ a {
   text-decoration-color: currentColor;
 }
 
+/* ── Top fade-out mask ─────────────────────────────────────────────
+   Fixed overlay across the top of the viewport. backdrop-filter
+   blurs whatever scrolls under it; the CSS mask-image makes the
+   overlay fully opaque over the status-bar / safe area and ramps
+   smoothly to transparent over the next ~48 px — so content only
+   picks up the blur + opacity fade when it is "almost leaving" the
+   viewport from above.
+─────────────────────────────────────────────────────────────────── */
+.top-fade-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(env(safe-area-inset-top) + 64px);
+  pointer-events: none;
+  z-index: 30;
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.55) 45%,
+    rgba(255, 255, 255, 0)   100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 30%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    #000 30%,
+    transparent 100%
+  );
+}
+
+.dark .top-fade-mask {
+  background: linear-gradient(
+    to bottom,
+    rgba(18, 18, 18, 0.9) 0%,
+    rgba(18, 18, 18, 0.55) 45%,
+    rgba(18, 18, 18, 0)   100%
+  );
+}
+
 .tabular-nums {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
