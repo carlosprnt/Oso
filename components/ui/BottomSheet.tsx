@@ -178,17 +178,26 @@ export default function BottomSheet({
         onClick={onClose}
       />
 
-      {/* Sheet */}
+      {/* Sheet — iOS standalone safe-area bleed pattern:
+          negative `bottom` so the white surface bleeds past the
+          layout viewport into the home-indicator area, and matching
+          padding-bottom inside so the actual content never renders
+          underneath the home indicator. */}
       <div
         ref={sheetRef}
         className={`
-          fixed bottom-0 left-0 right-0
+          fixed left-0 right-0
           bg-white dark:bg-[#1C1C1E]
           flex flex-col
           ${maxH}
           animate-slide-up
         `}
-        style={{ zIndex: zIndex ?? 60, paddingBottom: 'env(safe-area-inset-bottom)', borderRadius: '32px 32px 0 0' }}
+        style={{
+          zIndex: zIndex ?? 60,
+          bottom: 'calc(env(safe-area-inset-bottom) * -1)',
+          paddingBottom: 'calc(env(safe-area-inset-bottom) + 16px)',
+          borderRadius: '32px 32px 0 0',
+        }}
         onClick={e => e.stopPropagation()}
       >
         {/* Handle — drag zone */}

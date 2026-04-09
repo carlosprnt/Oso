@@ -366,10 +366,16 @@ export default function LoginScreen() {
         )}
       </AnimatePresence>
 
-      {/* ── Fixed bottom panel: title + body + dots + buttons ── */}
+      {/* ── Fixed bottom panel: title + body + dots + buttons ──
+         iOS standalone safe-area bleed: negative bottom so the white
+         surface bleeds into the home-indicator area, and matching
+         padding-bottom so the buttons never sit under the home bar. */}
       <div
-        className="fixed bottom-0 left-0 right-0 bg-white px-6 pt-6 z-10 rounded-t-[40px]"
-        style={{ paddingBottom: 'max(32px, env(safe-area-inset-bottom))' }}
+        className="fixed left-0 right-0 bg-white px-6 pt-6 z-10 rounded-t-[40px]"
+        style={{
+          bottom: 'calc(env(safe-area-inset-bottom) * -1)',
+          paddingBottom: 'calc(env(safe-area-inset-bottom) + 32px)',
+        }}
       >
         <div className="w-full max-w-sm mx-auto">
           {/* Hidden measurement: render all 4 slide texts in-flow (correct width), h-0 so no space taken */}
@@ -508,8 +514,11 @@ export default function LoginScreen() {
           animate={{ y: 0 }}
           exit={{ y: '100%' }}
           transition={{ type: 'spring', stiffness: 380, damping: 34 }}
-          className="fixed bottom-0 left-0 right-0 z-[201] bg-white rounded-t-[40px] px-5 pt-4"
-          style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom))' }}
+          className="fixed left-0 right-0 z-[201] bg-white rounded-t-[40px] px-5 pt-4"
+          style={{
+            bottom: 'calc(env(safe-area-inset-bottom) * -1)',
+            paddingBottom: 'calc(env(safe-area-inset-bottom) + 24px)',
+          }}
           onClick={e => e.stopPropagation()}
         >
           <div className="w-full max-w-xl mx-auto">
