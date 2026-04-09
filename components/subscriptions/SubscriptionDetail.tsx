@@ -120,7 +120,7 @@ export default function SubscriptionDetail({ subscription: sub }: SubscriptionDe
 
   return (
     <>
-      <div className="min-h-screen bg-white dark:bg-[#121212] -mx-4 sm:-mx-6 px-4 sm:px-6 pb-28">
+      <div className="min-h-screen min-h-dvh bg-white dark:bg-[#121212] -mx-4 sm:-mx-6 px-4 sm:px-6 pb-28">
 
         {/* Back button */}
         <div

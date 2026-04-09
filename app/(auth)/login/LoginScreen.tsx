@@ -352,7 +352,7 @@ export default function LoginScreen() {
                *   horizontal: 50vw − 44px  (half of 88 px logo)
                *   vertical:   safe-area-top + (visible height − 260px panel) / 2 − 44px
                */
-              top:  'calc(env(safe-area-inset-top) + (100vh - env(safe-area-inset-top) - 260px) / 2 - 44px)',
+              top:  'calc(env(safe-area-inset-top) + (100dvh - env(safe-area-inset-top) - 260px) / 2 - 44px)',
               left: 'calc(50% - 44px)',
             }}
             initial={{ opacity: 0, scale: 0.55 }}

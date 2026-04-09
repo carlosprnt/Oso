@@ -40,10 +40,10 @@ export default async function DashboardLayout({
   return (
     <LocaleProvider locale={detectedLocale}>
       <SubscriptionProvider userId={user.id} initialIsPro={initialIsPro}>
-        <div className="min-h-screen bg-white dark:bg-[#121212] pt-[env(safe-area-inset-top)]">
+        <div className="min-h-screen min-h-dvh bg-white dark:bg-[#121212] pt-[env(safe-area-inset-top)]">
           <Sidebar profile={profile as Profile | null} />
 
-          <main className="lg:pl-56 pb-28 lg:pb-0 min-h-screen">
+          <main className="lg:pl-56 pb-28 lg:pb-0 min-h-screen min-h-dvh">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 lg:py-8">
               {children}
             </div>

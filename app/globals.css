@@ -55,6 +55,22 @@
 *::before,
 *::after { box-sizing: border-box; }
 
+/* Full-height chain — required so the layout viewport collapses
+   correctly in iOS standalone webviews. min-height uses the legacy
+   100vh as a fallback, then 100dvh for browsers that support the
+   dynamic viewport unit (so the layout viewport tracks browser-UI
+   collapse / expand). */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
 html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

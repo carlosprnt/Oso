@@ -138,10 +138,16 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
    */
   const content = (
     <motion.div
-      // Overlay — full screen fixed container, sheet sits at the bottom
+      // Overlay — full-screen fixed container that bleeds past the
+      // layout viewport's bottom edge into the home-indicator strip,
+      // so the sheet's surface visually reaches the physical bottom
+      // of the device in iOS standalone mode.
       style={{
         position: 'fixed',
-        inset: 0,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 'calc(env(safe-area-inset-bottom) * -1)',
         zIndex: 200,
         display: 'flex',
         flexDirection: 'column',
@@ -154,13 +160,17 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
       transition={{ duration: 0.25 }}
       onClick={onClose}
     >
-      {/* Sheet — NOT position:fixed, just a flex child at the bottom */}
+      {/* Sheet — flex child sitting at the bottom of the bled overlay.
+          padding-bottom carries env(safe-area-inset-bottom) so the
+          inner content stops above the home indicator while the
+          sheet surface itself reaches the physical bottom edge. */}
       <motion.div
         style={{
           width: '100%',
           borderRadius: '24px 24px 0 0',
           overflow: 'hidden',
           position: 'relative',
+          paddingBottom: 'env(safe-area-inset-bottom)',
         }}
         className="bg-white dark:bg-[#1C1C1E]"
         initial={{ transform: 'translateY(100%)' }}
