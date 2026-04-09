@@ -99,7 +99,11 @@ export default function FilterModal({ currentStatus, currentCategory }: FilterMo
             onClick={() => setIsOpen(false)}
           />
 
-          {/* Sheet — slides up on mobile, centered on desktop */}
+          {/* Sheet — slides up on mobile, centered on desktop.
+              Mobile uses bottom: 0 + padding-bottom: env(...) so the
+              Reset / Apply footer clears the iOS home indicator.
+              On desktop env(safe-area-inset-bottom) is 0 so the
+              padding is a no-op. */}
           <div
             className="
               fixed z-50 bg-white dark:bg-[#1C1C1E]
@@ -112,6 +116,7 @@ export default function FilterModal({ currentStatus, currentCategory }: FilterMo
               sm:animate-fade-in-scale
               border border-[#D4D4D4] dark:border-[#2C2C2E]
             "
+            style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
           >
             {/* Handle (mobile) */}
             <div className="flex justify-center pt-3 pb-1 sm:hidden">

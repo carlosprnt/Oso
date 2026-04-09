@@ -843,7 +843,8 @@ export default function SubscriptionForm({
           onClick={() => setShowDeleteConfirm(false)}
         >
           <div
-            className="w-full bg-white dark:bg-[#1C1C1E] rounded-t-[32px] px-5 pt-5 pb-4"
+            className="w-full bg-white dark:bg-[#1C1C1E] rounded-t-[32px] px-5 pt-5"
+            style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 16px)' }}
             onClick={e => e.stopPropagation()}
           >
             <h3 className="text-[17px] font-semibold text-[#121212] dark:text-[#F2F2F7] mb-1">
@@ -881,7 +882,8 @@ export default function SubscriptionForm({
           onClick={() => setShowCancelConfirm(false)}
         >
           <div
-            className="w-full bg-white dark:bg-[#1C1C1E] rounded-t-[32px] px-5 pt-5 pb-4"
+            className="w-full bg-white dark:bg-[#1C1C1E] rounded-t-[32px] px-5 pt-5"
+            style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 16px)' }}
             onClick={e => e.stopPropagation()}
           >
             <h3 className="text-[17px] font-semibold text-[#121212] dark:text-[#F2F2F7] mb-1">
