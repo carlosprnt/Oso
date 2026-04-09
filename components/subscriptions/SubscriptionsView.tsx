@@ -55,7 +55,16 @@ interface SubscriptionRowProps {
 function SubscriptionRow({ sub, isSelected, onOpen, viewMode, numSkeleton }: SubscriptionRowProps) {
   const t = useT()
   return (
-    <div style={{ visibility: isSelected ? 'hidden' : undefined }}>
+    <motion.div
+      style={{ visibility: isSelected ? 'hidden' : undefined }}
+      /* Scroll-triggered enter animation: each row fades in from a
+         light blur + 0.90 scale as it enters the viewport from below,
+         matching the premium iOS feel requested by the user. */
+      initial={{ opacity: 0, scale: 0.9, filter: 'blur(8px)' }}
+      whileInView={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+      viewport={{ once: false, amount: 0.25, margin: '0px 0px -60px 0px' }}
+      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+    >
       <motion.div
         layoutId={`card-${sub.id}`}
         onClick={() => onOpen(sub)}
@@ -94,7 +103,7 @@ function SubscriptionRow({ sub, isSelected, onOpen, viewMode, numSkeleton }: Sub
         </div>
       </motion.div>
       <div className="border-b border-[#E8E8E8] dark:border-[#2C2C2E]" />
-    </div>
+    </motion.div>
   )
 }
 
