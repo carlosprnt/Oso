@@ -2,7 +2,13 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import {
+  motion,
+  useMotionValue,
+  useDragControls,
+  animate,
+  type PanInfo,
+} from 'framer-motion'
 import {
   X, Calendar, Tag, Zap, Users,
   RefreshCw, CreditCard, PieChart, BellOff,
@@ -91,6 +97,12 @@ interface Props {
   isClosing?: boolean
 }
 
+const DISMISS_OFFSET_PX   = 120
+const DISMISS_VELOCITY_PX = 500
+const DRAG_START_THRESHOLD = 6
+const OPEN_SPRING  = { type: 'spring' as const, stiffness: 320, damping: 34, mass: 0.95 }
+const SNAP_BACK    = { type: 'spring' as const, stiffness: 460, damping: 36, mass: 0.9 }
+
 export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
   const t = useT()
   const locale = useLocale()
@@ -99,6 +111,11 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
   const logoUrl = resolveSubscriptionLogoUrl(sub.name, sub.logo_url)
   const brandTint = useBrandTint(logoUrl)
 
+  // Drag state — shared with both the grabber drag and the scroll-at-
+  // top pull-to-dismiss so the sheet always follows the finger.
+  const y = useMotionValue(0)
+  const dragControls = useDragControls()
+
   // Lock body scroll. We use overflow:hidden (not position:fixed) so iOS
   // never enters the broken fixed-body scroll mode.
   useEffect(() => {
@@ -106,6 +123,79 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = prev }
   }, [])
+
+  // Scroll-at-top pull-to-dismiss. Mirrors the shared BottomSheet
+  // behaviour: when the inner scroll is at 0 and the user keeps
+  // pulling down, the gesture is transferred to the sheet itself
+  // via a motion value. On release, decide dismiss vs snap-back
+  // from offset + velocity.
+  useEffect(() => {
+    const scrollEl = scrollRef.current
+    if (!scrollEl) return
+
+    let touchStartY   = 0
+    let touchStartTop = 0
+    let lastY         = 0
+    let lastT         = 0
+    let dragging      = false
+
+    function onStart(e: TouchEvent) {
+      touchStartY   = e.touches[0].clientY
+      touchStartTop = scrollEl!.scrollTop
+      lastY         = touchStartY
+      lastT         = e.timeStamp
+      dragging      = false
+    }
+
+    function onMove(e: TouchEvent) {
+      const cy = e.touches[0].clientY
+      const dy = cy - touchStartY
+      if (!dragging && touchStartTop === 0 && dy > DRAG_START_THRESHOLD) {
+        dragging = true
+        y.stop()
+      }
+      if (dragging) {
+        e.preventDefault()
+        y.set(Math.max(0, dy - DRAG_START_THRESHOLD))
+        lastY = cy
+        lastT = e.timeStamp
+      }
+    }
+
+    function onEnd(e: TouchEvent) {
+      if (!dragging) return
+      dragging = false
+      const cy = e.changedTouches[0].clientY
+      const dy = cy - touchStartY
+      const elapsed = Math.max(1, e.timeStamp - lastT) / 1000
+      const velocity = (cy - lastY) / elapsed
+      const offset = Math.max(0, dy - DRAG_START_THRESHOLD)
+      if (offset > DISMISS_OFFSET_PX || velocity > DISMISS_VELOCITY_PX) {
+        onClose()
+      } else {
+        animate(y, 0, SNAP_BACK)
+      }
+    }
+
+    scrollEl.addEventListener('touchstart',  onStart, { passive: true  })
+    scrollEl.addEventListener('touchmove',   onMove,  { passive: false })
+    scrollEl.addEventListener('touchend',    onEnd,   { passive: true  })
+    scrollEl.addEventListener('touchcancel', onEnd,   { passive: true  })
+    return () => {
+      scrollEl.removeEventListener('touchstart',  onStart)
+      scrollEl.removeEventListener('touchmove',   onMove)
+      scrollEl.removeEventListener('touchend',    onEnd)
+      scrollEl.removeEventListener('touchcancel', onEnd)
+    }
+  }, [y, onClose])
+
+  function handleDragEnd(_: PointerEvent | MouseEvent | TouchEvent, info: PanInfo) {
+    if (info.offset.y > DISMISS_OFFSET_PX || info.velocity.y > DISMISS_VELOCITY_PX) {
+      onClose()
+    } else {
+      animate(y, 0, SNAP_BACK)
+    }
+  }
 
   const billingProg = billingProgress(sub.next_billing_date, sub.billing_period, sub.billing_interval_count)
   const daysLeft = daysUntilBilling(sub.next_billing_date)
@@ -163,20 +253,33 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
       {/* Sheet — flex child sitting at the bottom of the bled overlay.
           paddingBottom: env(safe-area-inset-bottom) keeps interactive
           content above the home indicator while the sheet's surface
-          itself reaches the physical bottom edge. */}
+          itself reaches the physical bottom edge.
+
+          drag="y" + dragListener={false} means the sheet only moves
+          when dragControls.start() is called from the grabber — the
+          scroll-at-top pull-to-dismiss is handled separately via the
+          touch listeners on scrollRef. Both paths drive the same `y`
+          motion value. */}
       <motion.div
         style={{
+          y,
           width: '100%',
-          borderRadius: '24px 24px 0 0',
+          borderRadius: '16px 16px 0 0',
           overflow: 'hidden',
           position: 'relative',
           paddingBottom: 'env(safe-area-inset-bottom)',
         }}
         className="bg-white dark:bg-[#1C1C1E]"
-        initial={{ transform: 'translateY(100%)' }}
-        animate={{ transform: 'translateY(0%)' }}
-        exit={{ transform: 'translateY(100%)' }}
-        transition={{ type: 'spring', stiffness: 340, damping: 32, mass: 0.85 }}
+        initial={{ y: '100%' }}
+        animate={{ y: 0 }}
+        exit={{ y: '100%' }}
+        transition={OPEN_SPRING}
+        drag="y"
+        dragListener={false}
+        dragControls={dragControls}
+        dragConstraints={{ top: 0 }}
+        dragElastic={{ top: 0, bottom: 0.15 }}
+        onDragEnd={handleDragEnd}
         onClick={(e) => e.stopPropagation()}   // don't close when tapping sheet
       >
         {/* Atmospheric brand tint — light mode */}
@@ -184,13 +287,18 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
         {/* Atmospheric brand tint — dark mode */}
         <div aria-hidden className="hidden dark:block" style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 360, background: brandTint.gradientDark, opacity: 0.45, filter: 'blur(18px)', pointerEvents: 'none', zIndex: 0 }} />
 
-        {/* Handle + fixed close button row */}
-        <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 16px 12px' }}>
-          <div className="w-10 h-1 bg-[#D4D4D4] dark:bg-[#3A3A3C] rounded-full" />
+        {/* Grabber — the only element that starts a drag on the sheet
+            via pointer events. Everything below it scrolls normally. */}
+        <div
+          onPointerDown={(e) => dragControls.start(e)}
+          style={{ position: 'relative', zIndex: 1, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px 16px 6px', touchAction: 'none', userSelect: 'none' }}
+        >
+          <div className="w-9 h-[5px] rounded-full bg-[#D4D4D4] dark:bg-[#48484A]" />
           <button
             onClick={onClose}
-            style={{ position: 'absolute', top: 16, right: 16, backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
+            style={{ position: 'absolute', top: 12, right: 16, backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
             className="w-11 h-11 rounded-full bg-white/50 dark:bg-[#2C2C2E]/50 flex items-center justify-center text-black dark:text-white active:opacity-60 transition-opacity"
+            aria-label="Close"
           >
             <X size={16} strokeWidth={2.5} />
           </button>

@@ -4,12 +4,12 @@
 // Handles: pricing toggle, purchase, restore, loading and error states.
 
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { X, Check, Loader2 } from 'lucide-react'
 import { PAYWALL_COPY, PAYWALL_BENEFITS, type PaywallTrigger } from '@/lib/revenuecat/paywallTriggers'
 import { RC_CONFIG } from '@/lib/revenuecat/config'
-import { purchasePackage, restorePurchases, getCurrentOffering } from '@/lib/revenuecat/client'
+import { purchasePackage, restorePurchases } from '@/lib/revenuecat/client'
 import { isCapacitor } from '@/lib/platform'
+import BottomSheet from '@/components/ui/BottomSheet'
 import Image from 'next/image'
 
 interface Props {
@@ -68,118 +68,95 @@ export default function PaywallSheet({ trigger, onClose, onPurchaseSuccess }: Pr
   }
 
   return (
-    <>
-      {/* Backdrop */}
-      <motion.div
-        className="fixed inset-0 z-[500] bg-black/50"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-      />
+    <BottomSheet isOpen onClose={onClose} height="tall" zIndex={501}>
+      {/* Close button — top right, overlaying the content */}
+      <div className="flex justify-end px-5 pt-1">
+        <button
+          onClick={onClose}
+          className="w-8 h-8 rounded-full bg-[#F2F2F7] flex items-center justify-center text-[#616161]"
+          aria-label="Close"
+        >
+          <X size={15} strokeWidth={2.5} />
+        </button>
+      </div>
 
-      {/* Sheet — iOS standalone safe-area bleed (see BottomSheet
-          comment for the rationale). */}
-      <motion.div
-        className="fixed left-0 right-0 z-[501] bg-white rounded-t-[32px] overflow-hidden"
-        style={{
-          bottom: 'calc(env(safe-area-inset-bottom) * -1)',
-          paddingBottom: 'env(safe-area-inset-bottom)',
-        }}
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '100%' }}
-        transition={{ type: 'spring', stiffness: 380, damping: 34 }}
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Close button */}
-        <div className="flex justify-end px-5 pt-4">
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-full bg-[#F2F2F7] flex items-center justify-center text-[#616161]"
-          >
-            <X size={15} strokeWidth={2.5} />
-          </button>
+      <div className="px-6 pb-2">
+        {/* Logo + trigger header */}
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-12 h-12 rounded-[14px] overflow-hidden shadow-sm flex-shrink-0">
+            <Image src="/logo.png" alt="Oso" width={48} height={48} className="w-full h-full object-cover" />
+          </div>
+          <div>
+            <p className="text-[13px] text-[#616161] font-medium">Oso Pro</p>
+            <h2 className="text-[17px] font-bold text-[#121212] leading-tight">{copy.headline}</h2>
+            <p className="text-[13px] text-[#616161] leading-snug">{copy.subheadline}</p>
+          </div>
         </div>
 
-        <div className="px-6 pb-2">
-          {/* Logo + trigger header */}
-          <div className="flex items-center gap-3 mb-5">
-            <div className="w-12 h-12 rounded-[14px] overflow-hidden shadow-sm flex-shrink-0">
-              <Image src="/logo.png" alt="Oso" width={48} height={48} className="w-full h-full object-cover" />
-            </div>
-            <div>
-              <p className="text-[13px] text-[#616161] font-medium">Oso Pro</p>
-              <h2 className="text-[17px] font-bold text-[#121212] leading-tight">{copy.headline}</h2>
-              <p className="text-[13px] text-[#616161] leading-snug">{copy.subheadline}</p>
-            </div>
-          </div>
-
-          {/* Benefits list */}
-          <div className="space-y-2.5 mb-6">
-            {PAYWALL_BENEFITS.map(b => (
-              <div key={b.id} className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-[#121212] flex items-center justify-center flex-shrink-0">
-                  <Check size={11} strokeWidth={3} className="text-white" />
-                </div>
-                <span className="text-[15px] text-[#121212]">{b.text}</span>
+        {/* Benefits list */}
+        <div className="space-y-2.5 mb-6">
+          {PAYWALL_BENEFITS.map(b => (
+            <div key={b.id} className="flex items-center gap-3">
+              <div className="w-5 h-5 rounded-full bg-[#121212] flex items-center justify-center flex-shrink-0">
+                <Check size={11} strokeWidth={3} className="text-white" />
               </div>
-            ))}
-          </div>
-
-          {/* Plan toggle */}
-          <div className="flex gap-3 mb-4">
-            <PlanCard
-              selected={plan === 'annual'}
-              onClick={() => setPlan('annual')}
-              label="Anual"
-              price="19,99€ / año"
-              badge="Más popular"
-              perMonth="1,66€/mes"
-            />
-            <PlanCard
-              selected={plan === 'monthly'}
-              onClick={() => setPlan('monthly')}
-              label="Mensual"
-              price="2,99€ / mes"
-            />
-          </div>
-
-          {/* Error */}
-          {error && (
-            <p className="text-[12px] text-red-600 text-center bg-red-50 rounded-lg px-3 py-2 mb-3">
-              {error}
-            </p>
-          )}
-
-          {/* CTA */}
-          <button
-            onClick={handlePurchase}
-            disabled={loading}
-            className="w-full h-[52px] rounded-full bg-[#121212] text-white text-[16px] font-semibold flex items-center justify-center gap-2 disabled:opacity-60 active:bg-[#000000] transition-colors mb-3"
-          >
-            {loading
-              ? <Loader2 size={18} className="animate-spin" />
-              : 'Continuar con Pro'}
-          </button>
-
-          {/* Restore */}
-          {isCapacitor() && (
-            <button
-              onClick={handleRestore}
-              disabled={restoring}
-              className="w-full h-10 text-[13px] text-[#121212] font-medium disabled:opacity-50"
-            >
-              {restoring ? 'Restaurando…' : 'Restaurar compra'}
-            </button>
-          )}
-
-          <p className="text-[11px] text-[#8E8E93] text-center mt-1">
-            Cancela en cualquier momento desde Ajustes
-          </p>
+              <span className="text-[15px] text-[#121212]">{b.text}</span>
+            </div>
+          ))}
         </div>
-      </motion.div>
-    </>
+
+        {/* Plan toggle */}
+        <div className="flex gap-3 mb-4">
+          <PlanCard
+            selected={plan === 'annual'}
+            onClick={() => setPlan('annual')}
+            label="Anual"
+            price="19,99€ / año"
+            badge="Más popular"
+            perMonth="1,66€/mes"
+          />
+          <PlanCard
+            selected={plan === 'monthly'}
+            onClick={() => setPlan('monthly')}
+            label="Mensual"
+            price="2,99€ / mes"
+          />
+        </div>
+
+        {/* Error */}
+        {error && (
+          <p className="text-[12px] text-red-600 text-center bg-red-50 rounded-lg px-3 py-2 mb-3">
+            {error}
+          </p>
+        )}
+
+        {/* CTA */}
+        <button
+          onClick={handlePurchase}
+          disabled={loading}
+          className="w-full h-[52px] rounded-full bg-[#121212] text-white text-[16px] font-semibold flex items-center justify-center gap-2 disabled:opacity-60 active:bg-[#000000] transition-colors mb-3"
+        >
+          {loading
+            ? <Loader2 size={18} className="animate-spin" />
+            : 'Continuar con Pro'}
+        </button>
+
+        {/* Restore */}
+        {isCapacitor() && (
+          <button
+            onClick={handleRestore}
+            disabled={restoring}
+            className="w-full h-10 text-[13px] text-[#121212] font-medium disabled:opacity-50"
+          >
+            {restoring ? 'Restaurando…' : 'Restaurar compra'}
+          </button>
+        )}
+
+        <p className="text-[11px] text-[#8E8E93] text-center mt-1 pb-4">
+          Cancela en cualquier momento desde Ajustes
+        </p>
+      </div>
+    </BottomSheet>
   )
 }
 
