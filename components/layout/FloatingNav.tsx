@@ -110,7 +110,7 @@ export default function FloatingNav() {
               border: `1px solid ${isDarkMode ? '#3A3A3C' : '#BCBCBC'}`,
             }}
           >
-            {/* Static backgrounds — always visible behind each button */}
+            {/* Static backgrounds — always visible behind each slot */}
             <div
               className="absolute rounded-full"
               style={{ width: BTN_W, height: BTN_H, top: PAD, left: PAD, backgroundColor: isDarkMode ? '#2C2C2E' : '#EEEEEE' }}
@@ -119,8 +119,14 @@ export default function FloatingNav() {
               className="absolute rounded-full"
               style={{ width: BTN_W, height: BTN_H, top: PAD, left: PAD + BTN_W + GAP, backgroundColor: isDarkMode ? '#2C2C2E' : '#EEEEEE' }}
             />
+            <div
+              className="absolute rounded-full"
+              style={{ width: BTN_W, height: BTN_H, top: PAD, left: PAD + 2 * (BTN_W + GAP), backgroundColor: isDarkMode ? '#2C2C2E' : '#EEEEEE' }}
+            />
 
-            {/* Sliding indicator */}
+            {/* Sliding indicator — only covers the Subs / Dashboard slots.
+                The avatar slot is a menu trigger, not a route tab, so the
+                indicator never lands on it. */}
             <motion.div
               className="absolute rounded-full"
               style={{ width: BTN_W, height: BTN_H, top: PAD, left: PAD, zIndex: 1, backgroundColor: isDarkMode ? '#F2F2F7' : '#121212' }}
@@ -137,7 +143,7 @@ export default function FloatingNav() {
               </div>
             </Link>
 
-            {/* Dashboard button */}
+            {/* Mis gastos button (formerly "Dashboard") */}
             <Link href="/dashboard" aria-label={t('nav.dashboard')}>
               <div className="relative flex items-center justify-center rounded-full"
                 style={{ width: BTN_W, height: BTN_H, zIndex: 2 }}
@@ -147,40 +153,40 @@ export default function FloatingNav() {
               </div>
             </Link>
 
+            {/* Account menu — third slot, right of Mis gastos */}
+            <div
+              className="relative flex items-center justify-center"
+              style={{ width: BTN_W, height: BTN_H, zIndex: 2 }}
+            >
+              <UserAvatarMenu />
+            </div>
           </div>
         </div>
 
-        {/* Right cluster: + button, then avatar menu (avatar sits to the
-            right of every other nav item per the app brief). vertically
-            centered so the 40-px avatar lines up with the 56-px + CTA. */}
-        <div
-          className="absolute right-4 pointer-events-auto flex items-center gap-3"
-          style={{ bottom: `calc(${bottomOffset} + 4px)`, height: 56 }}
+        {/* + button — right edge, 16px margin, same bottom as pill.
+            When the user has no subscriptions yet, it scales to 2x to
+            emphasize it as the primary call to action. */}
+        <motion.button
+          onClick={() => { haptics.tap('medium'); setStep('pick') }}
+          aria-label="Add subscription"
+          className="absolute right-4 pointer-events-auto flex items-center justify-center rounded-full bg-[#121212]"
+          style={{
+            width: 56,
+            height: 56,
+            originX: 1,
+            originY: 1,
+            bottom: `calc(${bottomOffset} + 4px)`,
+          }}
+          animate={emphasizeAdd ? { scale: [1, 1.25, 1] } : { scale: 1 }}
+          transition={
+            emphasizeAdd
+              ? { duration: 1.6, ease: 'easeInOut', repeat: Infinity }
+              : { type: 'spring', stiffness: 300, damping: 22 }
+          }
+          whileTap={{ scale: 0.95 }}
         >
-          <motion.button
-            onClick={() => { haptics.tap('medium'); setStep('pick') }}
-            aria-label="Add subscription"
-            className="flex items-center justify-center rounded-full bg-[#121212]"
-            style={{
-              width: 56,
-              height: 56,
-              originX: 1,
-              originY: 1,
-            }}
-            animate={emphasizeAdd ? { scale: [1, 1.25, 1] } : { scale: 1 }}
-            transition={
-              emphasizeAdd
-                ? { duration: 1.6, ease: 'easeInOut', repeat: Infinity }
-                : { type: 'spring', stiffness: 300, damping: 22 }
-            }
-            whileTap={{ scale: 0.95 }}
-          >
-            <Plus size={22} color="#ffffff" strokeWidth={2.5} />
-          </motion.button>
-
-          {/* Account menu — rightmost item, next to the + CTA. */}
-          <UserAvatarMenu />
-        </div>
+          <Plus size={22} color="#ffffff" strokeWidth={2.5} />
+        </motion.button>
       </nav>
       )}
 

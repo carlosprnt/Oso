@@ -12,7 +12,6 @@ import EmptyDashboardHero from '@/components/dashboard/EmptyDashboardHero'
 import CalendarModalButton from '@/components/dashboard/CalendarModalButton'
 import Insights from '@/components/dashboard/Insights'
 import DashboardReminderCards from '@/components/dashboard/DashboardReminderCards'
-import QuickAddPlatforms from '@/components/dashboard/QuickAddPlatforms'
 import { getServerT } from '@/lib/i18n/server'
 import type { Metadata } from 'next'
 
@@ -52,14 +51,9 @@ export default async function DashboardPage() {
       {isEmpty ? (
         <EmptyDashboardHero />
       ) : (
-        <DashboardSummaryHero stats={stats} />
-      )}
-
-      <DashboardCardStack>
-        {isEmpty ? (
-          <QuickAddPlatforms />
-        ) : (
-          <>
+        <>
+          <DashboardSummaryHero stats={stats} />
+          <DashboardCardStack>
             <DashboardReminderCards subscriptions={subs} />
             <Insights subscriptions={subs} stats={stats} />
             <div className="grid lg:grid-cols-3 gap-[8px]">
@@ -87,9 +81,9 @@ export default async function DashboardPage() {
                 <TopExpensiveSection subscriptions={top3} />
               </div>
             )}
-          </>
-        )}
-      </DashboardCardStack>
+          </DashboardCardStack>
+        </>
+      )}
     </div>
   )
 }

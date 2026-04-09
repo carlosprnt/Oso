@@ -12,7 +12,7 @@ const en = {
     add: 'Add',
   },
   nav: {
-    dashboard: 'Dashboard',
+    dashboard: 'My spending',
     subscriptions: 'Subscriptions',
     calendar: 'Calendar',
     lightMode: 'Light mode',
@@ -21,7 +21,7 @@ const en = {
     logout: 'Log out',
   },
   dashboard: {
-    title: 'Your spending',
+    title: 'My spending',
     subtitle: 'Your subscription overview',
     monthly: 'Monthly',
     yearly: 'Yearly',
@@ -303,7 +303,7 @@ const es: typeof en = {
     add: 'Añadir',
   },
   nav: {
-    dashboard: 'Panel',
+    dashboard: 'Mis gastos',
     subscriptions: 'Suscripciones',
     calendar: 'Calendario',
     lightMode: 'Modo claro',
@@ -312,7 +312,7 @@ const es: typeof en = {
     logout: 'Cerrar sesión',
   },
   dashboard: {
-    title: 'Tus gastos',
+    title: 'Mis gastos',
     subtitle: 'Resumen de tus suscripciones',
     monthly: 'Mensual',
     yearly: 'Anual',
