@@ -174,13 +174,13 @@ export default function SubscriptionDetail({ subscription: sub }: SubscriptionDe
               <div>
                 <p className="text-3xl font-bold text-[#121212] dark:text-[#F2F2F7] tabular-nums leading-none">
                   {formatCurrency(sub.my_monthly_cost, sub.currency)}
+                  <span className="text-sm font-semibold text-[#737373] dark:text-[#AEAEB2] ml-1">{t('detail.perMonth')}</span>
                 </p>
-                <p className="text-sm text-[#737373] dark:text-[#AEAEB2] mt-1">{t('detail.perMonth')}</p>
               </div>
               <div className="text-right">
-                <p className="text-xs text-[#737373] dark:text-[#AEAEB2] mb-0.5">{t('detail.annually')}</p>
                 <p className="text-lg font-semibold text-[#424242] dark:text-[#F2F2F7] tabular-nums">
                   {formatCurrency(sub.my_annual_cost, sub.currency)}
+                  <span className="text-sm text-[#737373] dark:text-[#AEAEB2] ml-1">{t('detail.annually')}</span>
                 </p>
               </div>
             </div>

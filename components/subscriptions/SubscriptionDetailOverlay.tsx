@@ -247,14 +247,14 @@ export default function SubscriptionDetailOverlay({ sub, onClose }: Props) {
                 <div>
                   <p className="text-3xl font-bold text-[#121212] dark:text-[#F2F2F7] tabular-nums leading-none">
                     {formatCurrency(sub.my_monthly_cost, sub.currency)}
+                    <span className="text-sm font-semibold text-[#737373] dark:text-[#AEAEB2] ml-1">{t('detail.perMonth')}</span>
                   </p>
-                  <p className="text-sm text-[#737373] dark:text-[#AEAEB2] mt-1">{t('detail.perMonth')}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-lg font-semibold text-[#121212] dark:text-[#F2F2F7] tabular-nums">
                     {formatCurrency(sub.my_annual_cost, sub.currency)}
+                    <span className="text-sm text-[#737373] dark:text-[#AEAEB2] ml-1">{t('detail.annually')}</span>
                   </p>
-                  <p className="text-sm text-[#737373] dark:text-[#AEAEB2] mt-1">{t('detail.annually')}</p>
                 </div>
               </div>
             </div>

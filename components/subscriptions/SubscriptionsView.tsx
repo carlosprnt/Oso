@@ -396,7 +396,7 @@ export default function SubscriptionsView({
                     </span>
                   )}
                 </button>
-                {' '}{viewMode === 'monthly' ? 'al mes' : 'al año'} en{' '}
+                {' '}{viewMode === 'monthly' ? '/mes' : '/año'} en{' '}
                 {allCount === 1 ? '1 suscripción activa' : `${allCount} suscripciones activas`}.
               </p>
             )}

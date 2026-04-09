@@ -39,7 +39,7 @@ export default function DashboardSummaryHero({
         </h1>
         {total > 0 && (
           <p className="text-[18px] font-bold text-[#121212] dark:text-[#F2F2F7] mt-1 leading-snug">
-            Pagas <span className="underline underline-offset-2">{monthly}</span> al mes en{' '}
+            Pagas <span className="underline underline-offset-2">{monthly}</span> /mes en{' '}
             {total === 1 ? '1 suscripción activa' : `${total} suscripciones activas`}.
           </p>
         )}
