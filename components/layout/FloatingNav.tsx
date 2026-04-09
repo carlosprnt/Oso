@@ -19,7 +19,7 @@ type Step = 'closed' | 'pick' | 'form' | 'gmail'
 
 const BTN_W    = 72   // nav button width  (Subs / Mis gastos)
 const BTN_H    = 48   // nav button height (Subs / Mis gastos)
-const AVATAR_S = 40   // avatar slot side — matches UserAvatarMenu's 40x40 button
+const AVATAR_S = 48   // avatar slot side — height matches BTN_H, width kept square
 const PAD      = 8    // pill padding
 const GAP      = 8    // gap between buttons
 
