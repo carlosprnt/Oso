@@ -36,7 +36,7 @@ import {
  * with the surface without being a DOM child of it.
  */
 
-const PEEK_HEIGHT   = 64      // px of foreground visible when lowered
+const PEEK_HEIGHT   = 200     // px of foreground visible when lowered
 const SNAP_THRESHOLD = 0.35   // fraction of LOWERED_Y to trigger snap
 const VEL_THRESHOLD  = 400    // px/s flick threshold
 
@@ -74,10 +74,13 @@ export default function DragToRevealSurface({ analytics, children }: Props) {
     }
   }, [])
 
-  // Sync to CSS variable so FloatingNav can follow
+  // Sync to CSS variable so FloatingNav can follow + hide the
+  // top fade mask when the surface is lowered (it blurs the dark layer)
   useEffect(() => {
     return y.on('change', (v) => {
       document.documentElement.style.setProperty('--surface-y', `${v}px`)
+      const mask = document.querySelector('.top-fade-mask') as HTMLElement | null
+      if (mask) mask.style.opacity = v > 30 ? '0' : '1'
     })
   }, [y])
 

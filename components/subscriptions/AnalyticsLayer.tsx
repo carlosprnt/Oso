@@ -21,8 +21,8 @@ export default function AnalyticsLayer({ stats, totalSubs, currency = 'EUR' }: P
 
   return (
     <div
-      className="h-full flex flex-col justify-center px-7"
-      style={{ paddingTop: 'calc(env(safe-area-inset-top) + 20px)' }}
+      className="h-full flex flex-col px-7"
+      style={{ paddingTop: 'calc(env(safe-area-inset-top) + 24px)' }}
     >
       <div className="max-w-xl mx-auto w-full space-y-8">
         {/* Editorial headline */}
