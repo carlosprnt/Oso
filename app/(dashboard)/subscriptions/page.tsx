@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { enrichSubscriptions, getDashboardStats } from '@/lib/calculations/subscriptions'
+import { enrichSubscriptions, getDashboardStats, getHighestCostSubscription, getTopSpendCategories, getUpcomingRenewals } from '@/lib/calculations/subscriptions'
 import type { Subscription, SubscriptionStatus, Category } from '@/types'
 import SubscriptionsView from '@/components/subscriptions/SubscriptionsView'
 import DragToRevealSurface from '@/components/subscriptions/DragToRevealSurface'
@@ -38,12 +38,26 @@ export default async function SubscriptionsPage({ searchParams }: PageProps) {
 
   const stats = getDashboardStats(allSubs)
   const sharedCount = allSubs.filter(s => s.is_shared && (s.status === 'active' || s.status === 'trial')).length
+  const mostExpensive = getHighestCostSubscription(allSubs)
+  const topCategory = getTopSpendCategories(allSubs, 1)[0] ?? null
+  const nextRenewal = getUpcomingRenewals(allSubs, 365)[0] ?? null
 
   return (
     <>
       <ScreenTracker kind="subscriptions" subscriptionCount={allSubs.length} />
       <DragToRevealSurface
-        analytics={<AnalyticsLayer stats={stats} sharedCount={sharedCount} firstName={firstName} />}
+        analytics={
+          <AnalyticsLayer
+            stats={stats}
+            sharedCount={sharedCount}
+            firstName={firstName}
+            mostExpensiveName={mostExpensive?.name ?? null}
+            mostExpensiveCost={mostExpensive ? mostExpensive.my_monthly_cost : 0}
+            topCategoryName={topCategory?.category ?? null}
+            nextRenewalName={nextRenewal?.subscription.name ?? null}
+            nextRenewalDays={nextRenewal?.days_until ?? null}
+          />
+        }
       >
         <SubscriptionsView
           subscriptions={filtered}
