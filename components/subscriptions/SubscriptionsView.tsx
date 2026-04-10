@@ -15,6 +15,7 @@ import QuickAddPlatforms from '@/components/dashboard/QuickAddPlatforms'
 import { AnalyticsEvents } from '@/lib/analytics'
 import haptics from '@/lib/haptics'
 import { formatCurrency } from '@/lib/utils/currency'
+import { resolveSubscriptionLogoUrl } from '@/lib/constants/platforms'
 import { CATEGORIES } from '@/lib/constants/categories'
 import { useT } from '@/lib/i18n/LocaleProvider'
 import type { SubscriptionWithCosts, SubscriptionStatus, Category, DashboardStats } from '@/types'
@@ -68,9 +69,24 @@ function SubscriptionRow({ sub, isSelected, onOpen, viewMode, numSkeleton }: Sub
       <motion.div
         layoutId={`card-${sub.id}`}
         onClick={() => onOpen(sub)}
-        className="flex items-center justify-between py-4 cursor-pointer active:opacity-60 transition-opacity"
+        className="flex items-center gap-3 py-4 cursor-pointer active:opacity-60 transition-opacity"
         whileTap={{ opacity: 0.6 }}
       >
+        {/* Logo 32×32 */}
+        {(() => {
+          const logoUrl = resolveSubscriptionLogoUrl(sub.name, sub.logo_url)
+          return (
+            <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center border border-[#E8E8E8] dark:border-[#3A3A3C] bg-white dark:bg-white">
+              {logoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={logoUrl} alt="" width={32} height={32} className="w-[82%] h-[82%] object-contain" loading="lazy" />
+              ) : (
+                <span className="text-xs font-semibold text-[#121212]">{sub.name.charAt(0)}</span>
+              )}
+            </div>
+          )
+        })()}
+
         {/* Name + optional status for non-active */}
         <div className="flex-1 min-w-0 flex items-baseline gap-2">
           <span className="text-[16px] font-medium text-[#121212] dark:text-[#F2F2F7] truncate">
