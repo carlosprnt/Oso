@@ -160,6 +160,7 @@ export default function DragToRevealSurface({ analytics, children }: Props) {
 
     function onEnd(e: TouchEvent) {
       if (!dragging) return
+      const wasRaised = raisedRef.current
       dragging = false
       locked   = false
 
@@ -169,7 +170,11 @@ export default function DragToRevealSurface({ analytics, children }: Props) {
       const cur = y.get()
 
       let target: number
-      if (Math.abs(vel) > VEL_THRESHOLD) {
+
+      if (!wasRaised) {
+        // Surface was lowered → ANY upward movement snaps raised
+        target = cur < loweredY ? 0 : loweredY
+      } else if (Math.abs(vel) > VEL_THRESHOLD) {
         target = vel > 0 ? loweredY : 0
       } else {
         target = cur > loweredY * SNAP_THRESHOLD ? loweredY : 0
