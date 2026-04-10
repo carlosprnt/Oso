@@ -33,13 +33,23 @@ export default function FloatingNav() {
     left: number
     width: number
     height: number
+    bottom: number
+    right: number
   } | null>(null)
 
   function openPicker() {
     haptics.tap('medium')
     if (fabRef.current) {
       const r = fabRef.current.getBoundingClientRect()
-      setMorphOrigin({ top: r.top, left: r.left, width: r.width, height: r.height })
+      setMorphOrigin({
+        top: r.top,
+        left: r.left,
+        width: r.width,
+        height: r.height,
+        // Compute bottom/right for the expand-from-corner animation
+        bottom: window.innerHeight - r.bottom,
+        right: window.innerWidth - r.right,
+      })
     }
     setStep('pick')
   }
@@ -112,113 +122,99 @@ export default function FloatingNav() {
       </div>
       )}
 
-      {/* Step 1 — Platform picker.
-          Custom presentation: the + FAB morphs into a black fullscreen
-          background (via the measured morphOrigin), then a white sheet
-          with the picker slides up on top of it. Closing reverses both
-          animations so the black surface collapses back into the FAB. */}
+      {/* Step 1 — Platform picker dropdown.
+          The + FAB circle expands into a black rounded-rect dropdown
+          anchored from the FAB's corner. The dropdown IS the expanded
+          circle — no separate backdrop or white sheet. Content is
+          white-on-black. Width: viewport − 40 px (20 px margin each
+          side). Height: 50 vh. */}
       <AnimatePresence>
         {step === 'pick' && morphOrigin && (
           <>
-            {/* Morphing black backdrop — expands from the FAB */}
+            {/* Invisible backdrop to catch taps outside the dropdown */}
             <motion.div
-              key="picker-morph-bg"
-              className="fixed bg-[#121212] pointer-events-auto"
-              style={{ zIndex: 500 }}
+              key="picker-backdrop"
+              className="fixed inset-0 z-[499]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={close}
+              style={{ background: 'rgba(0,0,0,0.3)' }}
+            />
+
+            {/* Expanding dropdown — morphs from the FAB circle */}
+            <motion.div
+              key="picker-dropdown"
+              className="fixed z-[500] bg-[#121212] flex flex-col overflow-hidden dark"
+              style={{ originX: 1, originY: 1 }}
               initial={{
-                top: morphOrigin.top,
-                left: morphOrigin.left,
+                bottom: morphOrigin.bottom,
+                right: morphOrigin.right,
                 width: morphOrigin.width,
                 height: morphOrigin.height,
                 borderRadius: morphOrigin.width / 2,
               }}
               animate={{
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                borderRadius: 0,
+                bottom: morphOrigin.bottom,
+                right: 20,
+                width: 'calc(100vw - 40px)',
+                height: '50vh',
+                borderRadius: 24,
               }}
               exit={{
-                top: morphOrigin.top,
-                left: morphOrigin.left,
+                bottom: morphOrigin.bottom,
+                right: morphOrigin.right,
                 width: morphOrigin.width,
                 height: morphOrigin.height,
                 borderRadius: morphOrigin.width / 2,
               }}
-              transition={{ type: 'spring', stiffness: 260, damping: 32, mass: 0.95 }}
-              onClick={close}
-              aria-hidden="true"
-            />
-
-            {/* White content sheet — slides up on top of the black bg */}
-            <motion.div
-              key="picker-sheet"
-              className="fixed left-0 right-0 bg-white dark:bg-[#1C1C1E] flex flex-col max-h-[82dvh]"
-              style={{
-                zIndex: 501,
-                bottom: 'calc(env(safe-area-inset-bottom) * -1)',
-                paddingBottom: 'env(safe-area-inset-bottom)',
-                borderRadius: '32px 32px 0 0',
-              }}
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{
-                type: 'spring',
-                stiffness: 340,
-                damping: 36,
-                mass: 0.95,
-                delay: 0.08,
-              }}
+              transition={{ type: 'spring', stiffness: 320, damping: 34, mass: 0.9 }}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Grabber */}
-              <div className="flex-shrink-0 flex justify-center pt-2.5 pb-1.5">
-                <div className="w-9 h-[5px] rounded-full bg-[#D4D4D4] dark:bg-[#48484A]" />
-              </div>
-
-              {/* Title + close */}
-              <div className="flex-shrink-0 flex items-center justify-between px-5 py-3">
-                <h2 className="text-[17px] font-semibold text-[#121212] dark:text-[#F2F2F7]">
-                  {t('sheets.createNew')}
-                </h2>
-                <button
-                  onClick={close}
-                  className="w-11 h-11 rounded-full bg-white dark:bg-[#2C2C2E] flex items-center justify-center text-[#616161] dark:text-[#AEAEB2] transition-colors active:bg-[#EBEBEB] dark:active:bg-[#3A3A3C]"
-                  aria-label="Close"
-                >
-                  <X size={16} strokeWidth={2.5} />
-                </button>
-              </div>
-
-              {/* Scrollable list */}
-              <div
-                className="flex-1 overflow-x-hidden min-h-0"
-                style={{
-                  overflowY: 'auto',
-                  WebkitOverflowScrolling: 'touch',
-                  overscrollBehavior: 'contain',
-                }}
+              {/* Inner content — fades in after expand starts */}
+              <motion.div
+                className="flex flex-col h-full"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25, delay: 0.1 }}
               >
-                <PlatformPicker onSelect={handleSelect} />
-              </div>
+                {/* Header: title + close X */}
+                <div className="flex items-center justify-between px-5 pt-5 pb-3 flex-shrink-0">
+                  <h2 className="text-[17px] font-semibold text-white">
+                    {t('sheets.createNew')}
+                  </h2>
+                  <button
+                    onClick={close}
+                    className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white/70 active:bg-white/20 transition-colors"
+                    aria-label="Close"
+                  >
+                    <X size={14} strokeWidth={2.5} />
+                  </button>
+                </div>
 
-              {/* Footer CTAs */}
-              <div className="flex-shrink-0 flex gap-3 px-5 pt-4 pb-4 border-t border-[#F0F0F0] dark:border-[#2C2C2E]">
-                <button
-                  onClick={() => setStep('gmail')}
-                  className="flex-1 h-12 rounded-full text-sm font-semibold text-[#121212] dark:text-[#F2F2F7] border border-[#121212] dark:border-[#F2F2F7] bg-transparent flex items-center justify-center active:bg-[#F0F0F0] dark:active:bg-[#2C2C2E] transition-colors"
+                {/* Scrollable platform list */}
+                <div
+                  className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 px-2"
+                  style={{
+                    WebkitOverflowScrolling: 'touch',
+                    overscrollBehavior: 'contain',
+                  }}
                 >
-                  {t('picker.searchGmail')}
-                </button>
-                <button
-                  onClick={() => handleSelect(null)}
-                  className="flex-1 h-12 rounded-full text-sm font-semibold text-white bg-[#121212] flex items-center justify-center active:bg-[#333333] transition-colors"
-                >
-                  {t('picker.enterManually')}
-                </button>
-              </div>
+                  <PlatformPicker onSelect={handleSelect} />
+                </div>
+
+                {/* Footer: add manually */}
+                <div className="flex-shrink-0 px-5 pt-3 pb-5">
+                  <button
+                    onClick={() => handleSelect(null)}
+                    className="w-full h-12 rounded-full text-sm font-semibold text-[#121212] bg-white flex items-center justify-center active:bg-white/90 transition-colors"
+                  >
+                    {t('picker.enterManually')}
+                  </button>
+                </div>
+              </motion.div>
             </motion.div>
           </>
         )}
