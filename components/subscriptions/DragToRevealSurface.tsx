@@ -36,7 +36,7 @@ import {
  */
 
 const PEEK_HEIGHT   = 120     // px of foreground visible when lowered
-const SNAP_THRESHOLD = 0.35   // fraction of LOWERED_Y to trigger snap
+const SNAP_THRESHOLD = 0.65   // fraction of LOWERED_Y — above this snaps lowered, below snaps raised
 const VEL_THRESHOLD  = 400    // px/s flick threshold
 
 const SNAP_SPRING = {
@@ -120,10 +120,13 @@ export default function DragToRevealSurface({ analytics, children }: Props) {
       const cy = e.touches[0].clientY
       const dy = cy - startY
 
-      // CASE 1: surface is lowered → any upward drag raises it
-      if (!raisedRef.current && dy < -6) {
+      // CASE 1: surface is lowered → ANY gesture becomes a drag
+      // (no scroll allowed in the lowered state — the surface
+      // must follow the finger so the user can pull it back up)
+      if (!raisedRef.current && !dragging && Math.abs(dy) > 6) {
         dragging = true
         locked   = true
+        y.stop()
       }
 
       // CASE 2: surface is raised, scroll at top, pulling down
@@ -133,7 +136,7 @@ export default function DragToRevealSurface({ analytics, children }: Props) {
         y.stop()
       }
 
-      // CASE 3: scrolling normally
+      // CASE 3: scrolling normally (only when raised)
       if (!dragging && Math.abs(dy) > 6) {
         locked = true
         return
