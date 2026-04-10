@@ -36,7 +36,7 @@ import {
  */
 
 const PEEK_HEIGHT   = 120     // px of foreground visible when lowered
-const SNAP_THRESHOLD = 0.20   // fraction of LOWERED_Y — above this snaps lowered, below snaps raised
+const SNAP_THRESHOLD = 0.12   // fraction of LOWERED_Y — above this snaps lowered, below snaps raised
 const VEL_THRESHOLD  = 400    // px/s flick threshold
 
 const SNAP_SPRING = {

@@ -34,12 +34,13 @@ export default async function SubscriptionsPage({ searchParams }: PageProps) {
   }
 
   const stats = getDashboardStats(allSubs)
+  const sharedCount = allSubs.filter(s => s.is_shared && (s.status === 'active' || s.status === 'trial')).length
 
   return (
     <>
       <ScreenTracker kind="subscriptions" subscriptionCount={allSubs.length} />
       <DragToRevealSurface
-        analytics={<AnalyticsLayer stats={stats} totalSubs={allSubs.length} />}
+        analytics={<AnalyticsLayer stats={stats} sharedCount={sharedCount} />}
       >
         <SubscriptionsView
           subscriptions={filtered}
