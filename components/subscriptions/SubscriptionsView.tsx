@@ -8,7 +8,7 @@ import {
 import { useRouter, usePathname } from 'next/navigation'
 import { useEffectiveScrollY } from '@/lib/hooks/useEffectiveScrollY'
 import SubscriptionDetailOverlay from './SubscriptionDetailOverlay'
-import { SlidersHorizontal, CalendarDays, Check, ChevronsUpDown, X, BarChart3 } from 'lucide-react'
+import { Settings, CalendarDays, Check, ChevronsUpDown, X, BarChart3 } from 'lucide-react'
 import BottomSheet from '@/components/ui/BottomSheet'
 import CalendarView from '@/components/calendar/CalendarView'
 import QuickAddPlatforms from '@/components/dashboard/QuickAddPlatforms'
@@ -418,16 +418,13 @@ export default function SubscriptionsView({
             )}
           </div>
           <div className="flex items-center gap-2 ml-4 flex-shrink-0">
-            <motion.button
-              onClick={handleFilterTap}
-              animate={filterShake}
-              className="relative w-10 h-10 rounded-full bg-[#F2F2F7] dark:bg-[#1C1C1E] flex items-center justify-center transition-colors active:bg-[#E5E5EA] dark:active:bg-[#2C2C2E]"
+            <button
+              onClick={() => router.push('/settings')}
+              className="w-10 h-10 rounded-full bg-[#F2F2F7] dark:bg-[#1C1C1E] flex items-center justify-center transition-colors active:bg-[#E5E5EA] dark:active:bg-[#2C2C2E]"
+              aria-label="Settings"
             >
-              <SlidersHorizontal size={17} strokeWidth={2} className="text-[#333333] dark:text-[#F2F2F7]" />
-              {hasActiveFilters && (
-                <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#121212] dark:bg-[#F2F2F7] border-2 border-white dark:border-[#121212]" />
-              )}
-            </motion.button>
+              <Settings size={17} strokeWidth={2} className="text-[#333333] dark:text-[#F2F2F7]" />
+            </button>
             <button
               onClick={() => window.dispatchEvent(new CustomEvent('oso:reveal-analytics'))}
               className="w-10 h-10 rounded-full bg-[#F2F2F7] dark:bg-[#1C1C1E] flex items-center justify-center transition-colors active:bg-[#E5E5EA] dark:active:bg-[#2C2C2E]"
