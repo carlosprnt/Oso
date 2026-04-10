@@ -73,14 +73,43 @@ export default function DragToRevealSurface({ analytics, children }: Props) {
     }
   }, [])
 
-  // Sync to CSS variable so FloatingNav can follow + hide the
-  // top fade mask when the surface is lowered (it blurs the dark layer)
+  // Sync to CSS variable so FloatingNav can follow + control the
+  // top fade mask visibility based on BOTH drag state and scroll.
+  // Mask is hidden by default (no blur at rest), shown only when
+  // the user scrolls inside the white surface, and hidden again
+  // when the surface is dragged down to reveal the dark layer.
+  const scrolledRef = useRef(false)
+
   useEffect(() => {
     return y.on('change', (v) => {
       document.documentElement.style.setProperty('--surface-y', `${v}px`)
       const mask = document.querySelector('.top-fade-mask') as HTMLElement | null
-      if (mask) mask.style.opacity = v > 30 ? '0' : '1'
+      if (mask) {
+        mask.style.opacity = (v > 30 || !scrolledRef.current) ? '0' : '1'
+      }
     })
+  }, [y])
+
+  // Listen to scroll inside the white surface to show/hide the mask
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    function onScroll() {
+      const scrolled = el!.scrollTop > 10
+      if (scrolled !== scrolledRef.current) {
+        scrolledRef.current = scrolled
+        const mask = document.querySelector('.top-fade-mask') as HTMLElement | null
+        if (mask) {
+          mask.style.opacity = (scrolled && y.get() < 30) ? '1' : '0'
+        }
+      }
+    }
+    // Start hidden
+    const mask = document.querySelector('.top-fade-mask') as HTMLElement | null
+    if (mask) mask.style.opacity = '0'
+
+    el.addEventListener('scroll', onScroll, { passive: true })
+    return () => el.removeEventListener('scroll', onScroll)
   }, [y])
 
   // Reset CSS variable on unmount
