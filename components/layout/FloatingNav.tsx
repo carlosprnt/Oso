@@ -157,10 +157,10 @@ export default function FloatingNav() {
               }}
               animate={{
                 bottom: morphOrigin.bottom,
-                right: 20,
-                width: 'calc(100vw - 40px)',
-                height: '50vh',
-                borderRadius: 24,
+                right: 10,
+                width: 'calc(100vw - 20px)',
+                height: '70vh',
+                borderRadius: 40,
               }}
               exit={{
                 bottom: morphOrigin.bottom,
@@ -181,7 +181,7 @@ export default function FloatingNav() {
                 transition={{ duration: 0.25, delay: 0.1 }}
               >
                 {/* Header: title + close X */}
-                <div className="flex items-center justify-between px-5 pt-5 pb-3 flex-shrink-0">
+                <div className="flex items-center justify-between px-4 pt-5 pb-3 flex-shrink-0">
                   <h2 className="text-[17px] font-semibold text-white">
                     {t('sheets.createNew')}
                   </h2>
@@ -196,7 +196,7 @@ export default function FloatingNav() {
 
                 {/* Scrollable platform list */}
                 <div
-                  className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 px-2"
+                  className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 px-4"
                   style={{
                     WebkitOverflowScrolling: 'touch',
                     overscrollBehavior: 'contain',
@@ -206,7 +206,7 @@ export default function FloatingNav() {
                 </div>
 
                 {/* Footer: add manually */}
-                <div className="flex-shrink-0 px-5 pt-3 pb-5">
+                <div className="flex-shrink-0 px-4 pt-3 pb-5">
                   <button
                     onClick={() => handleSelect(null)}
                     className="w-full h-12 rounded-full text-sm font-semibold text-[#121212] bg-white flex items-center justify-center active:bg-white/90 transition-colors"
