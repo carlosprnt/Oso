@@ -80,23 +80,26 @@ export default function AnalyticsLayer({
         </p>
 
         {/* Extra insights */}
-        <div className="space-y-3 pt-3">
+        <div className="space-y-4 pt-3">
           {mostExpensiveName && (
-            <p className="text-white/60 text-[15px] leading-snug">
-              Tu suscripción más cara es <span className="text-white font-semibold">{mostExpensiveName}</span> con {formatCurrency(mostExpensiveCost, currency)} /mes.
-            </p>
+            <div>
+              <p className="text-white/60 text-[15px]">Suscripción más cara:</p>
+              <p className="text-white font-semibold text-[15px]">{mostExpensiveName} con {formatCurrency(mostExpensiveCost, currency)} /mes.</p>
+            </div>
           )}
 
           {topCategoryName && (
-            <p className="text-white/60 text-[15px] leading-snug">
-              Tu categoría principal de gasto es <span className="text-white font-semibold">{t(`categories.${topCategoryName}` as Parameters<typeof t>[0])}</span>.
-            </p>
+            <div>
+              <p className="text-white/60 text-[15px]">Tu categoría principal de gasto:</p>
+              <p className="text-white font-semibold text-[15px]">{t(`categories.${topCategoryName}` as Parameters<typeof t>[0])}.</p>
+            </div>
           )}
 
           {nextRenewalName && nextRenewalDays !== null && (
-            <p className="text-white/60 text-[15px] leading-snug">
-              La próxima en renovarse es <span className="text-white font-semibold">{nextRenewalName}</span>, {renewalLabel}.
-            </p>
+            <div>
+              <p className="text-white/60 text-[15px]">La próxima renovación {renewalLabel}:</p>
+              <p className="text-white font-semibold text-[15px]">{nextRenewalName}.</p>
+            </div>
           )}
         </div>
       </div>
