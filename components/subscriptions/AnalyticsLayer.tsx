@@ -1,6 +1,7 @@
 'use client'
 
 import { formatCurrency } from '@/lib/utils/currency'
+import UserAvatarMenu from '@/components/dashboard/UserAvatarMenu'
 import type { DashboardStats } from '@/types'
 
 interface Props {
@@ -18,8 +19,15 @@ export default function AnalyticsLayer({ stats, sharedCount, currency = 'EUR' }:
   return (
     <div
       className="h-full flex flex-col px-7"
-      style={{ paddingTop: 'calc(env(safe-area-inset-top) + 24px)' }}
+      style={{ paddingTop: 'calc(env(safe-area-inset-top) + 16px)' }}
     >
+      {/* Avatar — top right */}
+      <div className="flex justify-end mb-4">
+        <div className="w-10 h-10">
+          <UserAvatarMenu />
+        </div>
+      </div>
+
       <div className="max-w-xl mx-auto w-full space-y-5">
         {/* Monthly */}
         <div>
