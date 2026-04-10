@@ -4,7 +4,6 @@ import {
   useRef,
   useState,
   useEffect,
-  useCallback,
   type ReactNode,
 } from 'react'
 import {
@@ -36,7 +35,7 @@ import {
  * with the surface without being a DOM child of it.
  */
 
-const PEEK_HEIGHT   = 200     // px of foreground visible when lowered
+const PEEK_HEIGHT   = 120     // px of foreground visible when lowered
 const SNAP_THRESHOLD = 0.35   // fraction of LOWERED_Y to trigger snap
 const VEL_THRESHOLD  = 400    // px/s flick threshold
 
@@ -190,13 +189,6 @@ export default function DragToRevealSurface({ analytics, children }: Props) {
     }
   }, [y, loweredY])
 
-  // Programmatic raise (e.g. when tapping the 64 px peek strip)
-  const raise = useCallback(() => {
-    raisedRef.current = true
-    setIsRaised(true)
-    animate(y, 0, SNAP_SPRING)
-  }, [y])
-
   // ── Dark layer transforms (subtle parallax + fade-in) ────
   const darkOpacity   = useTransform(y, [0, loweredY || 1], [0, 1])
   const darkTranslate = useTransform(y, [0, loweredY || 1], [-30, 0])
@@ -237,20 +229,7 @@ export default function DragToRevealSurface({ analytics, children }: Props) {
           </div>
         </div>
 
-        {/* Peek strip tap target — when lowered, tapping the visible
-            64 px strip pulls the surface back up */}
       </motion.div>
-
-      {/* Tap-to-raise overlay — only active when surface is lowered,
-          covers the 64 px visible peek strip */}
-      {!isRaised && (
-        <div
-          className="fixed left-0 right-0 z-20 cursor-pointer"
-          style={{ top: loweredY, height: PEEK_HEIGHT }}
-          onClick={raise}
-          aria-label="Show subscriptions"
-        />
-      )}
     </>
   )
 }
