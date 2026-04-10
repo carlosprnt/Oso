@@ -18,6 +18,9 @@ export default async function SubscriptionsPage({ searchParams }: PageProps) {
   const supabase = await createClient()
   const params = await searchParams
 
+  const { data: { user } } = await supabase.auth.getUser()
+  const firstName = (user?.user_metadata?.full_name ?? user?.email?.split('@')[0] ?? '').split(' ')[0]
+
   const { data: rawSubs } = await supabase
     .from('subscriptions')
     .select('*')
@@ -40,7 +43,7 @@ export default async function SubscriptionsPage({ searchParams }: PageProps) {
     <>
       <ScreenTracker kind="subscriptions" subscriptionCount={allSubs.length} />
       <DragToRevealSurface
-        analytics={<AnalyticsLayer stats={stats} sharedCount={sharedCount} />}
+        analytics={<AnalyticsLayer stats={stats} sharedCount={sharedCount} firstName={firstName} />}
       >
         <SubscriptionsView
           subscriptions={filtered}

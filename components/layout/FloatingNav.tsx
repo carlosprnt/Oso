@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
-import { Plus, X } from 'lucide-react'
+import { Plus, X, CalendarDays } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import BottomSheet from '@/components/ui/BottomSheet'
 import PlatformPicker from '@/components/subscriptions/PlatformPicker'
@@ -74,9 +74,24 @@ export default function FloatingNav() {
       {/* ── Floating nav — mobile only, hidden on settings ────────────────── */}
       {/* ── Floating + button — mobile only, hidden on settings ──── */}
       {!hideNav && (
-      <div className="lg:hidden fixed bottom-0 right-0 z-50 pointer-events-none"
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 pointer-events-none"
         style={{ transform: 'translateY(var(--surface-y, 0px))' }}
       >
+        {/* Calendar button — bottom left */}
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent('oso:open-calendar'))}
+          aria-label="Calendar"
+          className="absolute left-4 pointer-events-auto flex items-center justify-center rounded-full bg-[#F2F2F7] dark:bg-[#1C1C1E] active:bg-[#E5E5EA] dark:active:bg-[#2C2C2E] transition-colors"
+          style={{
+            width: 48,
+            height: 48,
+            bottom: `calc(${bottomOffset} + 8px)`,
+          }}
+        >
+          <CalendarDays size={19} strokeWidth={2} className="text-[#333333] dark:text-[#F2F2F7]" />
+        </button>
+
+        {/* + FAB — bottom right */}
         <motion.button
           ref={fabRef}
           onClick={openPicker}

@@ -8,7 +8,7 @@ import {
 import { useRouter, usePathname } from 'next/navigation'
 import { useEffectiveScrollY } from '@/lib/hooks/useEffectiveScrollY'
 import SubscriptionDetailOverlay from './SubscriptionDetailOverlay'
-import { SlidersHorizontal, CalendarDays, Check, ChevronsUpDown, X } from 'lucide-react'
+import { SlidersHorizontal, CalendarDays, Check, ChevronsUpDown, X, BarChart3 } from 'lucide-react'
 import BottomSheet from '@/components/ui/BottomSheet'
 import CalendarView from '@/components/calendar/CalendarView'
 import QuickAddPlatforms from '@/components/dashboard/QuickAddPlatforms'
@@ -60,10 +60,10 @@ function SubscriptionRow({ sub, isSelected, onOpen, viewMode, numSkeleton }: Sub
       /* Scroll-triggered enter animation: each row fades in from a
          light blur + 0.90 scale as it enters the viewport from below,
          matching the premium iOS feel requested by the user. */
-      initial={{ opacity: 0, scale: 0.9, filter: 'blur(8px)' }}
+      initial={{ opacity: 0, scale: 0.9, filter: 'blur(6px)' }}
       whileInView={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-      viewport={{ once: false, amount: 0.25, margin: '0px 0px -60px 0px' }}
-      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: false, amount: 0.15, margin: '-80px 0px -60px 0px' }}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
     >
       <motion.div
         layoutId={`card-${sub.id}`}
@@ -291,6 +291,13 @@ export default function SubscriptionsView({
   const pathname = usePathname()
   const [filterOpen, setFilterOpen] = useState(false)
   const [calendarOpen, setCalendarOpen] = useState(false)
+
+  // Listen for floating calendar button (lives outside SubscriptionsView)
+  useEffect(() => {
+    function onOpenCal() { setCalendarOpen(true) }
+    window.addEventListener('oso:open-calendar', onOpenCal)
+    return () => window.removeEventListener('oso:open-calendar', onOpenCal)
+  }, [])
   const [sortMode, setSortMode] = useState<SortMode>('alphabetical')
   const filterShake = useAnimationControls()
 
@@ -411,12 +418,6 @@ export default function SubscriptionsView({
             )}
           </div>
           <div className="flex items-center gap-2 ml-4 flex-shrink-0">
-            <button
-              onClick={() => setCalendarOpen(true)}
-              className="w-10 h-10 rounded-full bg-[#F2F2F7] dark:bg-[#1C1C1E] flex items-center justify-center transition-colors active:bg-[#E5E5EA] dark:active:bg-[#2C2C2E]"
-            >
-              <CalendarDays size={17} strokeWidth={2} className="text-[#333333] dark:text-[#F2F2F7]" />
-            </button>
             <motion.button
               onClick={handleFilterTap}
               animate={filterShake}
@@ -427,6 +428,13 @@ export default function SubscriptionsView({
                 <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#121212] dark:bg-[#F2F2F7] border-2 border-white dark:border-[#121212]" />
               )}
             </motion.button>
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent('oso:reveal-analytics'))}
+              className="w-10 h-10 rounded-full bg-[#F2F2F7] dark:bg-[#1C1C1E] flex items-center justify-center transition-colors active:bg-[#E5E5EA] dark:active:bg-[#2C2C2E]"
+              aria-label="Analytics"
+            >
+              <BarChart3 size={17} strokeWidth={2} className="text-[#333333] dark:text-[#F2F2F7]" />
+            </button>
           </div>
         </div>
       </motion.div>

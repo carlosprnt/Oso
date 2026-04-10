@@ -59,6 +59,19 @@ export default function DragToRevealSurface({ analytics, children }: Props) {
   const [isRaised, setIsRaised] = useState(true)
   const raisedRef = useRef(true)  // perf: avoids re-render on every touch
 
+  // Listen for programmatic reveal (stats button in SubscriptionsView header)
+  useEffect(() => {
+    function onReveal() {
+      if (raisedRef.current && loweredY > 0) {
+        raisedRef.current = false
+        setIsRaised(false)
+        animate(y, loweredY, SNAP_SPRING)
+      }
+    }
+    window.addEventListener('oso:reveal-analytics', onReveal)
+    return () => window.removeEventListener('oso:reveal-analytics', onReveal)
+  }, [y, loweredY])
+
   // Compute LOWERED_Y from actual viewport height
   useEffect(() => {
     function measure() {
