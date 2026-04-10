@@ -105,7 +105,7 @@ export default function DragToRevealSurface({ analytics, children }: Props) {
 
     function onStart(e: TouchEvent) {
       startY   = e.touches[0].clientY
-      startTop = el.scrollTop
+      startTop = el!.scrollTop
       lastY    = startY
       lastT    = e.timeStamp
       dragging = false
@@ -125,7 +125,7 @@ export default function DragToRevealSurface({ analytics, children }: Props) {
       }
 
       // CASE 2: surface is raised, scroll at top, pulling down
-      if (raisedRef.current && !dragging && startTop === 0 && el.scrollTop === 0 && dy > 6) {
+      if (raisedRef.current && !dragging && startTop === 0 && el!.scrollTop === 0 && dy > 6) {
         dragging = true
         locked   = true
         y.stop()
